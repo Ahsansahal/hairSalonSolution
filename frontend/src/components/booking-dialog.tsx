@@ -87,15 +87,15 @@ export function BookingDialog({ appointment, onClose, onStatusChanged }: Booking
       : "danger";
 
   return (
-    <div className="fixed inset-0 z-50 bg-[#1b1520]/60 backdrop-blur-xs flex items-center justify-center p-4">
-      <div className="bg-white rounded-3xl border border-[#e7dfd8] max-w-lg w-full shadow-2xl overflow-hidden animate-slide-up relative">
+    <div className="fixed inset-0 z-50 bg-[#0A1931]/60 backdrop-blur-xs flex items-center justify-center p-4">
+      <div className="bg-white rounded-3xl border border-slate-200 max-w-lg w-full shadow-2xl overflow-hidden animate-slide-up relative">
         {/* Decorative Top Accent */}
-        <div className="h-1.5 w-full bg-gradient-to-r from-[#a3214f] via-[#b38742] to-[#a3214f]" />
+        <div className="h-1.5 w-full bg-gradient-to-r from-[#0A1931] via-amber-500 to-[#0A1931]" />
 
         {/* Header */}
-        <div className="px-6 py-4 border-b border-[#e7dfd8] bg-[#faf7f4] flex items-center justify-between">
+        <div className="px-6 py-4 border-b border-slate-100 bg-[#F8FAFC] flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <span className="font-mono text-xs font-bold text-[#a3214f] bg-[#fbe9ef] px-2.5 py-0.5 rounded-md border border-[#f3cad8]">
+            <span className="font-mono text-xs font-bold text-amber-800 bg-amber-50 px-2.5 py-0.5 rounded-md border border-amber-200">
               {appointment.booking_reference}
             </span>
             <Badge tone={statusTone as any} dot={appointment.status === "IN_PROGRESS" || appointment.status === "CHECKED_IN"}>
@@ -112,7 +112,7 @@ export function BookingDialog({ appointment, onClose, onStatusChanged }: Booking
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-full text-[#7a7180] hover:text-[#1b1520] hover:bg-[#e7dfd8]/60 transition"
+            className="p-1.5 rounded-full text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition"
           >
             <X className="w-4 h-4" />
           </button>
@@ -123,39 +123,39 @@ export function BookingDialog({ appointment, onClose, onStatusChanged }: Booking
           {/* Client Details */}
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-[#1b1520] to-[#3a3242] text-white flex items-center justify-center font-bold text-sm shadow-xs">
+              <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-[#0A1931] to-[#12285A] text-white flex items-center justify-center font-bold text-sm shadow-xs">
                 {(appointment.customer_name || "G").slice(0, 2).toUpperCase()}
               </div>
               <div>
-                <h3 className="text-base font-bold text-[#1b1520]">{appointment.customer_name}</h3>
-                <p className="text-xs text-[#7a7180] flex items-center gap-1 mt-0.5">
-                  <Phone className="w-3 h-3 text-[#a3214f]" />
+                <h3 className="text-base font-bold text-[#0B1B3D]">{appointment.customer_name}</h3>
+                <p className="text-xs text-slate-500 flex items-center gap-1 mt-0.5">
+                  <Phone className="w-3 h-3 text-amber-600" />
                   <span>{appointment.customer_phone}</span>
                 </p>
               </div>
             </div>
             <div className="text-right">
-              <span className="text-2xl font-bold font-serif text-[#a3214f]">
+              <span className="text-2xl font-bold font-serif text-[#0B1B3D]">
                 {formatCurrency(appointment.total_amount)}
               </span>
-              <span className="block text-[10px] uppercase font-bold text-[#7a7180] tracking-wider mt-0.5">
+              <span className="block text-[10px] uppercase font-bold text-slate-400 tracking-wider mt-0.5">
                 {appointment.total_duration_minutes} Mins Duration
               </span>
             </div>
           </div>
 
           {/* Ticket Perforated Meta Box */}
-          <div className="p-4 rounded-2xl bg-[#faf7f4] border border-[#e7dfd8] space-y-2.5 text-xs text-[#1b1520] relative">
+          <div className="p-4 rounded-2xl bg-[#F8FAFC] border border-slate-200 space-y-2.5 text-xs text-[#0B1B3D] relative">
             <div className="flex justify-between items-center">
-              <span className="text-[#7a7180]">Branch Sanctuary:</span>
+              <span className="text-slate-500">Branch Sanctuary:</span>
               <span className="font-bold flex items-center gap-1">
-                <MapPin className="w-3 h-3 text-[#a3214f]" />
+                <MapPin className="w-3 h-3 text-amber-600" />
                 {appointment.branch_name}
               </span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-[#7a7180]">Artisan Stylist:</span>
-              <span className="font-bold text-[#a3214f] flex items-center gap-1">
+              <span className="text-slate-500">Artisan Stylist:</span>
+              <span className="font-bold text-amber-700 flex items-center gap-1">
                 <Scissors className="w-3 h-3" />
                 {appointment.staff_name}
               </span>
@@ -305,7 +305,7 @@ export function BookingDialog({ appointment, onClose, onStatusChanged }: Booking
                   <button
                     onClick={() => handleStatus("CHECKED_IN")}
                     disabled={loading}
-                    className="py-2.5 px-3 rounded-xl bg-[#fbe9ef] hover:bg-[#f4c2d3] text-[#a3214f] font-bold text-xs border border-[#f4c2d3] flex items-center justify-center gap-1.5 transition shadow-2xs"
+                    className="py-2.5 px-3 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold text-xs border border-blue-200 flex items-center justify-center gap-1.5 transition shadow-2xs"
                   >
                     <UserCheck className="w-4 h-4" />
                     <span>Check In Guest</span>

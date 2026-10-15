@@ -295,32 +295,32 @@ export default function BookingPage() {
   }, [slots]);
 
   return (
-    <div className="min-h-screen bg-[#faf7f4] text-[#1b1520] flex flex-col font-sans selection:bg-[#fbe9ef] selection:text-[#a3214f]">
+    <div className="min-h-screen bg-[#F8FAFC] text-[#0B1B3D] flex flex-col font-sans selection:bg-amber-100 selection:text-amber-900">
       {/* Top Boutique Navigation */}
-      <header className="bg-white/90 backdrop-blur-md border-b border-[#e7dfd8] sticky top-0 z-40 shadow-xs">
+      <header className="bg-white/95 backdrop-blur-md border-b border-slate-200 sticky top-0 z-40 shadow-xs">
         <div className="max-w-6xl mx-auto px-6 h-18 flex items-center justify-between">
           <Link href="/" className="flex items-center space-x-3 group">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#fbe9ef] to-[#f6d7e2] border border-[#f3cad8] flex items-center justify-center text-[#a3214f] shadow-xs group-hover:scale-105 transition">
-              <Sparkles className="w-5 h-5 text-[#a3214f]" />
+            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-amber-50 to-amber-100 border border-amber-200 flex items-center justify-center text-amber-700 shadow-xs group-hover:scale-105 transition">
+              <Sparkles className="w-5 h-5 text-amber-600" />
             </div>
             <div>
-              <span className="font-serif font-bold text-lg tracking-wider text-[#1b1520] block leading-none">
+              <span className="font-serif font-bold text-lg tracking-wider text-[#0B1B3D] block leading-none">
                 SHAY
               </span>
-              <span className="text-[10px] uppercase tracking-widest text-[#7a7180] font-semibold">
+              <span className="text-[10px] uppercase tracking-widest text-slate-500 font-semibold">
                 Salon &amp; Luxury Spa · Karachi
               </span>
             </div>
           </Link>
 
           {/* Tab switch pills */}
-          <div className="flex items-center p-1 rounded-full bg-[#f4efea] border border-[#e7dfd8]">
+          <div className="flex items-center p-1 rounded-full bg-slate-100 border border-slate-200">
             <button
               onClick={() => setActiveTab("book")}
               className={`px-4 py-1.5 rounded-full text-xs font-bold transition flex items-center gap-1.5 ${
                 activeTab === "book"
-                  ? "bg-[#a3214f] text-white shadow-xs"
-                  : "text-[#7a7180] hover:text-[#1b1520]"
+                  ? "bg-[#0B1B3D] text-amber-300 shadow-xs"
+                  : "text-slate-600 hover:text-[#0B1B3D]"
               }`}
             >
               <Calendar className="w-3.5 h-3.5" />
@@ -330,8 +330,8 @@ export default function BookingPage() {
               onClick={() => setActiveTab("manage")}
               className={`px-4 py-1.5 rounded-full text-xs font-bold transition flex items-center gap-1.5 ${
                 activeTab === "manage"
-                  ? "bg-[#a3214f] text-white shadow-xs"
-                  : "text-[#7a7180] hover:text-[#1b1520]"
+                  ? "bg-[#0B1B3D] text-amber-300 shadow-xs"
+                  : "text-slate-600 hover:text-[#0B1B3D]"
               }`}
             >
               <Search className="w-3.5 h-3.5" />
@@ -342,16 +342,16 @@ export default function BookingPage() {
       </header>
 
       {/* Hero Sub-Header */}
-      <div className="bg-gradient-to-b from-white via-white/80 to-[#faf7f4] border-b border-[#e7dfd8]/60 py-10 px-6">
+      <div className="bg-gradient-to-b from-white via-white/80 to-[#F8FAFC] border-b border-slate-200 py-10 px-6">
         <div className="max-w-4xl mx-auto text-center">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#fbe9ef] border border-[#f3cad8] text-[#a3214f] text-[11px] font-bold uppercase tracking-wider mb-3">
-            <Sparkles className="w-3.5 h-3.5" />
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-800 text-[11px] font-bold uppercase tracking-wider mb-3">
+            <Sparkles className="w-3.5 h-3.5 text-amber-600" />
             <span>Clifton Flagship &amp; DHA Bukhari · Karachi</span>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-serif font-bold text-[#1b1520] tracking-tight">
+          <h1 className="text-3xl sm:text-4xl font-serif font-bold text-[#0B1B3D] tracking-tight">
             Reserve Your Visit at SHAY
           </h1>
-          <p className="mt-2 text-xs sm:text-sm text-[#7a7180] max-w-xl mx-auto leading-relaxed">
+          <p className="mt-2 text-xs sm:text-sm text-slate-600 max-w-xl mx-auto leading-relaxed">
             Select your preferred Karachi sanctuary (Clifton or DHA), master stylist, and curated treatments. Instant confirmation dispatched via WhatsApp &amp; SMS.
           </p>
 
@@ -360,31 +360,31 @@ export default function BookingPage() {
             <div className="mt-8 flex items-center justify-center gap-2 sm:gap-4 max-w-lg mx-auto">
               <div className="flex items-center gap-2">
                 <span className={`w-6 h-6 rounded-full text-[11px] font-bold flex items-center justify-center ${
-                  selectedServices.length > 0 ? "bg-[#a3214f] text-white" : "bg-[#fbe9ef] text-[#a3214f] border border-[#f3cad8]"
+                  selectedServices.length > 0 ? "bg-[#0B1B3D] text-amber-300" : "bg-amber-50 text-amber-800 border border-amber-200"
                 }`}>
                   1
                 </span>
-                <span className="text-xs font-bold text-[#1b1520]">Treatments</span>
+                <span className="text-xs font-bold text-[#0B1B3D]">Treatments</span>
               </div>
-              <ChevronRight className="w-4 h-4 text-[#d6ccc3]" />
+              <ChevronRight className="w-4 h-4 text-slate-300" />
               <div className="flex items-center gap-2">
                 <span className={`w-6 h-6 rounded-full text-[11px] font-bold flex items-center justify-center ${
-                  selectedSlot ? "bg-[#a3214f] text-white" : "bg-[#f4efea] text-[#7a7180] border border-[#e7dfd8]"
+                  selectedSlot ? "bg-[#0B1B3D] text-amber-300" : "bg-slate-100 text-slate-500 border border-slate-200"
                 }`}>
                   2
                 </span>
-                <span className={`text-xs font-semibold ${selectedServices.length > 0 ? "text-[#1b1520]" : "text-[#7a7180]"}`}>
+                <span className={`text-xs font-semibold ${selectedServices.length > 0 ? "text-[#0B1B3D]" : "text-slate-500"}`}>
                   Artisan & Time
                 </span>
               </div>
-              <ChevronRight className="w-4 h-4 text-[#d6ccc3]" />
+              <ChevronRight className="w-4 h-4 text-slate-300" />
               <div className="flex items-center gap-2">
                 <span className={`w-6 h-6 rounded-full text-[11px] font-bold flex items-center justify-center ${
-                  confirmedBooking ? "bg-[#15803d] text-white" : "bg-[#f4efea] text-[#7a7180] border border-[#e7dfd8]"
+                  confirmedBooking ? "bg-emerald-600 text-white" : "bg-slate-100 text-slate-500 border border-slate-200"
                 }`}>
                   3
                 </span>
-                <span className={`text-xs font-semibold ${selectedSlot ? "text-[#1b1520]" : "text-[#7a7180]"}`}>
+                <span className={`text-xs font-semibold ${selectedSlot ? "text-[#0B1B3D]" : "text-slate-500"}`}>
                   Confirm
                 </span>
               </div>
@@ -396,43 +396,43 @@ export default function BookingPage() {
       <main className="flex-1 max-w-6xl mx-auto w-full px-6 py-10">
         {/* Find My Booking Tab */}
         {activeTab === "manage" && (
-          <div className="max-w-lg mx-auto bg-white border border-[#e7dfd8] rounded-3xl p-8 shadow-sm">
+          <div className="max-w-lg mx-auto bg-white border border-slate-200 rounded-3xl p-8 shadow-xs">
             <div className="text-center mb-6">
-              <div className="w-12 h-12 rounded-2xl bg-[#fbe9ef] border border-[#f3cad8] text-[#a3214f] flex items-center justify-center mx-auto mb-3">
-                <Search className="w-5 h-5" />
+              <div className="w-12 h-12 rounded-2xl bg-amber-50 border border-amber-200 text-amber-700 flex items-center justify-center mx-auto mb-3">
+                <Search className="w-5 h-5 text-amber-600" />
               </div>
-              <h2 className="text-2xl font-serif font-bold text-[#1b1520]">Lookup Your Reservation</h2>
-              <p className="text-xs text-[#7a7180] mt-1">
+              <h2 className="text-2xl font-serif font-bold text-[#0B1B3D]">Lookup Your Reservation</h2>
+              <p className="text-xs text-slate-500 mt-1">
                 Enter your booking reference code (e.g. BK-SHAY-001) to view status, schedule details, or cancel your visit.
               </p>
             </div>
 
             <form onSubmit={handleLookupBooking} className="space-y-4">
               <div>
-                <label className="block text-xs font-bold text-[#4a4250] mb-1">Booking Reference Code</label>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Booking Reference Code</label>
                 <input
                   type="text"
                   value={lookupRef}
                   onChange={(e) => setLookupRef(e.target.value)}
                   placeholder="BK-SHAY-001"
                   required
-                  className="w-full px-4 py-2.5 rounded-xl bg-[#faf7f4] border border-[#e7dfd8] text-[#1b1520] text-xs focus:outline-none focus:ring-2 focus:ring-[#a3214f]/20 font-mono uppercase tracking-wider font-bold"
+                  className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-[#0B1B3D] text-xs focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 font-mono uppercase tracking-wider font-bold"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-[#4a4250] mb-1">Your Mobile Phone</label>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Your Mobile Phone</label>
                 <input
                   type="text"
                   value={lookupPhone}
                   onChange={(e) => setLookupPhone(e.target.value)}
                   placeholder="+92 300 1234567"
-                  className="w-full px-4 py-2.5 rounded-xl bg-[#faf7f4] border border-[#e7dfd8] text-[#1b1520] text-xs focus:outline-none focus:ring-2 focus:ring-[#a3214f]/20"
+                  className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-[#0B1B3D] text-xs focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
                 />
               </div>
 
               {lookupError && (
-                <div className="p-3.5 rounded-xl bg-[#fbe9ef] border border-[#f3cad8] text-[#a3214f] text-xs flex items-center gap-2">
+                <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-center gap-2">
                   <AlertCircle className="w-4 h-4 flex-shrink-0" />
                   <span>{lookupError}</span>
                 </div>
@@ -441,7 +441,7 @@ export default function BookingPage() {
               <button
                 type="submit"
                 disabled={lookupLoading}
-                className="w-full py-3 rounded-xl bg-gradient-to-r from-[#a3214f] to-[#88183f] hover:from-[#8b1b42] hover:to-[#6f1232] text-white font-bold text-xs transition shadow-sm flex items-center justify-center space-x-2"
+                className="w-full py-3 rounded-xl bg-gradient-to-r from-[#0B1B3D] to-[#12285A] hover:bg-[#0A1931] text-amber-300 font-bold text-xs transition shadow-sm flex items-center justify-center space-x-2"
               >
                 {lookupLoading ? (
                   <>
@@ -458,38 +458,38 @@ export default function BookingPage() {
             </form>
 
             {lookupResult && (
-              <div className="mt-8 pt-6 border-t border-[#e7dfd8] space-y-4">
-                <div className="p-5 rounded-2xl bg-[#faf7f4] border border-[#e7dfd8] space-y-3 text-xs">
-                  <div className="flex justify-between items-center pb-2 border-b border-[#e7dfd8]">
-                    <span className="font-mono font-bold text-[#a3214f]">{lookupResult.booking_reference}</span>
+              <div className="mt-8 pt-6 border-t border-slate-200 space-y-4">
+                <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-3 text-xs">
+                  <div className="flex justify-between items-center pb-2 border-b border-slate-200">
+                    <span className="font-mono font-bold text-amber-700">{lookupResult.booking_reference}</span>
                     <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
                       lookupResult.status === "COMPLETED"
-                        ? "bg-[#e3f5e8] text-[#15803d] border border-[#b5e7c3]"
+                        ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
                         : lookupResult.status === "CONFIRMED"
-                        ? "bg-[#e5eefc] text-[#1d5fbf] border border-[#b8d2f8]"
+                        ? "bg-blue-50 text-blue-700 border border-blue-200"
                         : lookupResult.status === "CANCELLED"
-                        ? "bg-[#fbe9ef] text-[#a3214f] border border-[#f3cad8]"
-                        : "bg-stone-100 text-stone-700"
+                        ? "bg-rose-50 text-rose-700 border border-rose-200"
+                        : "bg-slate-100 text-slate-700"
                     }`}>
                       {lookupResult.status}
                     </span>
                   </div>
 
                   <div className="flex justify-between">
-                    <span className="text-[#7a7180]">Guest Name</span>
-                    <span className="font-bold text-[#1b1520]">{lookupResult.customer_name}</span>
+                    <span className="text-slate-500">Guest Name</span>
+                    <span className="font-bold text-[#0B1B3D]">{lookupResult.customer_name}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-[#7a7180]">Salon Location</span>
-                    <span className="font-semibold text-[#1b1520]">{lookupResult.branch_name}</span>
+                    <span className="text-slate-500">Salon Location</span>
+                    <span className="font-semibold text-[#0B1B3D]">{lookupResult.branch_name}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-[#7a7180]">Artisan Stylist</span>
-                    <span className="font-semibold text-[#1b1520]">{lookupResult.staff_name}</span>
+                    <span className="text-slate-500">Artisan Stylist</span>
+                    <span className="font-semibold text-[#0B1B3D]">{lookupResult.staff_name}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-[#7a7180]">Scheduled Time</span>
-                    <span className="font-semibold text-[#1b1520]">
+                    <span className="text-slate-500">Scheduled Time</span>
+                    <span className="font-semibold text-[#0B1B3D]">
                       {new Date(lookupResult.start_time).toLocaleString(undefined, {
                         month: 'short',
                         day: 'numeric',
@@ -499,9 +499,9 @@ export default function BookingPage() {
                       })}
                     </span>
                   </div>
-                  <div className="flex justify-between pt-2 border-t border-[#e7dfd8]">
-                    <span className="text-[#7a7180] font-bold">Total Service Fee</span>
-                    <span className="font-serif font-bold text-base text-[#a3214f]">
+                  <div className="flex justify-between pt-2 border-t border-slate-200">
+                    <span className="text-slate-600 font-bold">Total Service Fee</span>
+                    <span className="font-serif font-bold text-base text-[#0B1B3D]">
                       {formatCurrency(lookupResult.total_amount)}
                     </span>
                   </div>
@@ -510,7 +510,7 @@ export default function BookingPage() {
                 {lookupResult.status !== "CANCELLED" && lookupResult.status !== "COMPLETED" && (
                   <button
                     onClick={handleCancelBooking}
-                    className="w-full py-2.5 rounded-xl border border-[#f3cad8] hover:bg-[#fbe9ef] text-[#a3214f] font-bold text-xs transition"
+                    className="w-full py-2.5 rounded-xl border border-rose-200 hover:bg-rose-50 text-rose-700 font-bold text-xs transition"
                   >
                     Cancel This Reservation
                   </button>
@@ -525,44 +525,44 @@ export default function BookingPage() {
           <div>
             {confirmedBooking ? (
               /* High-End Confirmation Voucher */
-              <div className="max-w-xl mx-auto bg-white border border-[#e7dfd8] rounded-3xl p-8 sm:p-10 shadow-lg text-center relative overflow-hidden">
-                <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-[#a3214f] via-[#b38742] to-[#a3214f]" />
+              <div className="max-w-xl mx-auto bg-white border border-slate-200 rounded-3xl p-8 sm:p-10 shadow-lg text-center relative overflow-hidden">
+                <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-[#0B1B3D] via-amber-500 to-[#0B1B3D]" />
 
-                <div className="w-16 h-16 rounded-full bg-[#e3f5e8] text-[#15803d] flex items-center justify-center mx-auto mb-4 border border-[#b5e7c3] shadow-xs">
+                <div className="w-16 h-16 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto mb-4 border border-emerald-200 shadow-xs">
                   <CheckCircle2 className="w-9 h-9" />
                 </div>
-                <h2 className="text-3xl font-serif font-bold text-[#1b1520]">Your Visit is Reserved</h2>
-                <p className="text-xs text-[#7a7180] mt-1.5 max-w-sm mx-auto">
-                  We eagerly anticipate welcoming you, <strong className="text-[#1b1520]">{confirmedBooking.customer_name}</strong>.
+                <h2 className="text-3xl font-serif font-bold text-[#0B1B3D]">Your Visit is Reserved</h2>
+                <p className="text-xs text-slate-500 mt-1.5 max-w-sm mx-auto">
+                  We eagerly anticipate welcoming you, <strong className="text-[#0B1B3D]">{confirmedBooking.customer_name}</strong>.
                 </p>
 
                 {/* Ticket Body */}
-                <div className="mt-8 p-6 rounded-2xl bg-[#faf7f4] border border-[#e7dfd8] text-left space-y-3.5 text-xs relative">
-                  <div className="flex justify-between items-center pb-3 border-b border-[#e7dfd8]">
+                <div className="mt-8 p-6 rounded-2xl bg-slate-50 border border-slate-200 text-left space-y-3.5 text-xs relative">
+                  <div className="flex justify-between items-center pb-3 border-b border-slate-200">
                     <div>
-                      <span className="text-[10px] uppercase tracking-wider font-bold text-[#7a7180] block">
+                      <span className="text-[10px] uppercase tracking-wider font-bold text-slate-500 block">
                         Reservation Voucher
                       </span>
-                      <span className="font-mono text-base font-bold text-[#a3214f]">
+                      <span className="font-mono text-base font-bold text-amber-700">
                         {confirmedBooking.booking_reference}
                       </span>
                     </div>
-                    <span className="px-3 py-1 rounded-full bg-[#e3f5e8] text-[#15803d] border border-[#b5e7c3] text-[10px] font-bold uppercase tracking-wider">
+                    <span className="px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 text-[10px] font-bold uppercase tracking-wider">
                       Confirmed
                     </span>
                   </div>
 
                   <div className="flex justify-between">
-                    <span className="text-[#7a7180]">Salon Boutique</span>
-                    <span className="font-bold text-[#1b1520]">{confirmedBooking.branch_name}</span>
+                    <span className="text-slate-500">Salon Boutique</span>
+                    <span className="font-bold text-[#0B1B3D]">{confirmedBooking.branch_name}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-[#7a7180]">Stylist Artisan</span>
-                    <span className="font-bold text-[#1b1520]">{confirmedBooking.staff_name}</span>
+                    <span className="text-slate-500">Stylist Artisan</span>
+                    <span className="font-bold text-[#0B1B3D]">{confirmedBooking.staff_name}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-[#7a7180]">Appointment Time</span>
-                    <span className="font-bold text-[#1b1520]">
+                    <span className="text-slate-500">Appointment Time</span>
+                    <span className="font-bold text-[#0B1B3D]">
                       {new Date(confirmedBooking.start_time).toLocaleString(undefined, {
                         weekday: 'short',
                         month: 'short',
@@ -572,15 +572,15 @@ export default function BookingPage() {
                       })}
                     </span>
                   </div>
-                  <div className="flex justify-between pt-3 border-t border-[#e7dfd8]">
-                    <span className="text-[#7a7180] font-bold">Total Service Fee</span>
-                    <span className="font-serif font-bold text-lg text-[#a3214f]">
+                  <div className="flex justify-between pt-3 border-t border-slate-200">
+                    <span className="text-slate-600 font-bold">Total Service Fee</span>
+                    <span className="font-serif font-bold text-lg text-[#0B1B3D]">
                       {formatCurrency(confirmedBooking.total_amount)}
                     </span>
                   </div>
                 </div>
 
-                <div className="mt-6 p-3.5 rounded-xl bg-[#e8f7ee] border border-[#bce8cb] text-[#1b7a42] text-xs flex items-center justify-center gap-2">
+                <div className="mt-6 p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center justify-center gap-2">
                   <ShieldCheck className="w-4 h-4 flex-shrink-0" />
                   <span>Confirmation & WhatsApp reminder sent to <strong>{confirmedBooking.customer_phone}</strong></span>
                 </div>
@@ -600,13 +600,13 @@ export default function BookingPage() {
                       setSelectedServices([]);
                       setSelectedSlot(null);
                     }}
-                    className="flex-1 py-3 rounded-xl bg-gradient-to-r from-[#a3214f] to-[#88183f] hover:from-[#8b1b42] hover:to-[#6f1232] text-white font-bold text-xs shadow-sm transition"
+                    className="flex-1 py-3 rounded-xl bg-gradient-to-r from-[#0B1B3D] to-[#12285A] hover:bg-[#0A1931] text-amber-300 font-bold text-xs shadow-sm transition"
                   >
                     Reserve Another Visit
                   </button>
                   <Link
                     href="/"
-                    className="py-3 px-6 rounded-xl border border-[#e7dfd8] hover:bg-[#faf7f4] text-[#1b1520] font-semibold text-xs transition text-center"
+                    className="py-3 px-6 rounded-xl border border-slate-200 hover:bg-slate-50 text-[#0B1B3D] font-semibold text-xs transition text-center"
                   >
                     Back to Home
                   </Link>
@@ -618,30 +618,30 @@ export default function BookingPage() {
                 {/* Main Steps Column */}
                 <div className="lg:col-span-2 space-y-8">
                   {/* Step 1: Location & Services */}
-                  <div className="p-6 sm:p-8 rounded-3xl bg-white border border-[#e7dfd8] shadow-xs space-y-6">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#e7dfd8]">
+                  <div className="p-6 sm:p-8 rounded-3xl bg-white border border-slate-200 shadow-xs space-y-6">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="w-6 h-6 rounded-full bg-[#fbe9ef] text-[#a3214f] font-bold text-xs flex items-center justify-center">
+                          <span className="w-6 h-6 rounded-full bg-amber-50 text-amber-800 border border-amber-200 font-bold text-xs flex items-center justify-center">
                             1
                           </span>
-                          <h2 className="text-xl font-serif font-bold text-[#1b1520]">
+                          <h2 className="text-xl font-serif font-bold text-[#0B1B3D]">
                             Select Salon & Treatments
                           </h2>
                         </div>
-                        <p className="text-xs text-[#7a7180] mt-1">Choose your destination boutique and service treatments</p>
+                        <p className="text-xs text-slate-500 mt-1">Choose your destination boutique and service treatments</p>
                       </div>
 
                       {/* Location Selector Pill */}
-                      <div className="flex items-center gap-2 bg-[#faf7f4] border border-[#e7dfd8] px-3.5 py-2 rounded-2xl shadow-2xs">
-                        <MapPin className="w-4 h-4 text-[#a3214f]" />
+                      <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 px-3.5 py-2 rounded-2xl shadow-2xs">
+                        <MapPin className="w-4 h-4 text-amber-600" />
                         <select
                           value={selectedBranch?.id || ""}
                           onChange={(e) => {
                             const b = branches.find((item) => item.id === e.target.value);
                             if (b) setSelectedBranch(b);
                           }}
-                          className="bg-transparent text-xs font-bold text-[#1b1520] focus:outline-none cursor-pointer"
+                          className="bg-transparent text-xs font-bold text-[#0B1B3D] focus:outline-none cursor-pointer"
                         >
                           {branches.map((b) => (
                             <option key={b.id} value={b.id}>{b.name}</option>
@@ -651,7 +651,7 @@ export default function BookingPage() {
                     </div>
 
                     {/* Booking Type Segmented Switch (Single Services vs Combo Deals) */}
-                    <div className="flex items-center p-1.5 rounded-2xl bg-[#f4efea] border border-[#e7dfd8] text-xs">
+                    <div className="flex items-center p-1.5 rounded-2xl bg-slate-100 border border-slate-200 text-xs">
                       <button
                         type="button"
                         onClick={() => {
@@ -659,7 +659,7 @@ export default function BookingPage() {
                           setServiceCategory("all");
                         }}
                         className={`flex-1 py-2 rounded-xl font-bold transition text-center ${
-                          bookingTypeFilter === "all" ? "bg-white text-[#1b1520] shadow-xs" : "text-[#7a7180] hover:text-[#1b1520]"
+                          bookingTypeFilter === "all" ? "bg-white text-[#0B1B3D] shadow-xs" : "text-slate-500 hover:text-[#0B1B3D]"
                         }`}
                       >
                         All Treatments ({services.length})
@@ -671,7 +671,7 @@ export default function BookingPage() {
                           setServiceCategory("all");
                         }}
                         className={`flex-1 py-2 rounded-xl font-bold transition text-center flex items-center justify-center gap-1.5 ${
-                          bookingTypeFilter === "single" ? "bg-[#a3214f] text-white shadow-xs" : "text-[#7a7180] hover:text-[#1b1520]"
+                          bookingTypeFilter === "single" ? "bg-[#0B1B3D] text-amber-300 shadow-xs" : "text-slate-500 hover:text-[#0B1B3D]"
                         }`}
                       >
                         <Scissors className="w-3.5 h-3.5" />
@@ -684,7 +684,7 @@ export default function BookingPage() {
                           setServiceCategory("all");
                         }}
                         className={`flex-1 py-2 rounded-xl font-bold transition text-center flex items-center justify-center gap-1.5 ${
-                          bookingTypeFilter === "deal" ? "bg-[#b38742] text-white shadow-xs" : "text-[#7a7180] hover:text-[#1b1520]"
+                          bookingTypeFilter === "deal" ? "bg-amber-600 text-white shadow-xs" : "text-slate-500 hover:text-[#0B1B3D]"
                         }`}
                       >
                         <Sparkles className="w-3.5 h-3.5" />
@@ -702,8 +702,8 @@ export default function BookingPage() {
                             onClick={() => setServiceCategory(cat)}
                             className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition capitalize ${
                               serviceCategory === cat
-                                ? "bg-[#1b1520] text-white shadow-xs"
-                                : "bg-[#faf7f4] text-[#7a7180] hover:text-[#1b1520] hover:bg-[#f2ece6] border border-[#e7dfd8]"
+                                ? "bg-[#0B1B3D] text-amber-300 shadow-xs font-bold"
+                                : "bg-slate-50 text-slate-600 hover:text-[#0B1B3D] hover:bg-slate-100 border border-slate-200"
                             }`}
                           >
                             {cat === "all" ? "All Categories" : cat}
@@ -723,16 +723,16 @@ export default function BookingPage() {
                             onClick={() => toggleService(s.id)}
                             className={`p-4 rounded-2xl border cursor-pointer transition flex flex-col justify-between group ${
                               isSelected
-                                ? "bg-[#fef8fa] border-[#a3214f] shadow-xs ring-1 ring-[#a3214f]/20"
-                                : "bg-[#faf7f4]/60 border-[#e7dfd8] hover:border-[#d6ccc3] hover:bg-white"
+                                ? "bg-amber-50/50 border-amber-500 shadow-xs ring-1 ring-amber-400/30"
+                                : "bg-slate-50/60 border-slate-200 hover:border-amber-300 hover:bg-white"
                             }`}
                           >
                             <div className="flex items-start justify-between gap-3">
                               <div className="flex items-start gap-3">
                                 <div className={`w-5 h-5 rounded-md mt-0.5 flex items-center justify-center border transition flex-shrink-0 ${
                                   isSelected
-                                    ? "bg-[#a3214f] border-[#a3214f] text-white"
-                                    : "border-[#d6ccc3] bg-white group-hover:border-[#a3214f]"
+                                    ? "bg-[#0B1B3D] border-[#0B1B3D] text-amber-400"
+                                    : "border-slate-300 bg-white group-hover:border-amber-500"
                                 }`}>
                                   {isSelected && <Check className="w-3.5 h-3.5" />}
                                 </div>
@@ -747,26 +747,26 @@ export default function BookingPage() {
                                         Single Service
                                       </span>
                                     )}
-                                    <span className="text-[10px] text-[#7a7180] font-medium">
+                                    <span className="text-[10px] text-slate-500 font-medium">
                                       {s.category}
                                     </span>
                                   </div>
-                                  <h4 className="text-xs font-bold text-[#1b1520] group-hover:text-[#a3214f] transition">
+                                  <h4 className="text-xs font-bold text-[#0B1B3D] group-hover:text-amber-700 transition">
                                     {s.name}
                                   </h4>
-                                  <p className="text-[11px] text-[#7a7180] line-clamp-2 mt-0.5 leading-relaxed">
+                                  <p className="text-[11px] text-slate-500 line-clamp-2 mt-0.5 leading-relaxed">
                                     {s.description || "Bespoke treatment executed with artisanal care."}
                                   </p>
                                 </div>
                               </div>
                             </div>
 
-                            <div className="flex items-center justify-between mt-3 pt-2.5 border-t border-[#e7dfd8]/60 text-xs">
-                              <span className="text-[10px] font-semibold text-[#7a7180] flex items-center gap-1">
-                                <Clock className="w-3 h-3 text-[#7a7180]" />
+                            <div className="flex items-center justify-between mt-3 pt-2.5 border-t border-slate-200/60 text-xs">
+                              <span className="text-[10px] font-semibold text-slate-500 flex items-center gap-1">
+                                <Clock className="w-3 h-3 text-slate-400" />
                                 <span>{s.duration_minutes} mins</span>
                               </span>
-                              <span className="font-serif font-bold text-sm text-[#1b1520]">
+                              <span className="font-serif font-bold text-sm text-[#0B1B3D]">
                                 {formatCurrency(s.price)}
                               </span>
                             </div>
@@ -777,18 +777,18 @@ export default function BookingPage() {
                   </div>
 
                   {/* Step 2: Date & Available Times */}
-                  <div className="p-6 sm:p-8 rounded-3xl bg-white border border-[#e7dfd8] shadow-xs space-y-6">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#e7dfd8]">
+                  <div className="p-6 sm:p-8 rounded-3xl bg-white border border-slate-200 shadow-xs space-y-6">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="w-6 h-6 rounded-full bg-[#fbe9ef] text-[#a3214f] font-bold text-xs flex items-center justify-center">
+                          <span className="w-6 h-6 rounded-full bg-amber-50 text-amber-800 border border-amber-200 font-bold text-xs flex items-center justify-center">
                             2
                           </span>
-                          <h2 className="text-xl font-serif font-bold text-[#1b1520]">
+                          <h2 className="text-xl font-serif font-bold text-[#0B1B3D]">
                             Select Date & Stylist
                           </h2>
                         </div>
-                        <p className="text-xs text-[#7a7180] mt-1">Pick your preferred calendar date and artisan specialist</p>
+                        <p className="text-xs text-slate-500 mt-1">Pick your preferred calendar date and artisan specialist</p>
                       </div>
 
                       <div className="flex flex-wrap items-center gap-2.5">
@@ -797,13 +797,13 @@ export default function BookingPage() {
                           value={selectedDate}
                           min={new Date().toISOString().split("T")[0]}
                           onChange={(e) => setSelectedDate(e.target.value)}
-                          className="px-3.5 py-2 rounded-xl bg-[#faf7f4] border border-[#e7dfd8] text-xs font-bold text-[#1b1520] focus:outline-none focus:ring-2 focus:ring-[#a3214f]/20 shadow-2xs"
+                          className="px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold text-[#0B1B3D] focus:outline-none focus:ring-2 focus:ring-amber-500/20 shadow-2xs"
                         />
 
                         <select
                           value={selectedStaff}
                           onChange={(e) => setSelectedStaff(e.target.value)}
-                          className="px-3.5 py-2 rounded-xl bg-[#faf7f4] border border-[#e7dfd8] text-xs font-bold text-[#1b1520] focus:outline-none cursor-pointer shadow-2xs"
+                          className="px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold text-[#0B1B3D] focus:outline-none cursor-pointer shadow-2xs"
                         >
                           <option value="">Any Available Stylist</option>
                           {staffMembers.map((st) => (
@@ -816,16 +816,16 @@ export default function BookingPage() {
                     {/* Slots Area */}
                     <div>
                       {loadingSlots && (
-                        <div className="py-12 text-center text-xs text-[#a3214f] flex flex-col items-center justify-center gap-2">
-                          <RefreshCw className="w-6 h-6 animate-spin" />
+                        <div className="py-12 text-center text-xs text-amber-700 flex flex-col items-center justify-center gap-2">
+                          <RefreshCw className="w-6 h-6 animate-spin text-amber-600" />
                           <span className="font-semibold">Searching live salon schedule...</span>
                         </div>
                       )}
 
                       {!loadingSlots && slots.length === 0 && (
-                        <div className="py-12 text-center text-xs text-[#7a7180] bg-[#faf7f4] rounded-2xl border border-dashed border-[#e7dfd8] p-6">
-                          <Clock className="w-8 h-8 text-[#d6ccc3] mx-auto mb-2" />
-                          <p className="font-bold text-[#1b1520]">
+                        <div className="py-12 text-center text-xs text-slate-500 bg-slate-50 rounded-2xl border border-dashed border-slate-200 p-6">
+                          <Clock className="w-8 h-8 text-slate-300 mx-auto mb-2" />
+                          <p className="font-bold text-[#0B1B3D]">
                             {selectedServices.length === 0
                               ? "Select at least one treatment above to inspect open time slots."
                               : "No open times on this date. Please pick another day or select 'Any Available Stylist'."}
@@ -837,7 +837,7 @@ export default function BookingPage() {
                         <div className="space-y-4">
                           {groupedSlots.morning.length > 0 && (
                             <div>
-                              <span className="text-[10px] uppercase font-bold tracking-wider text-[#7a7180] block mb-2">
+                              <span className="text-[10px] uppercase font-bold tracking-wider text-slate-500 block mb-2">
                                 Morning Hours
                               </span>
                               <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
@@ -850,12 +850,12 @@ export default function BookingPage() {
                                       onClick={() => setSelectedSlot(slot)}
                                       className={`py-2.5 px-2 rounded-xl text-center border transition ${
                                         isSelected
-                                          ? "bg-[#a3214f] border-[#a3214f] text-white shadow-xs font-bold ring-2 ring-[#a3214f]/20"
-                                          : "bg-[#faf7f4] border-[#e7dfd8] hover:border-[#a3214f]/40 hover:bg-white text-[#1b1520] font-semibold text-xs"
+                                          ? "bg-[#0B1B3D] border-[#0B1B3D] text-amber-300 shadow-xs font-bold ring-2 ring-amber-400/20"
+                                          : "bg-slate-50 border-slate-200 hover:border-amber-400 hover:bg-white text-[#0B1B3D] font-semibold text-xs"
                                       }`}
                                     >
                                       <span className="block text-xs">{slot.time}</span>
-                                      <span className={`block text-[10px] truncate mt-0.5 ${isSelected ? "text-white/80" : "text-[#7a7180]"}`}>
+                                      <span className={`block text-[10px] truncate mt-0.5 ${isSelected ? "text-white/80" : "text-slate-500"}`}>
                                         {slot.staff_name.split(" ")[0]}
                                       </span>
                                     </button>
@@ -867,7 +867,7 @@ export default function BookingPage() {
 
                           {groupedSlots.afternoon.length > 0 && (
                             <div>
-                              <span className="text-[10px] uppercase font-bold tracking-wider text-[#7a7180] block mb-2">
+                              <span className="text-[10px] uppercase font-bold tracking-wider text-slate-500 block mb-2">
                                 Afternoon Hours
                               </span>
                               <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
@@ -880,12 +880,12 @@ export default function BookingPage() {
                                       onClick={() => setSelectedSlot(slot)}
                                       className={`py-2.5 px-2 rounded-xl text-center border transition ${
                                         isSelected
-                                          ? "bg-[#a3214f] border-[#a3214f] text-white shadow-xs font-bold ring-2 ring-[#a3214f]/20"
-                                          : "bg-[#faf7f4] border-[#e7dfd8] hover:border-[#a3214f]/40 hover:bg-white text-[#1b1520] font-semibold text-xs"
+                                          ? "bg-[#0B1B3D] border-[#0B1B3D] text-amber-300 shadow-xs font-bold ring-2 ring-amber-400/20"
+                                          : "bg-slate-50 border-slate-200 hover:border-amber-400 hover:bg-white text-[#0B1B3D] font-semibold text-xs"
                                       }`}
                                     >
                                       <span className="block text-xs">{slot.time}</span>
-                                      <span className={`block text-[10px] truncate mt-0.5 ${isSelected ? "text-white/80" : "text-[#7a7180]"}`}>
+                                      <span className={`block text-[10px] truncate mt-0.5 ${isSelected ? "text-white/80" : "text-slate-500"}`}>
                                         {slot.staff_name.split(" ")[0]}
                                       </span>
                                     </button>
@@ -897,7 +897,7 @@ export default function BookingPage() {
 
                           {groupedSlots.evening.length > 0 && (
                             <div>
-                              <span className="text-[10px] uppercase font-bold tracking-wider text-[#7a7180] block mb-2">
+                              <span className="text-[10px] uppercase font-bold tracking-wider text-slate-500 block mb-2">
                                 Evening Hours
                               </span>
                               <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
@@ -910,12 +910,12 @@ export default function BookingPage() {
                                       onClick={() => setSelectedSlot(slot)}
                                       className={`py-2.5 px-2 rounded-xl text-center border transition ${
                                         isSelected
-                                          ? "bg-[#a3214f] border-[#a3214f] text-white shadow-xs font-bold ring-2 ring-[#a3214f]/20"
-                                          : "bg-[#faf7f4] border-[#e7dfd8] hover:border-[#a3214f]/40 hover:bg-white text-[#1b1520] font-semibold text-xs"
+                                          ? "bg-[#0B1B3D] border-[#0B1B3D] text-amber-300 shadow-xs font-bold ring-2 ring-amber-400/20"
+                                          : "bg-slate-50 border-slate-200 hover:border-amber-400 hover:bg-white text-[#0B1B3D] font-semibold text-xs"
                                       }`}
                                     >
                                       <span className="block text-xs">{slot.time}</span>
-                                      <span className={`block text-[10px] truncate mt-0.5 ${isSelected ? "text-white/80" : "text-[#7a7180]"}`}>
+                                      <span className={`block text-[10px] truncate mt-0.5 ${isSelected ? "text-white/80" : "text-slate-500"}`}>
                                         {slot.staff_name.split(" ")[0]}
                                       </span>
                                     </button>
@@ -930,17 +930,17 @@ export default function BookingPage() {
                   </div>
 
                   {/* Step 3: Contact & Notes */}
-                  <div className="p-6 sm:p-8 rounded-3xl bg-white border border-[#e7dfd8] shadow-xs space-y-6">
-                    <div className="pb-4 border-b border-[#e7dfd8]">
+                  <div className="p-6 sm:p-8 rounded-3xl bg-white border border-slate-200 shadow-xs space-y-6">
+                    <div className="pb-4 border-b border-slate-200">
                       <div className="flex items-center gap-2">
-                        <span className="w-6 h-6 rounded-full bg-[#fbe9ef] text-[#a3214f] font-bold text-xs flex items-center justify-center">
+                        <span className="w-6 h-6 rounded-full bg-amber-50 text-amber-800 border border-amber-200 font-bold text-xs flex items-center justify-center">
                           3
                         </span>
-                        <h2 className="text-xl font-serif font-bold text-[#1b1520]">
+                        <h2 className="text-xl font-serif font-bold text-[#0B1B3D]">
                           Guest Information & Contact
                         </h2>
                       </div>
-                      <p className="text-xs text-[#7a7180] mt-1">
+                      <p className="text-xs text-slate-500 mt-1">
                         Where should we dispatch your appointment confirmation and schedule reminders?
                       </p>
                     </div>
@@ -948,50 +948,50 @@ export default function BookingPage() {
                     <form onSubmit={handleBookingSubmit} className="space-y-4">
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
-                          <label className="block text-xs font-bold text-[#4a4250] mb-1">Your Full Name *</label>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">Your Full Name *</label>
                           <input
                             type="text"
                             value={fullName}
                             onChange={(e) => setFullName(e.target.value)}
                             required
                             placeholder="e.g. Mahnoor Baloch"
-                            className="w-full px-4 py-2.5 rounded-xl bg-[#faf7f4] border border-[#e7dfd8] text-[#1b1520] text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-[#a3214f]/20"
+                            className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-[#0B1B3D] text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
                           />
                         </div>
 
                         <div>
-                          <label className="block text-xs font-bold text-[#4a4250] mb-1">Mobile Phone (for SMS / WhatsApp) *</label>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">Mobile Phone (for SMS / WhatsApp) *</label>
                           <input
                             type="tel"
                             value={phone}
                             onChange={(e) => setPhone(e.target.value)}
                             required
                             placeholder="+92 300 1234567"
-                            className="w-full px-4 py-2.5 rounded-xl bg-[#faf7f4] border border-[#e7dfd8] text-[#1b1520] text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-[#a3214f]/20"
+                            className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-[#0B1B3D] text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
                           />
                         </div>
                       </div>
 
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
-                          <label className="block text-xs font-bold text-[#4a4250] mb-1">Email Address (Optional)</label>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">Email Address (Optional)</label>
                           <input
                             type="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             placeholder="mahnoor@gmail.com"
-                            className="w-full px-4 py-2.5 rounded-xl bg-[#faf7f4] border border-[#e7dfd8] text-[#1b1520] text-xs focus:outline-none focus:ring-2 focus:ring-[#a3214f]/20"
+                            className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-[#0B1B3D] text-xs focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
                           />
                         </div>
 
                         <div>
-                          <label className="block text-xs font-bold text-[#4a4250] mb-1">Special Treatment Notes (Optional)</label>
+                          <label className="block text-xs font-bold text-slate-700 mb-1">Special Treatment Notes (Optional)</label>
                           <input
                             type="text"
                             value={notes}
                             onChange={(e) => setNotes(e.target.value)}
                             placeholder="e.g. Sensitive scalp, blonde toner preference"
-                            className="w-full px-4 py-2.5 rounded-xl bg-[#faf7f4] border border-[#e7dfd8] text-[#1b1520] text-xs focus:outline-none focus:ring-2 focus:ring-[#a3214f]/20"
+                            className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-[#0B1B3D] text-xs focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
                           />
                         </div>
                       </div>
@@ -1001,25 +1001,25 @@ export default function BookingPage() {
                           type="checkbox"
                           checked={whatsappOptIn}
                           onChange={(e) => setWhatsappOptIn(e.target.checked)}
-                          className="rounded text-[#a3214f] focus:ring-[#a3214f]"
+                          className="rounded text-amber-600 focus:ring-amber-500"
                         />
-                        <span className="text-xs text-[#7a7180]">
+                        <span className="text-xs text-slate-600">
                           Receive real-time WhatsApp booking updates and appointment reminders
                         </span>
                       </label>
 
                       {errorMsg && (
-                        <div className="p-3.5 rounded-xl bg-[#fbe9ef] border border-[#f3cad8] text-[#a3214f] text-xs flex items-center gap-2">
+                        <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-center gap-2">
                           <AlertCircle className="w-4 h-4 flex-shrink-0" />
                           <span>{errorMsg}</span>
                         </div>
                       )}
 
-                      <div className="pt-4 border-t border-[#e7dfd8] flex flex-col sm:flex-row items-center justify-between gap-3">
-                        <div className="text-xs text-[#7a7180] text-center sm:text-left">
+                      <div className="pt-4 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3">
+                        <div className="text-xs text-slate-600 text-center sm:text-left">
                           {selectedSlot ? (
                             <span>
-                              Selected: <strong className="text-[#1b1520]">{selectedDate} at {selectedSlot.time}</strong> with {selectedSlot.staff_name}
+                              Selected: <strong className="text-[#0B1B3D]">{selectedDate} at {selectedSlot.time}</strong> with {selectedSlot.staff_name}
                             </span>
                           ) : (
                             <span>Please choose your date &amp; time slot above</span>
@@ -1039,7 +1039,7 @@ export default function BookingPage() {
                           <button
                             type="submit"
                             disabled={submitting || !selectedSlot}
-                            className="flex-1 sm:flex-none px-6 py-3.5 rounded-xl bg-gradient-to-r from-[#a3214f] to-[#88183f] hover:from-[#8b1b42] hover:to-[#6f1232] disabled:opacity-50 text-white font-bold text-xs shadow-md transition transform hover:-translate-y-0.5"
+                            className="flex-1 sm:flex-none px-6 py-3.5 rounded-xl bg-gradient-to-r from-[#0B1B3D] to-[#12285A] hover:bg-[#0A1931] disabled:opacity-50 text-amber-300 font-bold text-xs shadow-md transition transform hover:-translate-y-0.5"
                           >
                             {submitting ? "Securing..." : "Confirm Online"}
                           </button>
@@ -1051,39 +1051,39 @@ export default function BookingPage() {
 
                 {/* Sticky Luxury Order Summary Rail */}
                 <div className="lg:col-span-1 sticky top-24 space-y-4">
-                  <div className="bg-white border border-[#e7dfd8] rounded-3xl p-6 shadow-sm">
-                    <div className="pb-3 border-b border-[#e7dfd8] flex items-center justify-between">
-                      <span className="text-[10px] uppercase font-bold tracking-wider text-[#7a7180]">
+                  <div className="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm">
+                    <div className="pb-3 border-b border-slate-200 flex items-center justify-between">
+                      <span className="text-[10px] uppercase font-bold tracking-wider text-slate-500">
                         Your Reservation
                       </span>
-                      <Sparkles className="w-4 h-4 text-[#a3214f]" />
+                      <Sparkles className="w-4 h-4 text-amber-600" />
                     </div>
 
                     <div className="mt-4 space-y-4 text-xs">
                       {/* Location */}
                       <div>
-                        <span className="text-[10px] uppercase font-bold text-[#7a7180] block">Location</span>
-                        <div className="font-bold text-[#1b1520] mt-0.5 flex items-center gap-1.5">
-                          <MapPin className="w-3.5 h-3.5 text-[#a3214f]" />
+                        <span className="text-[10px] uppercase font-bold text-slate-500 block">Location</span>
+                        <div className="font-bold text-[#0B1B3D] mt-0.5 flex items-center gap-1.5">
+                          <MapPin className="w-3.5 h-3.5 text-amber-600" />
                           <span>{selectedBranch?.name || "Select Branch"}</span>
                         </div>
-                        <span className="text-[11px] text-[#7a7180] block ml-5">{selectedBranch?.address}</span>
+                        <span className="text-[11px] text-slate-500 block ml-5">{selectedBranch?.address}</span>
                       </div>
 
                       {/* Selected Services */}
                       <div>
-                        <span className="text-[10px] uppercase font-bold text-[#7a7180] block">Selected Treatments</span>
+                        <span className="text-[10px] uppercase font-bold text-slate-500 block">Selected Treatments</span>
                         {selectedServiceObjects.length === 0 ? (
-                          <span className="text-[#7a7180] italic block mt-1">No treatments chosen yet</span>
+                          <span className="text-slate-400 italic block mt-1">No treatments chosen yet</span>
                         ) : (
                           <div className="mt-2 space-y-2">
                             {selectedServiceObjects.map((s) => (
                               <div key={s.id} className="flex justify-between items-center text-xs">
                                 <div>
-                                  <span className="font-semibold text-[#1b1520] block">{s.name}</span>
-                                  <span className="text-[10px] text-[#7a7180]">{s.duration_minutes}m</span>
+                                  <span className="font-semibold text-[#0B1B3D] block">{s.name}</span>
+                                  <span className="text-[10px] text-slate-500">{s.duration_minutes}m</span>
                                 </div>
-                                <span className="font-bold text-[#1b1520]">{formatCurrency(s.price)}</span>
+                                <span className="font-bold text-[#0B1B3D]">{formatCurrency(s.price)}</span>
                               </div>
                             ))}
                           </div>
@@ -1092,26 +1092,26 @@ export default function BookingPage() {
 
                       {/* Schedule */}
                       {selectedSlot && (
-                        <div className="pt-3 border-t border-[#e7dfd8]">
-                          <span className="text-[10px] uppercase font-bold text-[#7a7180] block">Time & Stylist</span>
-                          <div className="font-bold text-[#1b1520] mt-0.5">
+                        <div className="pt-3 border-t border-slate-200">
+                          <span className="text-[10px] uppercase font-bold text-slate-500 block">Time & Stylist</span>
+                          <div className="font-bold text-[#0B1B3D] mt-0.5">
                             {selectedDate} at {selectedSlot.time}
                           </div>
-                          <span className="text-[11px] text-[#7a7180] block">
-                            Stylist: <strong className="text-[#1b1520]">{selectedSlot.staff_name}</strong>
+                          <span className="text-[11px] text-slate-500 block">
+                            Stylist: <strong className="text-[#0B1B3D]">{selectedSlot.staff_name}</strong>
                           </span>
                         </div>
                       )}
 
                       {/* Total */}
-                      <div className="pt-4 border-t border-[#e7dfd8] flex justify-between items-baseline">
+                      <div className="pt-4 border-t border-slate-200 flex justify-between items-baseline">
                         <div>
-                          <span className="text-[10px] uppercase font-bold text-[#7a7180] block">Estimated Total</span>
-                          <span className="text-[11px] text-[#7a7180]">
+                          <span className="text-[10px] uppercase font-bold text-slate-500 block">Estimated Total</span>
+                          <span className="text-[11px] text-slate-500">
                             {totalDuration > 0 ? `${totalDuration} mins duration` : "Taxes included"}
                           </span>
                         </div>
-                        <span className="text-2xl font-serif font-bold text-[#a3214f]">
+                        <span className="text-2xl font-serif font-bold text-[#0B1B3D]">
                           {formatCurrency(totalCost)}
                         </span>
                       </div>
@@ -1119,9 +1119,9 @@ export default function BookingPage() {
                   </div>
 
                   {/* Trust guarantees */}
-                  <div className="p-4 rounded-2xl bg-[#faf7f4] border border-[#e7dfd8] text-[11px] text-[#7a7180] space-y-2">
-                    <div className="flex items-center gap-2 text-[#1b1520] font-semibold">
-                      <ShieldCheck className="w-4 h-4 text-[#15803d]" />
+                  <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-[11px] text-slate-600 space-y-2">
+                    <div className="flex items-center gap-2 text-[#0B1B3D] font-semibold">
+                      <ShieldCheck className="w-4 h-4 text-emerald-600" />
                       <span>Complimentary Rescheduling</span>
                     </div>
                     <p className="leading-relaxed">

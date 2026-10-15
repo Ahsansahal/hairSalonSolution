@@ -74,19 +74,19 @@ export default function GuestDealsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#faf7f4] text-[#1b1520] flex flex-col font-sans selection:bg-[#fbe9ef] selection:text-[#a3214f]">
+    <div className="min-h-screen bg-[#F8FAFC] text-[#0B1B3D] flex flex-col font-sans selection:bg-amber-100 selection:text-amber-900">
       {/* Header / Navbar */}
-      <header className="border-b border-[#e7dfd8] bg-white/95 backdrop-blur-md sticky top-0 z-50 shadow-xs">
+      <header className="border-b border-slate-200 bg-white/95 backdrop-blur-md sticky top-0 z-50 shadow-xs">
         <div className="max-w-7xl mx-auto px-6 h-18 flex items-center justify-between">
           <Link href="/" className="flex items-center space-x-3 group">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#fbe9ef] to-[#f6d7e2] border border-[#f3cad8] flex items-center justify-center text-[#a3214f] shadow-xs group-hover:scale-105 transition">
-              <Sparkles className="w-5 h-5 text-[#a3214f]" />
+            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-amber-50 to-amber-100 border border-amber-200 flex items-center justify-center text-amber-700 shadow-xs group-hover:scale-105 transition">
+              <Sparkles className="w-5 h-5 text-amber-600" />
             </div>
             <div>
-              <span className="text-xl font-serif tracking-wider font-bold text-[#1b1520] block leading-none">
+              <span className="text-xl font-serif tracking-wider font-bold text-[#0B1B3D] block leading-none">
                 SHAY
               </span>
-              <span className="block text-[10px] uppercase tracking-widest text-[#7a7180] font-semibold mt-0.5">
+              <span className="block text-[10px] uppercase tracking-widest text-slate-500 font-semibold mt-0.5">
                 Salon &amp; Spa Collective · Karachi
               </span>
             </div>
@@ -95,16 +95,16 @@ export default function GuestDealsPage() {
           <div className="flex items-center space-x-3">
             <Link
               href="/book"
-              className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-[#a3214f] to-[#88183f] hover:from-[#8b1b42] hover:to-[#6f1232] text-white text-xs font-bold transition shadow-sm transform hover:-translate-y-0.5"
+              className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-[#0B1B3D] to-[#12285A] hover:bg-[#0A1931] text-amber-300 text-xs font-bold transition shadow-sm transform hover:-translate-y-0.5"
             >
               <Calendar className="w-4 h-4" />
               <span>Book Appointment</span>
             </Link>
             <Link
               href="/dashboard"
-              className="inline-flex items-center space-x-2 px-4 py-2 rounded-full border border-[#e7dfd8] hover:bg-[#faf7f4] text-[#1b1520] text-xs font-bold transition"
+              className="inline-flex items-center space-x-2 px-4 py-2 rounded-full border border-slate-200 hover:bg-slate-50 text-[#0B1B3D] text-xs font-bold transition"
             >
-              <ShieldCheck className="w-4 h-4 text-[#a3214f]" />
+              <ShieldCheck className="w-4 h-4 text-amber-600" />
               <span>Staff Portal</span>
             </Link>
           </div>
@@ -112,45 +112,45 @@ export default function GuestDealsPage() {
       </header>
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden pt-12 pb-16 px-6 text-center bg-gradient-to-b from-white to-[#faf7f4] border-b border-[#e7dfd8]">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[350px] bg-gradient-to-tr from-rose-200/30 via-pink-100/20 to-amber-100/30 rounded-full blur-3xl pointer-events-none -z-10" />
+      <section className="relative overflow-hidden pt-12 pb-16 px-6 text-center bg-gradient-to-b from-white to-[#F8FAFC] border-b border-slate-200">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[350px] bg-gradient-to-tr from-amber-200/20 via-slate-100/30 to-amber-100/20 rounded-full blur-3xl pointer-events-none -z-10" />
 
         <div className="max-w-4xl mx-auto flex flex-col items-center">
-          <div className="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-[#fbe9ef] border border-[#f3cad8] text-[#a3214f] text-[11px] font-bold uppercase tracking-wider mb-4 shadow-2xs">
-            <Gift className="w-3.5 h-3.5" />
+          <div className="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-amber-50 border border-amber-200 text-amber-800 text-[11px] font-bold uppercase tracking-wider mb-4 shadow-2xs">
+            <Gift className="w-3.5 h-3.5 text-amber-600" />
             <span>Karachi Signature Combos &amp; Seasonal Packages</span>
           </div>
 
-          <h1 className="text-3xl sm:text-5xl md:text-6xl font-serif font-bold text-[#1b1520] leading-tight mb-4">
+          <h1 className="text-3xl sm:text-5xl md:text-6xl font-serif font-bold text-[#0B1B3D] leading-tight mb-4">
             Luxury Grooming &amp; Spa Deals
           </h1>
-          <p className="text-sm sm:text-base text-[#5c5464] max-w-2xl leading-relaxed">
+          <p className="text-sm sm:text-base text-slate-600 max-w-2xl leading-relaxed">
             Experience Karachi&apos;s finest styling, restorative Hydra facials, and couture wedding rituals. 
             Enjoy up to 35% savings with our curated all-inclusive packages at Clifton and DHA Bukhari.
           </p>
 
           {/* Karachi Salon Hours & Branch Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-8 w-full max-w-2xl text-left">
-            <div className="bg-white/80 backdrop-blur-sm p-4 rounded-2xl border border-[#e8dfd8] shadow-xs">
-              <div className="flex items-center gap-2 text-xs font-bold text-[#a3214f]">
+            <div className="bg-white/90 backdrop-blur-sm p-4 rounded-2xl border border-slate-200 shadow-xs">
+              <div className="flex items-center gap-2 text-xs font-bold text-amber-700">
                 <MapPin className="w-4 h-4" />
                 <span>Clifton Flagship Branch</span>
               </div>
-              <p className="text-[11px] text-[#7a7180] mt-1">Block 4, Clifton · Near Bilawal House</p>
-              <div className="mt-2 text-xs text-[#1b1520] font-medium flex items-center gap-1.5">
-                <Clock className="w-3.5 h-3.5 text-zinc-400" />
+              <p className="text-[11px] text-slate-500 mt-1">Block 4, Clifton · Near Bilawal House</p>
+              <div className="mt-2 text-xs text-[#0B1B3D] font-medium flex items-center gap-1.5">
+                <Clock className="w-3.5 h-3.5 text-slate-400" />
                 <span>Mon–Thu: 11:00 AM – 10:30 PM | Fri–Sun: 11:00 AM – 11:00 PM</span>
               </div>
             </div>
 
-            <div className="bg-white/80 backdrop-blur-sm p-4 rounded-2xl border border-[#e8dfd8] shadow-xs">
-              <div className="flex items-center gap-2 text-xs font-bold text-[#a3214f]">
+            <div className="bg-white/90 backdrop-blur-sm p-4 rounded-2xl border border-slate-200 shadow-xs">
+              <div className="flex items-center gap-2 text-xs font-bold text-amber-700">
                 <MapPin className="w-4 h-4" />
                 <span>DHA Bukhari Commercial</span>
               </div>
-              <p className="text-[11px] text-[#7a7180] mt-1">Bukhari Commercial Lane 3, Phase 6</p>
-              <div className="mt-2 text-xs text-[#1b1520] font-medium flex items-center gap-1.5">
-                <Clock className="w-3.5 h-3.5 text-zinc-400" />
+              <p className="text-[11px] text-slate-500 mt-1">Bukhari Commercial Lane 3, Phase 6</p>
+              <div className="mt-2 text-xs text-[#0B1B3D] font-medium flex items-center gap-1.5">
+                <Clock className="w-3.5 h-3.5 text-slate-400" />
                 <span>Mon–Thu: 11:30 AM – 10:30 PM | Fri–Sun: 11:00 AM – 11:00 PM</span>
               </div>
             </div>
@@ -166,8 +166,8 @@ export default function GuestDealsPage() {
             onClick={() => setSelectedCategory("all")}
             className={`px-5 py-2 rounded-full text-xs font-semibold transition shadow-xs ${
               selectedCategory === "all"
-                ? "bg-[#a3214f] text-white shadow-rose-900/20"
-                : "bg-white text-zinc-700 border border-[#e8dfd8] hover:bg-[#faf7f4]"
+                ? "bg-[#0B1B3D] text-amber-400 font-bold shadow-md ring-1 ring-amber-400/40"
+                : "bg-white text-slate-700 border border-slate-200 hover:bg-slate-50"
             }`}
           >
             All Signature Deals ({deals.length})
@@ -178,8 +178,8 @@ export default function GuestDealsPage() {
               onClick={() => setSelectedCategory(cat)}
               className={`px-5 py-2 rounded-full text-xs font-semibold transition shadow-xs ${
                 selectedCategory.toLowerCase() === cat.toLowerCase()
-                  ? "bg-[#a3214f] text-white shadow-rose-900/20"
-                  : "bg-white text-zinc-700 border border-[#e8dfd8] hover:bg-[#faf7f4]"
+                  ? "bg-[#0B1B3D] text-amber-400 font-bold shadow-md ring-1 ring-amber-400/40"
+                  : "bg-white text-slate-700 border border-slate-200 hover:bg-slate-50"
               }`}
             >
               {cat}
@@ -190,12 +190,12 @@ export default function GuestDealsPage() {
         {/* Deals Cards */}
         {loading ? (
           <div className="py-24 text-center space-y-3">
-            <div className="w-10 h-10 border-3 border-rose-500 border-t-transparent rounded-full animate-spin mx-auto" />
-            <p className="text-xs text-zinc-500">Loading exclusive Karachi salon packages...</p>
+            <div className="w-10 h-10 border-3 border-amber-500 border-t-transparent rounded-full animate-spin mx-auto" />
+            <p className="text-xs text-slate-500">Loading exclusive Karachi salon packages...</p>
           </div>
         ) : filteredDeals.length === 0 ? (
-          <div className="bg-white rounded-3xl border border-dashed border-[#e8dfd8] p-12 text-center">
-            <p className="text-zinc-500 text-sm">No packages currently found for this category.</p>
+          <div className="bg-white rounded-3xl border border-dashed border-slate-200 p-12 text-center">
+            <p className="text-slate-500 text-sm">No packages currently found for this category.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -206,44 +206,44 @@ export default function GuestDealsPage() {
               return (
                 <div
                   key={deal.id}
-                  className="bg-white rounded-3xl border border-[#e8dfd8] shadow-sm hover:shadow-2xl transition-all duration-300 flex flex-col justify-between overflow-hidden group hover:-translate-y-1 hover:border-rose-300 relative"
+                  className="bg-white rounded-3xl border border-slate-200 shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col justify-between overflow-hidden group hover:-translate-y-1 hover:border-amber-300 relative"
                 >
                   {/* Top Badge */}
-                  <div className="h-1.5 w-full bg-gradient-to-r from-[#a3214f] via-[#d4af37] to-[#a3214f]" />
+                  <div className="h-1.5 w-full bg-gradient-to-r from-[#0B1B3D] via-amber-500 to-[#0B1B3D]" />
 
                   <div>
-                    <div className="p-6 pb-4 border-b border-[#f4eee8] bg-[#faf7f4]">
+                    <div className="p-6 pb-4 border-b border-slate-100 bg-[#F8FAFC]">
                       <div className="flex items-center justify-between gap-2 mb-2">
-                        <span className="text-[11px] font-bold text-[#a3214f] uppercase tracking-wider">
+                        <span className="text-[11px] font-bold text-amber-700 uppercase tracking-wider">
                           Deal #{idx + 1 < 10 ? `0${idx + 1}` : idx + 1}
                         </span>
-                        <div className="flex items-center gap-1 text-[11px] text-zinc-600 font-medium bg-white px-2.5 py-0.5 rounded-full border border-[#e8dfd8]">
-                          <Clock className="w-3 h-3 text-zinc-400" />
+                        <div className="flex items-center gap-1 text-[11px] text-slate-600 font-medium bg-white px-2.5 py-0.5 rounded-full border border-slate-200">
+                          <Clock className="w-3 h-3 text-slate-400" />
                           <span>{deal.default_duration_minutes} mins</span>
                         </div>
                       </div>
 
-                      <h3 className="font-serif font-bold text-xl text-[#1b1520] group-hover:text-[#a3214f] transition-colors leading-snug">
+                      <h3 className="font-serif font-bold text-xl text-[#0B1B3D] group-hover:text-amber-700 transition-colors leading-snug">
                         {deal.name}
                       </h3>
 
                       {/* Pricing Tag */}
                       <div className="mt-4 flex items-baseline gap-2.5">
-                        <span className="font-serif font-extrabold text-2xl text-[#1b1520]">
+                        <span className="font-serif font-extrabold text-2xl text-[#0B1B3D]">
                           Rs. {Number(deal.base_price).toLocaleString()}
                         </span>
                         {originalPrice && (
-                          <span className="text-xs text-zinc-400 line-through font-medium">
+                          <span className="text-xs text-slate-400 line-through font-medium">
                             Rs. {originalPrice}
                           </span>
                         )}
                         {savings && (
-                          <span className="text-[11px] font-bold text-rose-600 bg-rose-50 border border-rose-200 px-2 py-0.5 rounded-full">
+                          <span className="text-[11px] font-bold text-amber-800 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full">
                             Save {savings}
                           </span>
                         )}
                       </div>
-                      <p className="text-[10px] text-zinc-400 mt-1 font-medium">
+                      <p className="text-[10px] text-slate-400 mt-1 font-medium">
                         *Inclusive of SRB 13% tax &amp; premium imported products
                       </p>
                     </div>
@@ -281,9 +281,9 @@ export default function GuestDealsPage() {
                       {/* Web Appointment Booking */}
                       <Link
                         href={`/book?service=${deal.id}`}
-                        className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-white hover:bg-zinc-50 text-zinc-800 border border-[#e8dfd8] text-xs font-semibold transition"
+                        className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-white hover:bg-slate-50 text-slate-800 border border-slate-200 text-xs font-semibold transition"
                       >
-                        <Calendar className="w-3.5 h-3.5 text-[#a3214f]" />
+                        <Calendar className="w-3.5 h-3.5 text-amber-600" />
                         <span>Book Online System</span>
                       </Link>
                     </div>

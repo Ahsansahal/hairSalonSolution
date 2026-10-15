@@ -113,9 +113,9 @@ export default function ClientsPage() {
             </button>
             <button
               onClick={() => setShowAddModal(true)}
-              className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#e11d48] to-[#be123c] px-4 py-2.5 text-xs font-bold text-white shadow-md shadow-rose-950/20 hover:from-[#f43f5e] hover:to-[#be123c] transition transform hover:-translate-y-0.5"
+              className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#0B1B3D] to-[#12285A] px-4 py-2.5 text-xs font-bold text-amber-300 shadow-sm border border-[#0B1B3D] hover:bg-[#0A1931] transition transform hover:-translate-y-0.5"
             >
-              <UserPlus className="h-4 w-4" />
+              <UserPlus className="h-4 w-4 text-amber-400" />
               <span>Add New Client</span>
             </button>
           </div>
@@ -240,20 +240,20 @@ export default function ClientsPage() {
             return (
               <Card
                 key={c.id}
-                className="p-5 flex flex-col justify-between hover:border-rose-300 transition-all duration-200 hover:shadow-md group bg-white"
+                className="p-5 flex flex-col justify-between hover:border-amber-300 transition-all duration-200 hover:shadow-md group bg-white border-slate-200"
               >
                 <div className="space-y-3.5">
                   {/* Top Header */}
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex items-center gap-3">
-                      <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-[#f43f5e] via-[#be123c] to-[#9f1239] text-white flex items-center justify-center font-bold text-sm shadow-sm shrink-0">
+                      <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-[#0B1B3D] to-[#12285A] text-amber-300 border border-amber-500/30 flex items-center justify-center font-bold text-sm shadow-sm shrink-0">
                         {initials}
                       </div>
                       <div>
-                        <h4 className="text-sm font-bold text-[#1b1520] group-hover:text-[#be123c] transition">
+                        <h4 className="text-sm font-bold text-[#0B1B3D] group-hover:text-amber-700 transition">
                           {c.full_name}
                         </h4>
-                        <span className="text-[11px] font-mono text-[#7a7180] block mt-0.5" title={rawPhone}>
+                        <span className="text-[11px] font-mono text-slate-500 block mt-0.5" title={rawPhone}>
                           {maskedPhone}
                         </span>
                       </div>
@@ -266,7 +266,7 @@ export default function ClientsPage() {
 
                   {/* Zyniq Sync Style Metrics Pills: Visits & Lifetime Spend */}
                   <div className="flex items-center gap-2 pt-1">
-                    <span className="px-2.5 py-1 rounded-lg bg-rose-50 border border-rose-200/70 text-[#a3214f] text-[11px] font-bold">
+                    <span className="px-2.5 py-1 rounded-lg bg-amber-50 border border-amber-200/70 text-amber-850 font-bold text-[11px]">
                       {c.pseudoVisits} visits
                     </span>
                     <span className="px-2.5 py-1 rounded-lg bg-emerald-50 border border-emerald-200/70 text-emerald-800 text-[11px] font-bold">
@@ -275,8 +275,8 @@ export default function ClientsPage() {
                   </div>
 
                   {/* Notes & Formula Preferences */}
-                  <div className="p-3 rounded-xl bg-[#faf7f4] border border-[#e7dfd8]/70 text-xs text-[#4a4250] space-y-1">
-                    <span className="text-[10px] uppercase font-bold text-[#7a7180] tracking-wider block">
+                  <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/70 text-xs text-slate-700 space-y-1">
+                    <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider block">
                       Client Profile &amp; Preferences:
                     </span>
                     <p className="line-clamp-2 leading-relaxed italic text-[11px]">
@@ -285,10 +285,10 @@ export default function ClientsPage() {
                   </div>
 
                   {/* Contact Information Details */}
-                  <div className="space-y-1.5 text-xs text-[#7a7180]">
+                  <div className="space-y-1.5 text-xs text-slate-600">
                     {c.email && (
                       <div className="flex items-center gap-2">
-                        <Mail className="w-3.5 h-3.5 text-[#a3214f] shrink-0" />
+                        <Mail className="w-3.5 h-3.5 text-amber-600 shrink-0" />
                         <span className="truncate">{c.email}</span>
                       </div>
                     )}
@@ -313,13 +313,13 @@ export default function ClientsPage() {
                 </div>
 
                 {/* Footer action */}
-                <div className="mt-4 pt-3 border-t border-[#e7dfd8] flex items-center justify-between text-xs">
-                  <span className="text-[11px] text-[#7a7180]">
+                <div className="mt-4 pt-3 border-t border-slate-200 flex items-center justify-between text-xs">
+                  <span className="text-[11px] text-slate-500">
                     Added {new Date(c.created_at || Date.now()).toLocaleDateString([], { month: "short", day: "numeric", year: "numeric" })}
                   </span>
                   <Link
                     href={`/dashboard/appointments`}
-                    className="font-bold text-[#be123c] hover:underline flex items-center gap-1 text-[11px]"
+                    className="font-bold text-amber-700 hover:text-amber-800 hover:underline flex items-center gap-1 text-[11px]"
                   >
                     <span>Book Session</span>
                     <ChevronRight className="w-3 h-3" />
@@ -349,10 +349,10 @@ export default function ClientsPage() {
             </div>
 
             <div className="mt-4 space-y-4 text-xs">
-              <div className="p-4 border-2 border-dashed border-[#e7dfd8] rounded-2xl text-center bg-[#faf7f4] hover:bg-[#f2ece6] transition cursor-pointer">
-                <Users className="w-8 h-8 text-[#a3214f] mx-auto mb-2 opacity-80" />
-                <p className="font-semibold text-[#1b1520]">Drag &amp; drop CSV / Excel file here</p>
-                <p className="text-[11px] text-[#7a7180] mt-1">Accepts .csv, .xlsx formatted with Name, Phone, Email, Spend</p>
+              <div className="p-4 border-2 border-dashed border-slate-200 rounded-2xl text-center bg-slate-50 hover:bg-slate-100 transition cursor-pointer">
+                <Users className="w-8 h-8 text-amber-600 mx-auto mb-2 opacity-80" />
+                <p className="font-semibold text-[#0B1B3D]">Drag &amp; drop CSV / Excel file here</p>
+                <p className="text-[11px] text-slate-500 mt-1">Accepts .csv, .xlsx formatted with Name, Phone, Email, Spend</p>
                 <input
                   type="file"
                   accept=".csv, .xlsx, .xls"
@@ -364,7 +364,7 @@ export default function ClientsPage() {
                 />
                 <label
                   htmlFor="csv-file-input"
-                  className="mt-3 inline-block px-3 py-1.5 rounded-lg bg-white border border-[#e7dfd8] text-xs font-semibold text-[#1b1520] cursor-pointer hover:bg-stone-50"
+                  className="mt-3 inline-block px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-xs font-semibold text-[#0B1B3D] cursor-pointer hover:bg-slate-50"
                 >
                   Choose Local File
                 </label>
@@ -377,8 +377,8 @@ export default function ClientsPage() {
                 </div>
               )}
 
-              <div className="p-3 rounded-xl bg-stone-50 border border-stone-200/70 text-[11px] text-[#7a7180] space-y-1">
-                <span className="font-semibold text-[#1b1520] block">Supported columns:</span>
+              <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/70 text-[11px] text-slate-600 space-y-1">
+                <span className="font-semibold text-[#0B1B3D] block">Supported columns:</span>
                 <span>Full Name, Phone (+92), Notes / Formula, Lifetime Visits, Spend</span>
               </div>
 
@@ -386,7 +386,7 @@ export default function ClientsPage() {
                 <button
                   type="button"
                   onClick={() => { setShowImportModal(false); setImportStatus(null); }}
-                  className="px-4 py-2 rounded-xl border border-[#e7dfd8] hover:bg-[#faf7f4] text-[#7a7180] text-xs font-medium transition"
+                  className="px-4 py-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-600 text-xs font-medium transition"
                 >
                   Cancel
                 </button>
@@ -397,7 +397,7 @@ export default function ClientsPage() {
                     setShowImportModal(false);
                     setImportStatus(null);
                   }}
-                  className="px-4 py-2 rounded-xl bg-[#a3214f] hover:bg-[#8b1b42] text-white text-xs font-semibold shadow-sm transition"
+                  className="px-4 py-2 rounded-xl bg-[#0B1B3D] hover:bg-[#12285A] text-amber-300 text-xs font-semibold shadow-sm transition"
                 >
                   Confirm Import
                 </button>
@@ -410,15 +410,15 @@ export default function ClientsPage() {
       {/* Add Client Modal */}
       {showAddModal && (
         <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl border border-[#e7dfd8] animate-in fade-in zoom-in-95 duration-150">
-            <div className="flex items-center justify-between pb-3 border-b border-[#e7dfd8]">
+          <div className="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl border border-slate-200 animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-200">
               <div>
-                <h3 className="text-lg font-serif font-bold text-[#1b1520]">Add New Client Record</h3>
-                <p className="text-xs text-[#7a7180]">Register guest into central SHAY salon directory</p>
+                <h3 className="text-lg font-serif font-bold text-[#0B1B3D]">Add New Client Record</h3>
+                <p className="text-xs text-slate-500">Register guest into central SHAY salon directory</p>
               </div>
               <button
                 onClick={() => setShowAddModal(false)}
-                className="text-[#7a7180] hover:text-[#1b1520] p-1.5 rounded-full hover:bg-stone-100 transition"
+                className="text-slate-400 hover:text-[#0B1B3D] p-1.5 rounded-full hover:bg-slate-100 transition"
               >
                 ✕
               </button>
@@ -432,7 +432,7 @@ export default function ClientsPage() {
 
             <form onSubmit={handleCreateClient} className="mt-4 space-y-4 text-xs">
               <div>
-                <label className="block font-semibold text-[#1b1520] mb-1">
+                <label className="block font-semibold text-[#0B1B3D] mb-1">
                   Full Name *
                 </label>
                 <input
@@ -441,12 +441,12 @@ export default function ClientsPage() {
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
                   placeholder="e.g. Mahnoor Baloch"
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#faf7f4] border border-[#e7dfd8] text-[#1b1520] focus:outline-none focus:ring-2 focus:ring-[#e11d48]/20 font-medium"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-[#0B1B3D] focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 font-medium"
                 />
               </div>
 
               <div>
-                <label className="block font-semibold text-[#1b1520] mb-1">
+                <label className="block font-semibold text-[#0B1B3D] mb-1">
                   Mobile Number (WhatsApp) *
                 </label>
                 <input
@@ -455,12 +455,12 @@ export default function ClientsPage() {
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   placeholder="+92 300 1234567"
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#faf7f4] border border-[#e7dfd8] text-[#1b1520] focus:outline-none focus:ring-2 focus:ring-[#e11d48]/20 font-medium font-mono"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-[#0B1B3D] focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 font-medium font-mono"
                 />
               </div>
 
               <div>
-                <label className="block font-semibold text-[#1b1520] mb-1">
+                <label className="block font-semibold text-[#0B1B3D] mb-1">
                   Email Address (Optional)
                 </label>
                 <input
@@ -468,12 +468,12 @@ export default function ClientsPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="e.g. mahnoor@gmail.com"
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#faf7f4] border border-[#e7dfd8] text-[#1b1520] focus:outline-none focus:ring-2 focus:ring-[#e11d48]/20"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-[#0B1B3D] focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
                 />
               </div>
 
               <div>
-                <label className="block font-semibold text-[#1b1520] mb-1">
+                <label className="block font-semibold text-[#0B1B3D] mb-1">
                   Styling Notes / Color Formulas / Allergies
                 </label>
                 <textarea
@@ -481,7 +481,7 @@ export default function ClientsPage() {
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder="e.g. Sensitive scalp, prefers Ammonia-free color L'Oreal Majirel"
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#faf7f4] border border-[#e7dfd8] text-[#1b1520] focus:outline-none focus:ring-2 focus:ring-[#e11d48]/20"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-[#0B1B3D] focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
                 />
               </div>
 
@@ -491,9 +491,9 @@ export default function ClientsPage() {
                   id="wa-opt"
                   checked={whatsappOptIn}
                   onChange={(e) => setWhatsappOptIn(e.target.checked)}
-                  className="rounded text-[#e11d48] focus:ring-[#e11d48]"
+                  className="rounded text-amber-600 focus:ring-amber-500"
                 />
-                <label htmlFor="wa-opt" className="text-xs text-[#4a4250] font-medium cursor-pointer">
+                <label htmlFor="wa-opt" className="text-xs text-slate-600 font-medium cursor-pointer">
                   Opt-in for WhatsApp automated booking confirmations &amp; reminders (+92)
                 </label>
               </div>
@@ -502,14 +502,14 @@ export default function ClientsPage() {
                 <button
                   type="button"
                   onClick={() => setShowAddModal(false)}
-                  className="px-4 py-2 rounded-xl border border-[#e7dfd8] hover:bg-[#faf7f4] text-[#7a7180] font-medium transition"
+                  className="px-4 py-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-600 font-medium transition"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="px-5 py-2 rounded-xl bg-gradient-to-r from-[#e11d48] to-[#be123c] text-white font-bold shadow-sm transition disabled:opacity-50"
+                  className="px-5 py-2 rounded-xl bg-gradient-to-r from-[#0B1B3D] to-[#12285A] hover:bg-[#0A1931] text-amber-300 font-bold shadow-sm transition disabled:opacity-50"
                 >
                   {submitting ? "Saving..." : "Save Client Record"}
                 </button>

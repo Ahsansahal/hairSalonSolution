@@ -112,13 +112,13 @@ export function FloorBoard({
           <button
             onClick={onRefresh}
             title="Refresh floor status"
-            className="p-2 rounded-xl border border-[#e7dfd8] bg-[#faf7f4] hover:bg-[#f2ece6] text-[#4a4250] transition shadow-2xs"
+            className="p-2 rounded-xl border border-slate-200 bg-[#F8FAFC] hover:bg-slate-100 text-slate-600 transition shadow-2xs"
           >
-            <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin text-[#a3214f]" : ""}`} />
+            <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin text-amber-600" : ""}`} />
           </button>
           <button
             onClick={onAddWalkIn}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-gradient-to-r from-[#a3214f] to-[#88183f] text-white font-bold text-xs shadow-xs hover:from-[#8b1b42] hover:to-[#6f1232] transition transform hover:-translate-y-0.5"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-[#0A1931] font-extrabold text-xs shadow-md transition transform hover:-translate-y-0.5"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Seat Walk-In</span>
@@ -195,7 +195,7 @@ export function FloorBoard({
                           </span>
                         </div>
                       </div>
-                      <span className="font-serif font-bold text-xs text-[#a3214f]">
+                      <span className="font-serif font-bold text-xs text-amber-700">
                         {formatCurrency(booking.total_amount)}
                       </span>
                     </div>
@@ -203,16 +203,16 @@ export function FloorBoard({
                     {/* Progress Bar for Active Service */}
                     {isBusy && (
                       <div className="space-y-1 pt-1">
-                        <div className="flex justify-between text-[10px] font-semibold text-[#7a7180]">
+                        <div className="flex justify-between text-[10px] font-semibold text-slate-500">
                           <span className="flex items-center gap-1">
-                            <Clock className="w-3 h-3 text-[#a3214f]" />
+                            <Clock className="w-3 h-3 text-amber-600" />
                             <span>{st.elapsedText}</span>
                           </span>
                           <span>{Math.round(st.progress)}%</span>
                         </div>
-                        <div className="w-full h-2 bg-rose-100/70 rounded-full overflow-hidden p-0.5">
+                        <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden p-0.5">
                           <div
-                            className="h-full bg-gradient-to-r from-[#f43f5e] via-[#e11d48] to-[#f59e0b] rounded-full transition-all duration-500 shadow-xs"
+                            className="h-full bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 rounded-full transition-all duration-500 shadow-xs"
                             style={{ width: `${st.progress}%` }}
                           />
                         </div>
@@ -221,8 +221,8 @@ export function FloorBoard({
                   </div>
                 ) : (
                   <div className="mt-6 py-4 text-center">
-                    <span className="text-xs text-[#7a7180] block font-medium">Station is currently open</span>
-                    <span className="text-[10px] text-[#15803d] font-bold uppercase tracking-wider block mt-0.5">
+                    <span className="text-xs text-slate-500 block font-medium">Station is currently open</span>
+                    <span className="text-[10px] text-emerald-700 font-bold uppercase tracking-wider block mt-0.5">
                       Ready for immediate styling
                     </span>
                   </div>
@@ -230,19 +230,19 @@ export function FloorBoard({
               </div>
 
               {/* Station Actions Footer */}
-              <div className="mt-4 pt-3 border-t border-[#e7dfd8]/60 flex items-center justify-between">
+              <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
                 {booking ? (
                   <button
                     onClick={() => onSelectAppointment(booking)}
-                    className="w-full py-2 rounded-xl bg-white border border-[#e7dfd8] hover:border-[#a3214f]/40 hover:bg-[#faf7f4] text-[#1b1520] font-bold text-xs transition shadow-2xs flex items-center justify-center gap-1.5"
+                    className="w-full py-2 rounded-xl bg-white border border-slate-200 hover:border-amber-400 hover:bg-slate-50 text-[#0B1B3D] font-bold text-xs transition shadow-2xs flex items-center justify-center gap-1.5"
                   >
-                    <UserCheck className="w-3.5 h-3.5 text-[#a3214f]" />
+                    <UserCheck className="w-3.5 h-3.5 text-amber-600" />
                     <span>View Guest Ticket</span>
                   </button>
                 ) : (
                   <button
                     onClick={onAddWalkIn}
-                    className="w-full py-2 rounded-xl bg-[#faf7f4] border border-[#e7dfd8] hover:bg-[#a3214f] hover:text-white hover:border-[#a3214f] text-[#1b1520] font-bold text-xs transition shadow-2xs flex items-center justify-center gap-1.5"
+                    className="w-full py-2 rounded-xl bg-slate-50 border border-slate-200 hover:bg-[#0A1931] hover:text-white hover:border-[#0A1931] text-[#0B1B3D] font-bold text-xs transition shadow-2xs flex items-center justify-center gap-1.5"
                   >
                     <Plus className="w-3.5 h-3.5" />
                     <span>Seat Client Here</span>

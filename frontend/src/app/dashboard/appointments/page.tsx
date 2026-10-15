@@ -221,16 +221,16 @@ export default function AppointmentsPage() {
           <div className="flex items-center gap-2">
             <button
               onClick={loadAppointments}
-              className="p-2.5 rounded-xl border border-[#e7dfd8] bg-white text-[#7a7180] hover:text-[#1b1520] hover:bg-[#faf7f4] transition shadow-xs"
+              className="p-2.5 rounded-xl border border-slate-200 bg-white text-slate-500 hover:text-[#0B1B3D] hover:bg-slate-50 transition shadow-xs"
               title="Refresh Schedule"
             >
-              <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin text-[#a3214f]" : ""}`} />
+              <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin text-amber-600" : ""}`} />
             </button>
             <button
               onClick={() => setShowWalkInModal(true)}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#a3214f] to-[#88183f] hover:from-[#8b1b42] hover:to-[#6f1232] text-white text-xs font-semibold shadow-xs transition transform hover:-translate-y-0.5"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#0B1B3D] to-[#12285A] hover:bg-[#0A1931] text-amber-300 text-xs font-bold shadow-xs transition transform hover:-translate-y-0.5 border border-[#0B1B3D]"
             >
-              <Plus className="w-4 h-4" />
+              <Plus className="w-4 h-4 text-amber-400" />
               <span>Add Walk-In Guest</span>
             </button>
           </div>
@@ -244,7 +244,7 @@ export default function AppointmentsPage() {
           value={appointments.length}
           tone="brand"
           trend="Live Roster"
-          icon={<Calendar className="w-4 h-4 text-[#a3214f]" />}
+          icon={<Calendar className="w-4 h-4 text-amber-600" />}
         />
         <Stat
           label="Upcoming Confirmed"
@@ -275,13 +275,13 @@ export default function AppointmentsPage() {
           {/* Search box & View Switcher */}
           <div className="flex items-center gap-3 w-full md:w-auto">
             {/* View switcher buttons */}
-            <div className="flex items-center p-1 rounded-xl bg-white border border-[#e7dfd8] shadow-2xs">
+            <div className="flex items-center p-1 rounded-xl bg-slate-50 border border-slate-200 shadow-2xs">
               <button
                 onClick={() => setViewMode("list")}
                 className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 ${
                   viewMode === "list"
-                    ? "bg-gradient-to-r from-[#e11d48] to-[#be123c] text-white shadow-xs"
-                    : "text-[#7a7180] hover:text-[#1b1520] hover:bg-[#faf7f4]"
+                    ? "bg-[#0B1B3D] text-amber-300 shadow-xs"
+                    : "text-slate-500 hover:text-[#0B1B3D] hover:bg-slate-100"
                 }`}
               >
                 <List className="w-3.5 h-3.5" />
@@ -291,8 +291,8 @@ export default function AppointmentsPage() {
                 onClick={() => setViewMode("timeline")}
                 className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 ${
                   viewMode === "timeline"
-                    ? "bg-gradient-to-r from-[#8b5cf6] to-[#6d28d9] text-white shadow-xs"
-                    : "text-[#7a7180] hover:text-[#1b1520] hover:bg-[#faf7f4]"
+                    ? "bg-[#0B1B3D] text-amber-300 shadow-xs"
+                    : "text-slate-500 hover:text-[#0B1B3D] hover:bg-slate-100"
                 }`}
               >
                 <LayoutGrid className="w-3.5 h-3.5" />
@@ -301,13 +301,13 @@ export default function AppointmentsPage() {
             </div>
 
             <div className="relative flex-1 md:w-72">
-              <Search className="w-4 h-4 text-[#7a7180] absolute left-3.5 top-3" />
+              <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
               <input
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search guest, ref, stylist..."
-                className="w-full pl-10 pr-4 py-2 rounded-xl bg-[#faf7f4] border border-[#e7dfd8] text-[#1b1520] text-xs focus:outline-none focus:ring-2 focus:ring-[#a3214f]/20 font-medium placeholder-[#7a7180]"
+                className="w-full pl-10 pr-4 py-2 rounded-xl bg-slate-50 border border-slate-200 text-[#0B1B3D] text-xs focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 font-medium placeholder-slate-400"
               />
             </div>
           </div>
@@ -316,12 +316,12 @@ export default function AppointmentsPage() {
           {viewMode === "list" ? (
             <div className="flex items-center gap-1.5 flex-wrap w-full md:w-auto">
               {[
-                { id: "all", label: "All", activeClass: "bg-[#1b1520] text-white shadow-xs" },
-                { id: "CONFIRMED", label: "Confirmed", activeClass: "bg-gradient-to-r from-sky-600 to-blue-600 text-white shadow-xs" },
-                { id: "CHECKED_IN", label: "Checked In", activeClass: "bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-xs" },
-                { id: "IN_PROGRESS", label: "In Chair", activeClass: "bg-gradient-to-r from-amber-600 to-orange-600 text-white shadow-xs" },
-                { id: "COMPLETED", label: "Completed", activeClass: "bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-xs" },
-                { id: "CANCELLED", label: "Cancelled", activeClass: "bg-gradient-to-r from-red-600 to-rose-600 text-white shadow-xs" },
+                { id: "all", label: "All", activeClass: "bg-[#0B1B3D] text-amber-300 font-bold shadow-xs" },
+                { id: "CONFIRMED", label: "Confirmed", activeClass: "bg-sky-700 text-white shadow-xs" },
+                { id: "CHECKED_IN", label: "Checked In", activeClass: "bg-indigo-700 text-white shadow-xs" },
+                { id: "IN_PROGRESS", label: "In Chair", activeClass: "bg-amber-600 text-white shadow-xs" },
+                { id: "COMPLETED", label: "Completed", activeClass: "bg-emerald-700 text-white shadow-xs" },
+                { id: "CANCELLED", label: "Cancelled", activeClass: "bg-rose-700 text-white shadow-xs" },
               ].map((tab) => (
                 <button
                   key={tab.id}
@@ -329,7 +329,7 @@ export default function AppointmentsPage() {
                   className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
                     statusFilter === tab.id
                       ? tab.activeClass
-                      : "bg-[#faf7f4] text-[#7a7180] hover:text-[#1b1520] hover:bg-[#f2ece6] border border-[#e7dfd8]"
+                      : "bg-slate-50 text-slate-600 hover:text-[#0B1B3D] hover:bg-slate-100 border border-slate-200"
                   }`}
                 >
                   {tab.label}
@@ -341,7 +341,7 @@ export default function AppointmentsPage() {
             <div className="flex items-center gap-2">
               <button
                 onClick={() => changeDateBy(-1)}
-                className="p-1.5 rounded-lg border border-[#e7dfd8] bg-[#faf7f4] hover:bg-[#f2ece6] text-[#4a4250] transition"
+                className="p-1.5 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-600 transition"
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
@@ -349,17 +349,17 @@ export default function AppointmentsPage() {
                 type="date"
                 value={selectedDate}
                 onChange={(e) => setSelectedDate(e.target.value)}
-                className="px-3 py-1.5 rounded-xl bg-[#faf7f4] border border-[#e7dfd8] text-xs font-bold text-[#1b1520] focus:outline-none"
+                className="px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold text-[#0B1B3D] focus:outline-none"
               />
               <button
                 onClick={() => changeDateBy(1)}
-                className="p-1.5 rounded-lg border border-[#e7dfd8] bg-[#faf7f4] hover:bg-[#f2ece6] text-[#4a4250] transition"
+                className="p-1.5 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-600 transition"
               >
                 <ChevronRight className="w-4 h-4" />
               </button>
               <button
                 onClick={() => setSelectedDate(new Date().toISOString().split("T")[0])}
-                className="px-2.5 py-1.5 rounded-lg text-xs font-bold bg-[#fbe9ef] text-[#a3214f] border border-[#f3cad8]"
+                className="px-2.5 py-1.5 rounded-lg text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200"
               >
                 Today
               </button>
@@ -383,14 +383,14 @@ export default function AppointmentsPage() {
                   className="bg-white rounded-3xl border border-[#e7dfd8] shadow-xs flex flex-col overflow-hidden"
                 >
                   {/* Stylist Lane Header */}
-                  <div className="p-4 bg-gradient-to-r from-[#faf7f4] to-white border-b border-[#e7dfd8] flex items-center justify-between">
+                  <div className="p-4 bg-gradient-to-r from-slate-50 to-white border-b border-slate-200 flex items-center justify-between">
                     <div className="flex items-center gap-2.5">
-                      <div className="w-9 h-9 rounded-xl bg-[#fbe9ef] border border-[#f3cad8] text-[#a3214f] flex items-center justify-center font-bold text-xs shadow-2xs">
+                      <div className="w-9 h-9 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 flex items-center justify-center font-bold text-xs shadow-2xs">
                         {st.full_name?.slice(0, 2).toUpperCase()}
                       </div>
                       <div>
-                        <h4 className="font-bold text-xs text-[#1b1520] leading-tight">{st.full_name}</h4>
-                        <span className="text-[10px] text-[#7a7180]">{st.title || "Master Artisan"}</span>
+                        <h4 className="font-bold text-xs text-[#0B1B3D] leading-tight">{st.full_name}</h4>
+                        <span className="text-[10px] text-slate-500">{st.title || "Master Artisan"}</span>
                       </div>
                     </div>
                     <Badge tone="brand" className="text-[10px] font-bold">
@@ -416,10 +416,10 @@ export default function AppointmentsPage() {
                           <div
                             key={a.id}
                             onClick={() => setSelectedAppointment(a)}
-                            className="p-3 rounded-2xl bg-white border border-[#e7dfd8] hover:border-[#a3214f]/50 hover:shadow-xs transition cursor-pointer space-y-1.5 group"
+                            className="p-3 rounded-2xl bg-white border border-slate-200 hover:border-amber-400 hover:shadow-xs transition cursor-pointer space-y-1.5 group"
                           >
                             <div className="flex items-center justify-between text-xs">
-                              <span className="font-mono text-[10px] font-bold text-[#a3214f] bg-[#fbe9ef] px-1.5 py-0.2 rounded">
+                              <span className="font-mono text-[10px] font-bold text-amber-800 bg-amber-50 px-1.5 py-0.2 rounded border border-amber-200">
                                 {timeStr}
                               </span>
                               <Badge
@@ -441,18 +441,18 @@ export default function AppointmentsPage() {
                             </div>
 
                             <div>
-                              <h5 className="font-bold text-xs text-[#1b1520] group-hover:text-[#a3214f] transition">
+                              <h5 className="font-bold text-xs text-[#0B1B3D] group-hover:text-amber-700 transition">
                                 {a.customer_name}
                               </h5>
-                              <span className="text-[11px] text-[#7a7180] flex items-center gap-1 mt-0.5">
-                                <Phone className="w-3 h-3 text-[#7a7180]" />
+                              <span className="text-[11px] text-slate-500 flex items-center gap-1 mt-0.5">
+                                <Phone className="w-3 h-3 text-slate-400" />
                                 {a.customer_phone}
                               </span>
                             </div>
 
-                            <div className="flex items-center justify-between pt-1 border-t border-[#e7dfd8]/60 text-[11px]">
-                              <span className="text-[#7a7180]">{a.total_duration_minutes}m duration</span>
-                              <span className="font-serif font-bold text-[#1b1520]">
+                            <div className="flex items-center justify-between pt-1 border-t border-slate-200/60 text-[11px]">
+                              <span className="text-slate-500">{a.total_duration_minutes}m duration</span>
+                              <span className="font-serif font-bold text-[#0B1B3D]">
                                 {formatCurrency(a.total_amount)}
                               </span>
                             </div>
@@ -470,22 +470,22 @@ export default function AppointmentsPage() {
 
       {/* VIEW 2: List / Table View */}
       {viewMode === "list" && (
-        <Card className="overflow-hidden">
+        <Card className="overflow-hidden border-slate-200">
           {loading && appointments.length === 0 ? (
-            <div className="py-20 text-center text-xs text-[#7a7180] flex flex-col items-center justify-center space-y-2">
-              <RefreshCw className="w-5 h-5 text-[#a3214f] animate-spin" />
+            <div className="py-20 text-center text-xs text-slate-500 flex flex-col items-center justify-center space-y-2">
+              <RefreshCw className="w-5 h-5 text-amber-600 animate-spin" />
               <span>Synchronizing salon schedules...</span>
             </div>
           ) : filteredAppointments.length === 0 ? (
-            <div className="py-20 text-center text-[#7a7180] flex flex-col items-center justify-center space-y-2">
-              <Calendar className="w-8 h-8 text-[#d6ccc3]" />
-              <p className="text-sm font-semibold text-[#1b1520]">No appointments found</p>
+            <div className="py-20 text-center text-slate-500 flex flex-col items-center justify-center space-y-2">
+              <Calendar className="w-8 h-8 text-slate-300" />
+              <p className="text-sm font-semibold text-[#0B1B3D]">No appointments found</p>
               <p className="text-xs">Try adjusting your status filter or search keywords.</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
-                <thead className="border-b border-[#e7dfd8] bg-[#faf7f4] text-[#7a7180] font-bold text-[10px] uppercase tracking-wider">
+                <thead className="border-b border-slate-200 bg-slate-50 text-slate-500 font-bold text-[10px] uppercase tracking-wider">
                   <tr>
                     <th className="py-3.5 px-5">Ref Code</th>
                     <th className="py-3.5 px-5">Guest</th>
@@ -498,7 +498,7 @@ export default function AppointmentsPage() {
                     <th className="py-3.5 px-5 text-right">Floor Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#f2ece6] text-[#1b1520]">
+                <tbody className="divide-y divide-slate-100 text-[#0B1B3D]">
                   {filteredAppointments.map((a) => {
                     const guestInitials = (a.customer_name || "Guest")
                       .split(" ")
@@ -514,11 +514,11 @@ export default function AppointmentsPage() {
                       <tr
                         key={a.id}
                         onClick={() => setSelectedAppointment(a)}
-                        className="hover:bg-[#faf7f4]/80 transition group cursor-pointer"
+                        className="hover:bg-slate-50/80 transition group cursor-pointer"
                       >
                         {/* Ref code */}
                         <td className="py-4 px-5">
-                          <span className="font-mono text-xs font-bold text-[#a3214f] bg-[#fbe9ef] px-2 py-0.5 rounded-md border border-[#f3cad8]">
+                          <span className="font-mono text-xs font-bold text-amber-800 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200">
                             {a.booking_reference}
                           </span>
                         </td>
@@ -526,15 +526,15 @@ export default function AppointmentsPage() {
                         {/* Guest */}
                         <td className="py-4 px-5">
                           <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#1b1520] to-[#3a3242] text-white flex items-center justify-center text-[10px] font-bold shadow-xs flex-shrink-0">
+                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#0B1B3D] to-[#12285A] text-amber-300 flex items-center justify-center text-[10px] font-bold shadow-xs flex-shrink-0">
                               {guestInitials}
                             </div>
                             <div>
-                              <span className="font-semibold block text-stone-900 group-hover:text-[#a3214f] transition">
+                              <span className="font-semibold block text-[#0B1B3D] group-hover:text-amber-700 transition">
                                 {a.customer_name}
                               </span>
-                              <span className="text-[11px] text-[#7a7180] flex items-center gap-1">
-                                <Phone className="w-3 h-3 text-[#7a7180]" />
+                              <span className="text-[11px] text-slate-500 flex items-center gap-1">
+                                <Phone className="w-3 h-3 text-slate-400" />
                                 {a.customer_phone}
                               </span>
                             </div>
@@ -543,8 +543,8 @@ export default function AppointmentsPage() {
 
                         {/* Location */}
                         <td className="py-4 px-5">
-                          <div className="flex items-center gap-1.5 text-[#4a4250]">
-                            <MapPin className="w-3.5 h-3.5 text-[#a3214f]" />
+                          <div className="flex items-center gap-1.5 text-slate-600">
+                            <MapPin className="w-3.5 h-3.5 text-amber-600" />
                             <span className="font-medium text-xs">{a.branch_name}</span>
                           </div>
                         </td>
@@ -552,24 +552,24 @@ export default function AppointmentsPage() {
                         {/* Stylist */}
                         <td className="py-4 px-5">
                           <div className="flex items-center gap-1.5">
-                            <span className="w-2 h-2 rounded-full bg-[#a3214f]" />
-                            <span className="font-semibold text-xs text-[#1b1520]">{a.staff_name}</span>
+                            <span className="w-2 h-2 rounded-full bg-amber-500" />
+                            <span className="font-semibold text-xs text-[#0B1B3D]">{a.staff_name}</span>
                           </div>
                         </td>
 
                         {/* Date & Time */}
                         <td className="py-4 px-5">
                           <div>
-                            <div className="flex items-center gap-1.5 font-semibold text-xs text-[#1b1520]">
+                            <div className="flex items-center gap-1.5 font-semibold text-xs text-[#0B1B3D]">
                               {isToday && (
-                                <span className="text-[9px] uppercase tracking-wide font-bold bg-[#fbe9ef] text-[#a3214f] px-1.5 py-0.2 rounded">
+                                <span className="text-[9px] uppercase tracking-wide font-bold bg-amber-50 text-amber-800 px-1.5 py-0.2 rounded border border-amber-200">
                                   Today
                                 </span>
                               )}
                               <span>{dateObj.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>
                             </div>
-                            <span className="text-[11px] text-[#7a7180] flex items-center gap-1 mt-0.5">
-                              <Clock className="w-3 h-3 text-[#7a7180]" />
+                            <span className="text-[11px] text-slate-500 flex items-center gap-1 mt-0.5">
+                              <Clock className="w-3 h-3 text-slate-400" />
                               {dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} ({a.total_duration_minutes}m)
                             </span>
                           </div>
@@ -579,10 +579,10 @@ export default function AppointmentsPage() {
                         <td className="py-4 px-5">
                           <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
                             a.source === "WHATSAPP"
-                              ? "bg-[#e8f7ee] text-[#1b7a42] border border-[#bce8cb]"
+                              ? "bg-emerald-50 text-emerald-800 border border-emerald-200"
                               : a.source === "WALK_IN"
-                              ? "bg-[#faf7f4] text-[#7a7180] border border-[#e7dfd8]"
-                              : "bg-[#fbe9ef] text-[#a3214f] border border-[#f3cad8]"
+                              ? "bg-slate-100 text-slate-600 border border-slate-200"
+                              : "bg-amber-50 text-amber-800 border border-amber-200"
                           }`}>
                             {a.source || "ONLINE"}
                           </span>
@@ -655,7 +655,7 @@ export default function AppointmentsPage() {
                             {a.status !== "COMPLETED" && a.status !== "CANCELLED" && (
                               <button
                                 onClick={() => handleStatusTransition(a.id, "CANCELLED")}
-                                className="px-2 py-1 rounded-lg hover:bg-[#fbe9ef] text-[#7a7180] hover:text-[#a3214f] text-[11px] font-medium transition"
+                                className="px-2 py-1 rounded-lg hover:bg-rose-50 text-slate-500 hover:text-rose-700 text-[11px] font-medium transition"
                               >
                                 Cancel
                               </button>
@@ -683,18 +683,18 @@ export default function AppointmentsPage() {
 
       {/* Luxury Walk-In Modal */}
       {showWalkInModal && (
-        <div className="fixed inset-0 z-50 bg-[#1b1520]/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl border border-[#e7dfd8] transform transition-all">
-            <div className="flex items-center justify-between pb-4 border-b border-[#e7dfd8]">
+        <div className="fixed inset-0 z-50 bg-[#0B1B3D]/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl border border-slate-200 transform transition-all">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-200">
               <div>
-                <span className="text-[10px] font-bold uppercase tracking-widest text-[#a3214f] block">
+                <span className="text-[10px] font-bold uppercase tracking-widest text-amber-700 block">
                   Concierge Desk
                 </span>
-                <h3 className="text-xl font-serif font-bold text-[#1b1520]">New Walk-In Reservation</h3>
+                <h3 className="text-xl font-serif font-bold text-[#0B1B3D]">New Walk-In Reservation</h3>
               </div>
               <button
                 onClick={() => setShowWalkInModal(false)}
-                className="text-[#7a7180] hover:text-[#1b1520] p-1.5 rounded-full hover:bg-[#faf7f4] transition"
+                className="text-slate-400 hover:text-[#0B1B3D] p-1.5 rounded-full hover:bg-slate-50 transition"
               >
                 <XCircle className="w-5 h-5" />
               </button>
@@ -716,7 +716,7 @@ export default function AppointmentsPage() {
               return (
                 <form onSubmit={handleCreateWalkIn} className="mt-5 space-y-4">
                   {/* Booking Type Filter Tabs */}
-                  <div className="flex items-center justify-between p-1 rounded-xl bg-[#f4efea] border border-[#e7dfd8] text-xs">
+                  <div className="flex items-center justify-between p-1 rounded-xl bg-slate-100 border border-slate-200 text-xs">
                     <button
                       type="button"
                       onClick={() => {
@@ -726,7 +726,7 @@ export default function AppointmentsPage() {
                         }
                       }}
                       className={`flex-1 py-1.5 rounded-lg font-bold transition text-center ${
-                        walkInBookingType === "all" ? "bg-white text-[#1b1520] shadow-xs" : "text-[#7a7180] hover:text-[#1b1520]"
+                        walkInBookingType === "all" ? "bg-white text-[#0B1B3D] shadow-xs" : "text-slate-500 hover:text-[#0B1B3D]"
                       }`}
                     >
                       All Treatments
@@ -741,7 +741,7 @@ export default function AppointmentsPage() {
                         }
                       }}
                       className={`flex-1 py-1.5 rounded-lg font-bold transition text-center ${
-                        walkInBookingType === "single" ? "bg-[#a3214f] text-white shadow-xs" : "text-[#7a7180] hover:text-[#1b1520]"
+                        walkInBookingType === "single" ? "bg-[#0B1B3D] text-amber-300 shadow-xs font-bold" : "text-slate-500 hover:text-[#0B1B3D]"
                       }`}
                     >
                       ✂️ Single Services
@@ -756,7 +756,7 @@ export default function AppointmentsPage() {
                         }
                       }}
                       className={`flex-1 py-1.5 rounded-lg font-bold transition text-center ${
-                        walkInBookingType === "deal" ? "bg-[#b38742] text-white shadow-xs" : "text-[#7a7180] hover:text-[#1b1520]"
+                        walkInBookingType === "deal" ? "bg-amber-600 text-white shadow-xs font-bold" : "text-slate-500 hover:text-[#0B1B3D]"
                       }`}
                     >
                       🎁 Combo Deals
@@ -765,20 +765,20 @@ export default function AppointmentsPage() {
 
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-xs font-bold text-[#4a4250] mb-1">Branch Location</label>
+                      <label className="block text-xs font-bold text-slate-700 mb-1">Branch Location</label>
                       {isOwner ? (
                         <select
                           value={walkInBranch}
                           onChange={(e) => setWalkInBranch(e.target.value)}
                           required
-                          className="w-full px-3 py-2.5 rounded-xl bg-[#faf7f4] border border-[#e7dfd8] text-[#1b1520] text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-[#a3214f]/20"
+                          className="w-full px-3 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-[#0B1B3D] text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-amber-500/20"
                         >
                           {branches.map((b) => (
                             <option key={b.id} value={b.id}>{b.name}</option>
                           ))}
                         </select>
                       ) : (
-                        <div className="w-full px-3 py-2.5 rounded-xl bg-[#faf7f4] border border-[#e7dfd8] text-[#1b1520] text-xs font-semibold flex items-center justify-between cursor-not-allowed select-none">
+                        <div className="w-full px-3 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-[#0B1B3D] text-xs font-semibold flex items-center justify-between cursor-not-allowed select-none">
                           <span className="truncate">{branches.find((b) => b.id === (walkInBranch || userAssignedBranch))?.name || "Clifton Flagship Branch"}</span>
                           <span className="text-[10px] text-amber-800 bg-amber-100 border border-amber-200 px-2 py-0.5 rounded-md font-bold shrink-0">
                             🔒 Station Locked
@@ -789,7 +789,7 @@ export default function AppointmentsPage() {
 
                     <div>
                       <div className="flex items-center justify-between mb-1">
-                        <label className="block text-xs font-bold text-[#4a4250]">Treatment</label>
+                        <label className="block text-xs font-bold text-slate-700">Treatment</label>
                         <button
                           type="button"
                           onClick={() => {
@@ -797,7 +797,7 @@ export default function AppointmentsPage() {
                               setWalkInSelectedServices([...walkInSelectedServices, walkInService]);
                             }
                           }}
-                          className="text-[11px] font-bold text-[#a3214f] hover:text-[#7f1339] transition"
+                          className="text-[11px] font-bold text-amber-700 hover:text-amber-800 transition"
                         >
                           + Add More Services
                         </button>
@@ -813,7 +813,7 @@ export default function AppointmentsPage() {
                             }
                           }}
                           required
-                          className="flex-1 px-3 py-2.5 rounded-xl bg-[#faf7f4] border border-[#e7dfd8] text-[#1b1520] text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-[#a3214f]/20"
+                          className="flex-1 px-3 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-[#0B1B3D] text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-amber-500/20"
                         >
                           {walkInCategories.map((cat) => (
                             <optgroup key={cat} label={`── ${cat} ──`}>
@@ -834,7 +834,7 @@ export default function AppointmentsPage() {
                               setWalkInSelectedServices([...walkInSelectedServices, walkInService]);
                             }
                           }}
-                          className="px-2.5 py-2 rounded-xl bg-[#fbe9ef] border border-[#f3cad8] text-[#a3214f] text-xs font-bold hover:bg-[#f8d7e3] transition shrink-0"
+                          className="px-2.5 py-2 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs font-bold hover:bg-amber-100 transition shrink-0"
                           title="Add another treatment"
                         >
                           + Add
@@ -849,15 +849,15 @@ export default function AppointmentsPage() {
                             .map((s) => (
                               <span
                                 key={s.id}
-                                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#fbe9ef] border border-[#f3cad8] text-[11px] font-semibold text-[#1b1520]"
+                                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-amber-50 border border-amber-200 text-[11px] font-semibold text-[#0B1B3D]"
                               >
                                 <span>{s.name}</span>
-                                <strong className="text-[#a3214f]">Rs. {Number(s.base_price).toLocaleString()}</strong>
+                                <strong className="text-amber-800">Rs. {Number(s.base_price).toLocaleString()}</strong>
                                 {walkInSelectedServices.length > 1 && (
                                   <button
                                     type="button"
                                     onClick={() => setWalkInSelectedServices(walkInSelectedServices.filter((id) => id !== s.id))}
-                                    className="ml-1 text-[#a3214f] hover:text-rose-900 font-bold"
+                                    className="ml-1 text-slate-400 hover:text-rose-600 font-bold"
                                     title="Remove treatment"
                                   >
                                     ✕
@@ -872,12 +872,12 @@ export default function AppointmentsPage() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold text-[#4a4250] mb-1">Stylist / Artisan</label>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Stylist / Artisan</label>
                   <select
                     value={walkInStaff}
                     onChange={(e) => setWalkInStaff(e.target.value)}
                     required
-                    className="w-full px-3 py-2.5 rounded-xl bg-[#faf7f4] border border-[#e7dfd8] text-[#1b1520] text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-[#a3214f]/20"
+                    className="w-full px-3 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-[#0B1B3D] text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-amber-500/20"
                   >
                     {staffList
                       .filter((st) => !walkInBranch || !st.branch_id || st.branch_id === walkInBranch)
@@ -888,57 +888,57 @@ export default function AppointmentsPage() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-[#4a4250] mb-1">Start Time</label>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Start Time</label>
                   <input
                     type="datetime-local"
                     value={walkInTime}
                     onChange={(e) => setWalkInTime(e.target.value)}
                     required
-                    className="w-full px-3 py-2 rounded-xl bg-[#faf7f4] border border-[#e7dfd8] text-[#1b1520] text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-[#a3214f]/20"
+                    className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-[#0B1B3D] text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-amber-500/20"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold text-[#4a4250] mb-1">Guest Full Name</label>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Guest Full Name</label>
                   <input
                     type="text"
                     value={walkInName}
                     onChange={(e) => setWalkInName(e.target.value)}
                     placeholder="e.g. Ayesha Khan"
                     required
-                    className="w-full px-3 py-2 rounded-xl bg-[#faf7f4] border border-[#e7dfd8] text-[#1b1520] text-xs focus:outline-none focus:ring-2 focus:ring-[#a3214f]/20"
+                    className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-[#0B1B3D] text-xs focus:outline-none focus:ring-2 focus:ring-amber-500/20"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-[#4a4250] mb-1">Phone Number</label>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Phone Number</label>
                   <input
                     type="tel"
                     value={walkInPhone}
                     onChange={(e) => setWalkInPhone(e.target.value)}
                     placeholder="+92 300 1234567"
                     required
-                    className="w-full px-3 py-2 rounded-xl bg-[#faf7f4] border border-[#e7dfd8] text-[#1b1520] text-xs focus:outline-none focus:ring-2 focus:ring-[#a3214f]/20"
+                    className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-[#0B1B3D] text-xs focus:outline-none focus:ring-2 focus:ring-amber-500/20"
                   />
                 </div>
               </div>
 
               {walkInError && (
-                <div className="p-3 rounded-xl bg-[#fbe9ef] border border-[#f3cad8] text-[#a3214f] text-xs flex items-center gap-2">
+                <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-center gap-2">
                   <AlertCircle className="w-4 h-4 flex-shrink-0" />
                   <span>{walkInError}</span>
                 </div>
               )}
 
-              <div className="pt-3 border-t border-[#e7dfd8] flex items-center justify-between">
+              <div className="pt-3 border-t border-slate-200 flex items-center justify-between">
                 <div className="flex flex-col">
-                  <span className="text-xs font-bold text-[#1b1520] flex items-center gap-1.5">
+                  <span className="text-xs font-bold text-[#0B1B3D] flex items-center gap-1.5">
                     <span>Total Fee:</span>
-                    <span className="text-[#a3214f] font-serif text-sm">Rs. {totalWalkInFee.toLocaleString()}</span>
+                    <span className="text-amber-800 font-serif text-sm">Rs. {totalWalkInFee.toLocaleString()}</span>
                   </span>
-                  <span className="text-[10px] text-[#7a7180]">
+                  <span className="text-[10px] text-slate-500">
                     {selectedWalkInServicesList.length} service(s) · {totalWalkInDuration} mins
                   </span>
                 </div>
@@ -947,14 +947,14 @@ export default function AppointmentsPage() {
                   <button
                     type="button"
                     onClick={() => setShowWalkInModal(false)}
-                    className="px-4 py-2 rounded-xl border border-[#e7dfd8] text-xs font-semibold text-[#7a7180] hover:bg-[#faf7f4] transition"
+                    className="px-4 py-2 rounded-xl border border-slate-200 text-xs font-semibold text-slate-600 hover:bg-slate-50 transition"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={walkInSubmitting}
-                    className="px-5 py-2 rounded-xl bg-gradient-to-r from-[#a3214f] to-[#88183f] hover:from-[#8b1b42] hover:to-[#6f1232] text-white text-xs font-bold shadow-sm transition disabled:opacity-50"
+                    className="px-5 py-2 rounded-xl bg-gradient-to-r from-[#0B1B3D] to-[#12285A] hover:bg-[#0A1931] text-amber-300 text-xs font-bold shadow-sm transition disabled:opacity-50"
                   >
                     {walkInSubmitting ? "Locking Slot..." : "Confirm & Seat Guest"}
                   </button>

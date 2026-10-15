@@ -140,27 +140,27 @@ export function WalkInDialog({ isOpen, onClose, onSuccess, initialServiceId }: W
   const selectedSvc = services.find((s) => s.id === serviceId);
 
   return (
-    <div className="fixed inset-0 z-50 bg-[#1b1520]/60 backdrop-blur-xs flex items-center justify-center p-4">
-      <div className="bg-white rounded-3xl border border-[#e7dfd8] max-w-lg w-full shadow-2xl overflow-hidden animate-slide-up relative">
+    <div className="fixed inset-0 z-50 bg-[#0A1931]/60 backdrop-blur-xs flex items-center justify-center p-4">
+      <div className="bg-white rounded-3xl border border-slate-200 max-w-lg w-full shadow-2xl overflow-hidden animate-slide-up relative">
         {/* Top Gradient Stripe */}
-        <div className="h-1.5 w-full bg-gradient-to-r from-[#a3214f] via-[#b38742] to-[#a3214f]" />
+        <div className="h-1.5 w-full bg-gradient-to-r from-[#0A1931] via-amber-500 to-[#0A1931]" />
 
         {/* Header */}
-        <div className="px-6 py-4 border-b border-[#e7dfd8] bg-[#faf7f4] flex items-center justify-between">
-          <div className="flex items-center space-x-2 text-[#a3214f]">
-            <div className="w-8 h-8 rounded-xl bg-[#fbe9ef] border border-[#f3cad8] flex items-center justify-center text-[#a3214f]">
+        <div className="px-6 py-4 border-b border-slate-100 bg-[#F8FAFC] flex items-center justify-between">
+          <div className="flex items-center space-x-2 text-[#0B1B3D]">
+            <div className="w-8 h-8 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-700">
               <UserPlus className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="font-serif font-bold text-base text-[#1b1520] leading-none">Add Walk-In Guest</h3>
-              <span className="text-[10px] text-[#7a7180] font-semibold uppercase tracking-wider">
+              <h3 className="font-serif font-bold text-base text-[#0B1B3D] leading-none">Add Walk-In Guest</h3>
+              <span className="text-[10px] text-slate-500 font-semibold uppercase tracking-wider">
                 Instant Reception Check-In
               </span>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-full text-[#7a7180] hover:text-[#1b1520] hover:bg-[#e7dfd8]/60 transition"
+            className="p-1.5 rounded-full text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition"
           >
             <X className="w-4 h-4" />
           </button>
@@ -169,7 +169,7 @@ export function WalkInDialog({ isOpen, onClose, onSuccess, initialServiceId }: W
         {/* Form Body */}
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           {/* Booking Type Filter Tabs */}
-          <div className="flex items-center justify-between p-1 rounded-xl bg-[#f4efea] border border-[#e7dfd8] text-xs">
+          <div className="flex items-center justify-between p-1 rounded-xl bg-slate-100 border border-slate-200 text-xs">
             <button
               type="button"
               onClick={() => {
@@ -179,7 +179,7 @@ export function WalkInDialog({ isOpen, onClose, onSuccess, initialServiceId }: W
                 }
               }}
               className={`flex-1 py-1.5 rounded-lg font-bold transition text-center ${
-                bookingType === "all" ? "bg-white text-[#1b1520] shadow-xs" : "text-[#7a7180] hover:text-[#1b1520]"
+                bookingType === "all" ? "bg-white text-[#0B1B3D] shadow-xs" : "text-slate-600 hover:text-slate-900"
               }`}
             >
               All Treatments
@@ -194,7 +194,7 @@ export function WalkInDialog({ isOpen, onClose, onSuccess, initialServiceId }: W
                 }
               }}
               className={`flex-1 py-1.5 rounded-lg font-bold transition text-center ${
-                bookingType === "single" ? "bg-[#a3214f] text-white shadow-xs" : "text-[#7a7180] hover:text-[#1b1520]"
+                bookingType === "single" ? "bg-[#0A1931] text-white shadow-xs" : "text-slate-600 hover:text-slate-900"
               }`}
             >
               ✂️ Single Services
@@ -209,7 +209,7 @@ export function WalkInDialog({ isOpen, onClose, onSuccess, initialServiceId }: W
                 }
               }}
               className={`flex-1 py-1.5 rounded-lg font-bold transition text-center ${
-                bookingType === "deal" ? "bg-[#b38742] text-white shadow-xs" : "text-[#7a7180] hover:text-[#1b1520]"
+                bookingType === "deal" ? "bg-amber-600 text-white shadow-xs" : "text-slate-600 hover:text-slate-900"
               }`}
             >
               🎁 Combo Deals
@@ -218,13 +218,13 @@ export function WalkInDialog({ isOpen, onClose, onSuccess, initialServiceId }: W
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-bold text-[#4a4250] mb-1">Salon Branch</label>
+              <label className="block text-xs font-bold text-slate-700 mb-1">Salon Branch</label>
               {isOwner ? (
                 <select
                   value={branchId}
                   onChange={(e) => setBranchId(e.target.value)}
                   required
-                  className="w-full px-3 py-2 rounded-xl bg-[#faf7f4] border border-[#e7dfd8] text-xs font-bold text-[#1b1520] focus:outline-none focus:ring-2 focus:ring-[#a3214f]/20"
+                  className="w-full px-3 py-2 rounded-xl bg-[#F8FAFC] border border-slate-200 text-xs font-bold text-[#0B1B3D] focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
                 >
                   {branches.map((b) => (
                     <option key={b.id} value={b.id}>
@@ -233,7 +233,7 @@ export function WalkInDialog({ isOpen, onClose, onSuccess, initialServiceId }: W
                   ))}
                 </select>
               ) : (
-                <div className="w-full px-3 py-2 rounded-xl bg-[#faf7f4] border border-[#e7dfd8] text-xs font-bold text-[#1b1520] flex items-center justify-between cursor-not-allowed select-none">
+                <div className="w-full px-3 py-2 rounded-xl bg-[#F8FAFC] border border-slate-200 text-xs font-bold text-[#0B1B3D] flex items-center justify-between cursor-not-allowed select-none">
                   <span className="truncate">{branches.find((b) => b.id === branchId)?.name || "Clifton Flagship Branch"}</span>
                   <span className="text-[10px] text-amber-800 bg-amber-100 border border-amber-200 px-2 py-0.5 rounded-md font-bold shrink-0">
                     🔒 Station Locked
@@ -244,7 +244,7 @@ export function WalkInDialog({ isOpen, onClose, onSuccess, initialServiceId }: W
 
             <div>
               <div className="flex items-center justify-between mb-1">
-                <label className="block text-xs font-bold text-[#4a4250]">Service Treatment</label>
+                <label className="block text-xs font-bold text-slate-700">Service Treatment</label>
                 <button
                   type="button"
                   onClick={() => {
@@ -252,7 +252,7 @@ export function WalkInDialog({ isOpen, onClose, onSuccess, initialServiceId }: W
                       setSelectedServiceIds([...selectedServiceIds, serviceId]);
                     }
                   }}
-                  className="inline-flex items-center gap-1 text-[11px] font-bold text-[#a3214f] hover:text-[#7f1339] transition"
+                  className="inline-flex items-center gap-1 text-[11px] font-bold text-amber-700 hover:text-amber-800 transition"
                 >
                   <Plus className="w-3 h-3" />
                   <span>+ Add More Services</span>
@@ -269,7 +269,7 @@ export function WalkInDialog({ isOpen, onClose, onSuccess, initialServiceId }: W
                     }
                   }}
                   required
-                  className="flex-1 px-3 py-2 rounded-xl bg-[#faf7f4] border border-[#e7dfd8] text-xs font-bold text-[#1b1520] focus:outline-none focus:ring-2 focus:ring-[#a3214f]/20"
+                  className="flex-1 px-3 py-2 rounded-xl bg-[#F8FAFC] border border-slate-200 text-xs font-bold text-[#0B1B3D] focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
                 >
                   {categories.map((cat) => (
                     <optgroup key={cat} label={`── ${cat} ──`}>
@@ -290,7 +290,7 @@ export function WalkInDialog({ isOpen, onClose, onSuccess, initialServiceId }: W
                       setSelectedServiceIds([...selectedServiceIds, serviceId]);
                     }
                   }}
-                  className="px-2.5 py-2 rounded-xl bg-[#fbe9ef] border border-[#f3cad8] text-[#a3214f] text-xs font-bold hover:bg-[#f8d7e3] transition shrink-0"
+                  className="px-2.5 py-2 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs font-bold hover:bg-amber-100 transition shrink-0"
                   title="Add another service to this guest's visit"
                 >
                   + Add
@@ -303,15 +303,15 @@ export function WalkInDialog({ isOpen, onClose, onSuccess, initialServiceId }: W
                   {selectedServicesList.map((s) => (
                     <span
                       key={s.id}
-                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#fbe9ef] border border-[#f3cad8] text-[11px] font-semibold text-[#1b1520]"
+                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-amber-50/80 border border-amber-200 text-[11px] font-semibold text-[#0B1B3D]"
                     >
                       <span>{s.name}</span>
-                      <strong className="text-[#a3214f]">Rs. {Number(s.base_price).toLocaleString()}</strong>
+                      <strong className="text-amber-700">Rs. {Number(s.base_price).toLocaleString()}</strong>
                       {selectedServicesList.length > 1 && (
                         <button
                           type="button"
                           onClick={() => setSelectedServiceIds(selectedServiceIds.filter((id) => id !== s.id))}
-                          className="ml-1 text-[#a3214f] hover:text-rose-900 font-bold"
+                          className="ml-1 text-slate-400 hover:text-rose-600 font-bold"
                           title="Remove service"
                         >
                           ✕
@@ -326,11 +326,11 @@ export function WalkInDialog({ isOpen, onClose, onSuccess, initialServiceId }: W
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-bold text-[#4a4250] mb-1">Assigned Stylist</label>
+              <label className="block text-xs font-bold text-slate-700 mb-1">Assigned Stylist</label>
               <select
                 value={staffId}
                 onChange={(e) => setStaffId(e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-[#faf7f4] border border-[#e7dfd8] text-xs font-bold text-[#1b1520] focus:outline-none focus:ring-2 focus:ring-[#a3214f]/20"
+                className="w-full px-3 py-2 rounded-xl bg-[#F8FAFC] border border-slate-200 text-xs font-bold text-[#0B1B3D] focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
               >
                 <option value="">Auto-Assign Available Stylist</option>
                 {staffList
@@ -344,68 +344,68 @@ export function WalkInDialog({ isOpen, onClose, onSuccess, initialServiceId }: W
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-[#4a4250] mb-1">Start Time</label>
+              <label className="block text-xs font-bold text-slate-700 mb-1">Start Time</label>
               <input
                 type="datetime-local"
                 value={startTime}
                 onChange={(e) => setStartTime(e.target.value)}
                 required
-                className="w-full px-3 py-2 rounded-xl bg-[#faf7f4] border border-[#e7dfd8] text-xs font-bold text-[#1b1520] focus:outline-none focus:ring-2 focus:ring-[#a3214f]/20"
+                className="w-full px-3 py-2 rounded-xl bg-[#F8FAFC] border border-slate-200 text-xs font-bold text-[#0B1B3D] focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-bold text-[#4a4250] mb-1">Client Full Name *</label>
+              <label className="block text-xs font-bold text-slate-700 mb-1">Client Full Name *</label>
               <input
                 type="text"
                 value={customerName}
                 onChange={(e) => setCustomerName(e.target.value)}
                 required
                 placeholder="e.g. Ayesha Khan"
-                className="w-full px-3.5 py-2.5 rounded-xl bg-[#faf7f4] border border-[#e7dfd8] text-xs font-semibold text-[#1b1520] focus:outline-none focus:ring-2 focus:ring-[#a3214f]/20"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-[#F8FAFC] border border-slate-200 text-xs font-semibold text-[#0B1B3D] focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-[#4a4250] mb-1">Contact Phone *</label>
+              <label className="block text-xs font-bold text-slate-700 mb-1">Contact Phone *</label>
               <input
                 type="tel"
                 value={customerPhone}
                 onChange={(e) => setCustomerPhone(e.target.value)}
                 required
                 placeholder="+92 300 1234567"
-                className="w-full px-3.5 py-2.5 rounded-xl bg-[#faf7f4] border border-[#e7dfd8] text-xs font-semibold text-[#1b1520] focus:outline-none focus:ring-2 focus:ring-[#a3214f]/20"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-[#F8FAFC] border border-slate-200 text-xs font-semibold text-[#0B1B3D] focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-[#4a4250] mb-1">Special Notes / Preferences</label>
+            <label className="block text-xs font-bold text-slate-700 mb-1">Special Notes / Preferences</label>
             <input
               type="text"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="e.g. Warm towel massage preference"
-              className="w-full px-3.5 py-2 rounded-xl bg-[#faf7f4] border border-[#e7dfd8] text-xs font-medium text-[#1b1520] focus:outline-none focus:ring-2 focus:ring-[#a3214f]/20"
+              className="w-full px-3.5 py-2.5 rounded-xl bg-[#F8FAFC] border border-slate-200 text-xs font-medium text-[#0B1B3D] focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
             />
           </div>
 
           {error && (
-            <div className="p-3.5 rounded-xl bg-[#fbe9ef] border border-[#f3cad8] text-[#a3214f] text-xs flex items-center space-x-2">
+            <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-center space-x-2">
               <AlertCircle className="w-4 h-4 flex-shrink-0" />
               <span>{error}</span>
             </div>
           )}
 
-          <div className="pt-3 border-t border-[#e7dfd8] flex items-center justify-between">
+          <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
             <div className="flex flex-col">
-              <span className="text-xs font-bold text-[#1b1520] flex items-center gap-1.5">
+              <span className="text-xs font-bold text-[#0B1B3D] flex items-center gap-1.5">
                 <span>Total Fee:</span>
-                <span className="text-[#a3214f] font-serif text-sm">Rs. {totalAmount.toLocaleString()}</span>
+                <span className="text-amber-700 font-serif text-sm">Rs. {totalAmount.toLocaleString()}</span>
               </span>
-              <span className="text-[10px] text-[#7a7180]">
+              <span className="text-[10px] text-slate-500">
                 {selectedServicesList.length} service(s) · {totalDuration} mins estimated
               </span>
             </div>
@@ -414,14 +414,14 @@ export function WalkInDialog({ isOpen, onClose, onSuccess, initialServiceId }: W
               <button
                 type="button"
                 onClick={onClose}
-                className="px-4 py-2 rounded-xl border border-[#e7dfd8] text-xs font-semibold text-[#7a7180] hover:bg-[#faf7f4] transition"
+                className="px-4 py-2 rounded-xl border border-slate-200 text-xs font-semibold text-slate-600 hover:bg-slate-50 transition"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={loading}
-                className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#a3214f] to-[#88183f] hover:from-[#8b1b42] hover:to-[#6f1232] text-white font-bold text-xs shadow-sm transition disabled:opacity-50"
+                className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-[#0A1931] font-extrabold text-xs shadow-md transition disabled:opacity-50"
               >
                 {loading ? "Locking Slot..." : "Confirm & Seat Guest"}
               </button>

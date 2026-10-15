@@ -208,14 +208,14 @@ export default function AttendancePage() {
             <button
               onClick={handleGeneratePayroll}
               disabled={generatingPayroll}
-              className="inline-flex items-center gap-2 rounded-xl bg-[#a3214f] px-4 py-2.5 text-xs font-semibold text-white shadow-sm transition hover:bg-[#8b1b42] disabled:opacity-50"
+              className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#0B1B3D] to-[#12285A] hover:bg-[#0A1931] px-4 py-2.5 text-xs font-bold text-amber-300 shadow-sm border border-[#0B1B3D] transition disabled:opacity-50"
             >
-              <DollarSign className="h-4 w-4" />
+              <DollarSign className="h-4 w-4 text-amber-400" />
               <span>{generatingPayroll ? "Calculating..." : "Run Month-End Payroll"}</span>
             </button>
           ) : (
-            <div className="inline-flex items-center gap-2 rounded-xl bg-[#faf7f4] border border-[#e7dfd8] px-3.5 py-2 text-xs font-semibold text-[#7a7180] shadow-2xs">
-              <Eye className="h-4 w-4 text-[#a3214f]" />
+            <div className="inline-flex items-center gap-2 rounded-xl bg-slate-50 border border-slate-200 px-3.5 py-2 text-xs font-semibold text-slate-500 shadow-2xs">
+              <Eye className="h-4 w-4 text-amber-600" />
               <span>Manager Audit Mode (Read-Only)</span>
             </div>
           )
@@ -245,7 +245,7 @@ export default function AttendancePage() {
           label="Biometric Stations"
           value={devices.length}
           tone="brand"
-          icon={<Cpu className="h-4 w-4 text-[#a3214f]" />}
+          icon={<Cpu className="h-4 w-4 text-amber-600" />}
         />
         <Stat
           label="Shift Summaries Logged"
@@ -270,11 +270,11 @@ export default function AttendancePage() {
       {/* Hardware Stations & Simulator Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Device Stations */}
-        <Card className="p-5 space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-[#e7dfd8]">
+        <Card className="p-5 space-y-4 border-slate-200">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-200">
             <div>
-              <h2 className="text-[15px] font-bold text-[#1b1520]">Registered Biometric Terminals</h2>
-              <p className="text-xs text-[#7a7180]">Physical time-clocks connected via cloud bridge</p>
+              <h2 className="text-[15px] font-bold text-[#0B1B3D]">Registered Biometric Terminals</h2>
+              <p className="text-xs text-slate-500">Physical time-clocks connected via cloud bridge</p>
             </div>
             <span className="text-[10px] text-emerald-700 font-semibold px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
@@ -284,19 +284,19 @@ export default function AttendancePage() {
 
           <div className="space-y-3">
             {devices.length === 0 ? (
-              <p className="text-xs text-[#7a7180] py-4 text-center">No biometric stations registered yet.</p>
+              <p className="text-xs text-slate-500 py-4 text-center">No biometric stations registered yet.</p>
             ) : (
               devices.map((d) => (
                 <div
                   key={d.id}
-                  className="p-3.5 rounded-xl bg-[#faf7f4] border border-[#e7dfd8] flex items-center justify-between"
+                  className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between"
                 >
                   <div>
-                    <h4 className="text-xs font-bold text-[#1b1520]">{d.name}</h4>
-                    <p className="text-[11px] text-[#7a7180] mt-0.5">
-                      {d.device_model} • <span className="text-[#a3214f] font-medium">{d.branch_name}</span>
+                    <h4 className="text-xs font-bold text-[#0B1B3D]">{d.name}</h4>
+                    <p className="text-[11px] text-slate-500 mt-0.5">
+                      {d.device_model} • <span className="text-amber-700 font-medium">{d.branch_name}</span>
                     </p>
-                    <span className="text-[10px] font-mono text-[#7a7180] mt-1 block">
+                    <span className="text-[10px] font-mono text-slate-500 mt-1 block">
                       S/N: {d.serial_number}
                     </span>
                   </div>
@@ -321,13 +321,13 @@ export default function AttendancePage() {
           <form onSubmit={handleSimulatePunch} className="space-y-4">
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-semibold text-[#1b1520] mb-1">
+                <label className="block text-xs font-semibold text-[#0B1B3D] mb-1">
                   Artisan / Stylist
                 </label>
                 <select
                   value={selectedStaffBioId}
                   onChange={(e) => setSelectedStaffBioId(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-[#faf7f4] border border-[#e7dfd8] text-[#1b1520] text-xs focus:outline-none focus:ring-2 focus:ring-[#a3214f]/20 font-medium"
+                  className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-[#0B1B3D] text-xs focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 font-medium"
                 >
                   {staffList.length > 0 ? (
                     staffList.map((st) => (
@@ -347,13 +347,13 @@ export default function AttendancePage() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-[#1b1520] mb-1">
+                <label className="block text-xs font-semibold text-[#0B1B3D] mb-1">
                   Scan Action
                 </label>
                 <select
                   value={punchType}
                   onChange={(e) => setPunchType(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-[#faf7f4] border border-[#e7dfd8] text-[#1b1520] text-xs focus:outline-none focus:ring-2 focus:ring-[#a3214f]/20 font-medium"
+                  className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-[#0B1B3D] text-xs focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 font-medium"
                 >
                   <option value="CHECK_IN">Check In (Shift Start)</option>
                   <option value="CHECK_OUT">Check Out (Shift End)</option>
@@ -375,14 +375,14 @@ export default function AttendancePage() {
             <button
               type="submit"
               disabled={punchLoading}
-              className="w-full py-2.5 rounded-xl bg-[#a3214f] hover:bg-[#8b1b42] text-white text-xs font-semibold shadow-sm transition flex items-center justify-center gap-2 disabled:opacity-50"
+              className="w-full py-2.5 rounded-xl bg-gradient-to-r from-[#0B1B3D] to-[#12285A] hover:bg-[#0A1931] text-amber-300 text-xs font-bold shadow-sm transition flex items-center justify-center gap-2 disabled:opacity-50"
             >
-              <Play className="w-3.5 h-3.5" />
+              <Play className="w-3.5 h-3.5 text-amber-400" />
               <span>{punchLoading ? "Recording Scan..." : "Punch Time Clock"}</span>
             </button>
 
-            <div className="rounded-xl bg-[#faf7f4] border border-[#e7dfd8]/60 p-2.5 text-[11px] text-[#7a7180] space-y-1">
-              <p className="font-semibold text-[#1b1520]">Attendance-Driven Compensation Rules:</p>
+            <div className="rounded-xl bg-slate-50 border border-slate-200/60 p-2.5 text-[11px] text-slate-600 space-y-1">
+              <p className="font-semibold text-[#0B1B3D]">Attendance-Driven Compensation Rules:</p>
               <p>• Standard month = 20 work days (160 hours).</p>
               <p>• Overtime: Hours &gt; 160h are compensated at <strong>1.5x</strong> base hourly wage.</p>
               <p>• Deductions: Missed shifts/days incur proportionate hourly deductions.</p>
@@ -431,7 +431,7 @@ export default function AttendancePage() {
                     <Badge tone={pr.status === "FINALIZED" ? "success" : "brand"} className="text-[10px]">
                       {pr.status}
                     </Badge>
-                    <span className="text-xs text-[#a3214f] font-semibold">
+                    <span className="text-xs text-amber-800 font-semibold">
                       ({pr.branch_name || "All Branches"})
                     </span>
                   </div>
@@ -466,7 +466,7 @@ export default function AttendancePage() {
                 </div>
                 <div>
                   <span className="text-[10px] text-[#7a7180] uppercase tracking-wider font-semibold block">Service Commissions</span>
-                  <span className="font-bold text-[#a3214f] text-sm">+{formatCurrency(pr.total_commissions)}</span>
+                  <span className="font-bold text-amber-700 text-sm">+{formatCurrency(pr.total_commissions)}</span>
                 </div>
                 <div>
                   <span className="text-[10px] text-[#7a7180] uppercase tracking-wider font-semibold block">Attendance Deductions</span>
@@ -548,7 +548,7 @@ export default function AttendancePage() {
                                 <span className="text-[#7a7180]">Rs. 0</span>
                               )}
                             </td>
-                            <td className="py-3 px-3 font-semibold text-[#a3214f]">
+                            <td className="py-3 px-3 font-semibold text-amber-700">
                               +{formatCurrency(item.commission_pay)}
                             </td>
                             <td className="py-3 px-3 font-bold text-[#1b1520] tabular-nums">
@@ -588,7 +588,7 @@ export default function AttendancePage() {
                                   <button
                                     onClick={() => handleDisburseItem(pr.id, item.id)}
                                     disabled={disbursingId === item.id}
-                                    className="px-2.5 py-1 rounded-lg bg-[#a3214f] hover:bg-[#8b1b42] text-white text-[11px] font-semibold transition disabled:opacity-50 inline-flex items-center gap-1"
+                                    className="px-2.5 py-1 rounded-lg bg-[#0B1B3D] hover:bg-[#071120] text-amber-300 text-[11px] font-semibold transition disabled:opacity-50 inline-flex items-center gap-1 shadow-sm"
                                   >
                                     <span>{disbursingId === item.id ? "Paying..." : "Pay Remaining"}</span>
                                     <ArrowRight className="w-2.5 h-2.5" />
@@ -656,7 +656,7 @@ export default function AttendancePage() {
                     <td className="py-3 px-3.5 text-[#7a7180]">
                       {s.last_check_out ? new Date(s.last_check_out).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "—"}
                     </td>
-                    <td className="py-3 px-3.5 font-bold text-[#a3214f] tabular-nums">{s.worked_minutes} mins</td>
+                    <td className="py-3 px-3.5 font-bold text-[#0B1B3D] tabular-nums">{s.worked_minutes} mins</td>
                     <td className="py-3 px-3.5">
                       <span className="text-[10px] font-semibold px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700">
                         {s.status}

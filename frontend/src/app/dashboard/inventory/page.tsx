@@ -476,7 +476,7 @@ export default function InventoryPage() {
                   </div>
                   <button
                     onClick={() => handleUndoUsage(u.id)}
-                    className="text-[11px] font-bold text-[#be123c] hover:underline px-2 py-0.5 rounded hover:bg-rose-50 transition"
+                    className="text-[11px] font-bold text-rose-600 hover:text-rose-700 hover:underline px-2 py-0.5 rounded hover:bg-rose-50 transition"
                   >
                     Undo
                   </button>

@@ -143,22 +143,22 @@ export default function DealsDashboardPage() {
   return (
     <div className="space-y-8 max-w-7xl mx-auto pb-16">
       {/* Top Banner & Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gradient-to-r from-[#180e1c] via-[#2a1332] to-[#180e1c] p-6 sm:p-8 rounded-3xl border border-[#3d1e48] shadow-xl text-white relative overflow-hidden">
-        <div className="absolute right-0 top-0 bottom-0 w-80 bg-gradient-to-l from-rose-500/10 via-amber-500/10 to-transparent pointer-events-none" />
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gradient-to-r from-[#0A1931] via-[#12285A] to-[#1E3A6E] p-6 sm:p-8 rounded-3xl border border-slate-700/50 shadow-xl text-white relative overflow-hidden">
+        <div className="absolute right-0 top-0 bottom-0 w-80 bg-gradient-to-l from-amber-500/10 via-blue-500/10 to-transparent pointer-events-none" />
         
         <div className="relative z-10 space-y-2">
           <div className="flex items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-rose-500/20 text-rose-300 border border-rose-500/30">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/30">
               <Gift className="w-3.5 h-3.5" /> High-Conversion Karachi Packages
             </span>
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-amber-500/20 text-amber-300 border border-amber-500/30">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
               <Percent className="w-3.5 h-3.5" /> Up to 35% Customer Savings
             </span>
           </div>
-          <h1 className="font-serif text-2xl sm:text-3xl font-bold tracking-tight text-white flex items-center gap-3">
+          <h1 className="font-serif text-2xl sm:text-3xl font-extrabold tracking-tight text-white flex items-center gap-3">
             Deals &amp; Signature Packages
           </h1>
-          <p className="text-sm text-zinc-300 max-w-2xl">
+          <p className="text-sm text-slate-300 max-w-2xl">
             Streamline multi-service bookings, WhatsApp promotion campaigns, and instant walk-in seating. 
             All deals are pre-configured with SRB 13% tax compliance and stylist commission tracking.
           </p>
@@ -171,11 +171,11 @@ export default function DealsDashboardPage() {
             className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-white border border-white/20 text-xs font-medium transition shadow-sm"
           >
             <span>Live Guest Deals Page</span>
-            <ExternalLink className="w-3.5 h-3.5 text-zinc-300" />
+            <ExternalLink className="w-3.5 h-3.5 text-slate-300" />
           </Link>
           <button
             onClick={() => setCreateModalOpen(true)}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#a3214f] to-[#be123c] hover:from-[#8f1d45] hover:to-[#9f1239] text-white text-xs font-semibold shadow-lg shadow-rose-900/30 transition transform active:scale-95"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-[#0A1931] text-xs font-extrabold shadow-md transition transform active:scale-95"
           >
             <Plus className="w-4 h-4" />
             <span>Create New Deal</span>
@@ -309,22 +309,22 @@ export default function DealsDashboardPage() {
                       </div>
                     </div>
 
-                    <h3 className="font-serif font-bold text-lg text-[#1b1520] group-hover:text-[#a3214f] transition-colors leading-snug">
+                    <h3 className="font-serif font-bold text-lg text-[#0B1B3D] group-hover:text-amber-700 transition-colors leading-snug">
                       {deal.name}
                     </h3>
 
                     {/* Price and Savings Header */}
                     <div className="mt-4 flex items-baseline gap-2.5">
-                      <span className="font-serif font-extrabold text-2xl text-[#1b1520]">
+                      <span className="font-serif font-extrabold text-2xl text-[#0B1B3D]">
                         Rs. {Number(deal.base_price).toLocaleString()}
                       </span>
                       {originalPrice && (
-                        <span className="text-xs text-zinc-400 line-through font-medium">
+                        <span className="text-xs text-slate-400 line-through font-medium">
                           Rs. {originalPrice}
                         </span>
                       )}
                       {savings && (
-                        <span className="text-[11px] font-bold text-rose-600 bg-rose-50 border border-rose-200 px-2 py-0.5 rounded-full">
+                        <span className="text-[11px] font-bold text-amber-800 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full">
                           Save {savings}
                         </span>
                       )}
@@ -333,12 +333,12 @@ export default function DealsDashboardPage() {
 
                   {/* Treatments / Inclusions List */}
                   <div className="p-6 py-5 space-y-3">
-                    <p className="text-[11px] font-bold uppercase tracking-wider text-zinc-400">
+                    <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
                       Package Inclusions:
                     </p>
                     <ul className="space-y-2">
                       {items.map((item, idx) => (
-                        <li key={idx} className="flex items-start gap-2.5 text-xs text-zinc-700 leading-relaxed">
+                        <li key={idx} className="flex items-start gap-2.5 text-xs text-slate-700 leading-relaxed">
                           <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0 mt-0.5" />
                           <span>{item}</span>
                         </li>
@@ -348,21 +348,21 @@ export default function DealsDashboardPage() {
                 </div>
 
                 {/* Card Action Footer */}
-                <div className="p-6 pt-0 border-t border-[#f4eee8] bg-[#faf7f4]/60">
+                <div className="p-6 pt-0 border-t border-slate-100 bg-[#F8FAFC]/60">
                   <div className="pt-4 flex flex-col gap-2">
                     {/* Primary Action: Instant Seat Walk-in */}
                     <button
                       onClick={() => handleSeatWalkIn(deal.id)}
-                      className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-gradient-to-r from-[#a3214f] to-[#881337] hover:from-[#8f1d45] hover:to-[#700f2d] text-white text-xs font-semibold shadow-md transition transform active:scale-95"
+                      className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-[#0A1931] hover:bg-[#12285A] text-white text-xs font-bold shadow-md transition transform active:scale-95"
                     >
-                      <Scissors className="w-3.5 h-3.5" />
+                      <Scissors className="w-3.5 h-3.5 text-amber-400" />
                       <span>Seat Guest with this Deal</span>
                     </button>
 
                     {/* Secondary Action: Copy WhatsApp Link */}
                     <button
                       onClick={() => handleCopyWhatsAppLink(deal)}
-                      className="w-full flex items-center justify-center gap-2 py-2 px-4 rounded-xl bg-white hover:bg-zinc-50 text-zinc-700 border border-zinc-200 text-xs font-medium transition"
+                      className="w-full flex items-center justify-center gap-2 py-2 px-4 rounded-xl bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 text-xs font-medium transition"
                     >
                       {isCopied ? (
                         <>
@@ -371,7 +371,7 @@ export default function DealsDashboardPage() {
                         </>
                       ) : (
                         <>
-                          <Share2 className="w-3.5 h-3.5 text-zinc-500" />
+                          <Share2 className="w-3.5 h-3.5 text-slate-500" />
                           <span>Copy WhatsApp Promo Link</span>
                         </>
                       )}
@@ -386,14 +386,14 @@ export default function DealsDashboardPage() {
 
       {/* Create New Deal Modal */}
       {createModalOpen && (
-        <div className="fixed inset-0 z-50 bg-[#1b1520]/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl border border-[#e8dfd8] max-w-lg w-full shadow-2xl overflow-hidden animate-slide-up relative">
-            <div className="h-1.5 w-full bg-gradient-to-r from-[#a3214f] via-[#b38742] to-[#a3214f]" />
+        <div className="fixed inset-0 z-50 bg-[#0A1931]/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl border border-slate-200 max-w-lg w-full shadow-2xl overflow-hidden animate-slide-up relative">
+            <div className="h-1.5 w-full bg-gradient-to-r from-[#0A1931] via-amber-500 to-[#0A1931]" />
 
-            <div className="px-6 py-4 border-b border-[#e8dfd8] bg-[#faf7f4] flex items-center justify-between">
-              <div className="flex items-center space-x-2 text-[#a3214f]">
-                <Sparkles className="w-5 h-5" />
-                <h3 className="font-serif font-bold text-base text-[#1b1520]">
+            <div className="px-6 py-4 border-b border-slate-100 bg-[#F8FAFC] flex items-center justify-between">
+              <div className="flex items-center space-x-2 text-[#0B1B3D]">
+                <Sparkles className="w-5 h-5 text-amber-600" />
+                <h3 className="font-serif font-bold text-base text-[#0B1B3D]">
                   Create New Signature Deal / Package
                 </h3>
               </div>
@@ -519,7 +519,7 @@ export default function DealsDashboardPage() {
                 <button
                   type="submit"
                   disabled={creating}
-                  className="px-5 py-2 rounded-xl text-xs font-semibold bg-gradient-to-r from-[#a3214f] to-[#be123c] text-white hover:from-[#8f1d45] hover:to-[#9f1239] transition disabled:opacity-50 shadow-md"
+                  className="px-5 py-2 rounded-xl text-xs font-semibold bg-[#0B1B3D] text-amber-300 hover:bg-[#071120] border border-amber-500/20 transition disabled:opacity-50 shadow-md"
                 >
                   {creating ? "Publishing Deal..." : "Publish Deal Package"}
                 </button>

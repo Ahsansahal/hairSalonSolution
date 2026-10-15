@@ -123,13 +123,13 @@ export default function ServicesPage() {
           isOwner ? (
             <button
               onClick={() => setShowAddModal(true)}
-              className="inline-flex items-center gap-2 rounded-xl bg-[#a3214f] px-4 py-2.5 text-xs font-semibold text-white shadow-sm transition hover:bg-[#8b1b42]"
+              className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 px-4 py-2.5 text-xs font-extrabold text-[#0A1931] shadow-md transition"
             >
               <Plus className="h-4 w-4" />
               <span>Add New Service</span>
             </button>
           ) : (
-            <div className="inline-flex items-center gap-2 rounded-xl bg-[#faf7f4] border border-[#e7dfd8] px-3.5 py-2 text-xs font-medium text-[#7a7180]">
+            <div className="inline-flex items-center gap-2 rounded-xl bg-[#F8FAFC] border border-slate-200 px-3.5 py-2 text-xs font-medium text-slate-500">
               <span>🔒 Staff View (Pricing Locked by Owner)</span>
             </div>
           )
@@ -142,25 +142,25 @@ export default function ServicesPage() {
           label="Total Treatments"
           value={services.length}
           tone="brand"
-          icon={<Scissors className="h-4 w-4 text-[#a3214f]" />}
+          icon={<Scissors className="h-4 w-4 text-amber-400" />}
         />
         <Stat
           label="Categories"
           value={categories.length - 1 || 0}
           tone="default"
-          icon={<Tag className="h-4 w-4 text-[#4a4250]" />}
+          icon={<Tag className="h-4 w-4 text-slate-600" />}
         />
         <Stat
           label="Avg Duration"
           value={`${avgDuration}m`}
           tone="info"
-          icon={<Clock className="h-4 w-4 text-[#1d5fbf]" />}
+          icon={<Clock className="h-4 w-4 text-blue-600" />}
         />
         <Stat
           label="Branch Overrides"
           value={branchServices.length}
           tone="success"
-          icon={<Sparkles className="h-4 w-4 text-[#15803d]" />}
+          icon={<Sparkles className="h-4 w-4 text-emerald-600" />}
         />
       </div>
 
@@ -168,22 +168,22 @@ export default function ServicesPage() {
       <Card className="p-4 space-y-3.5">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="relative w-full sm:w-80">
-            <Search className="w-4 h-4 text-[#7a7180] absolute left-3.5 top-3" />
+            <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
             <input
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Search services (e.g. Skin Fade, Beard, HydraFacial)..."
-              className="w-full pl-10 pr-4 py-2 rounded-xl bg-[#faf7f4] border border-[#e7dfd8] text-[#1b1520] text-xs focus:outline-none focus:ring-2 focus:ring-[#a3214f]/20"
+              className="w-full pl-10 pr-4 py-2 rounded-xl bg-[#F8FAFC] border border-slate-200 text-[#0B1B3D] text-xs focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
             />
           </div>
 
           {/* Type Segmented Control (Single vs Deal) */}
-          <div className="flex items-center p-1 rounded-xl bg-[#f4efea] border border-[#e7dfd8] text-xs">
+          <div className="flex items-center p-1 rounded-xl bg-slate-100 border border-slate-200 text-xs">
             <button
               onClick={() => setServiceType("all")}
               className={`px-3 py-1.5 rounded-lg font-bold transition ${
-                serviceType === "all" ? "bg-white text-[#1b1520] shadow-xs" : "text-[#7a7180] hover:text-[#1b1520]"
+                serviceType === "all" ? "bg-white text-[#0B1B3D] shadow-xs" : "text-slate-600 hover:text-slate-900"
               }`}
             >
               All ({services.length})
@@ -191,7 +191,7 @@ export default function ServicesPage() {
             <button
               onClick={() => setServiceType("single")}
               className={`px-3 py-1.5 rounded-lg font-bold transition flex items-center gap-1.5 ${
-                serviceType === "single" ? "bg-[#a3214f] text-white shadow-xs" : "text-[#7a7180] hover:text-[#1b1520]"
+                serviceType === "single" ? "bg-[#0A1931] text-white shadow-xs" : "text-slate-600 hover:text-slate-900"
               }`}
             >
               <Scissors className="w-3 h-3" />
@@ -200,7 +200,7 @@ export default function ServicesPage() {
             <button
               onClick={() => setServiceType("deal")}
               className={`px-3 py-1.5 rounded-lg font-bold transition flex items-center gap-1.5 ${
-                serviceType === "deal" ? "bg-[#b38742] text-white shadow-xs" : "text-[#7a7180] hover:text-[#1b1520]"
+                serviceType === "deal" ? "bg-amber-600 text-white shadow-xs" : "text-slate-600 hover:text-slate-900"
               }`}
             >
               <Sparkles className="w-3 h-3" />
@@ -261,38 +261,38 @@ export default function ServicesPage() {
                         </span>
                       )}
                     </div>
-                    <span className="text-xl font-serif font-bold text-[#a3214f] tabular-nums shrink-0">
+                    <span className="text-xl font-serif font-bold text-amber-700 tabular-nums shrink-0">
                       {formatCurrency(s.base_price)}
                     </span>
                   </div>
-                  <h3 className="text-base font-bold text-[#1b1520] mt-3">{s.name}</h3>
-                  <p className="text-xs text-[#7a7180] mt-1.5 line-clamp-2 leading-relaxed">
+                  <h3 className="text-base font-bold text-[#0B1B3D] mt-3">{s.name}</h3>
+                  <p className="text-xs text-slate-500 mt-1.5 line-clamp-2 leading-relaxed">
                     {s.description || "Indulgent bespoke salon treatment tailored to your style."}
                   </p>
-                  <div className="mt-4 flex flex-wrap items-center gap-3 text-xs text-[#7a7180]">
+                  <div className="mt-4 flex flex-wrap items-center gap-3 text-xs text-slate-500">
                     <span className="flex items-center gap-1.5">
-                      <Clock className="w-3.5 h-3.5 text-[#a3214f]" />
-                      <span className="font-medium text-[#1b1520]">{s.default_duration_minutes} mins</span>
+                      <Clock className="w-3.5 h-3.5 text-amber-600" />
+                      <span className="font-medium text-[#0B1B3D]">{s.default_duration_minutes} mins</span>
                     </span>
                     <span className="flex items-center gap-1.5">
-                      <Tag className="w-3.5 h-3.5 text-[#7a7180]" />
+                      <Tag className="w-3.5 h-3.5 text-slate-400" />
                       <span>+{s.buffer_minutes || 15}m reset</span>
                     </span>
-                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded bg-purple-50 text-purple-700 border border-purple-200/60">
+                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded bg-amber-50 text-amber-800 border border-amber-200/60">
                       Cap: 10% max disc.
                     </span>
                   </div>
                 </div>
 
                 {/* Overrides footer */}
-                <div className="mt-5 pt-3 border-t border-[#e7dfd8] flex items-center justify-between text-[11px]">
+                <div className="mt-5 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px]">
                   {overrides.length > 0 ? (
-                    <span className="text-[#a3214f] font-medium flex items-center gap-1">
+                    <span className="text-amber-700 font-medium flex items-center gap-1">
                       <Sparkles className="w-3 h-3" />
                       {overrides.length} branch variation(s)
                     </span>
                   ) : (
-                    <span className="text-[#7a7180]">Standard chain pricing</span>
+                    <span className="text-slate-400">Standard chain pricing</span>
                   )}
                   <span className="text-[10px] text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded font-medium">
                     Active
@@ -317,16 +317,16 @@ export default function ServicesPage() {
 
       {/* Add Modal */}
       {showAddModal && (
-        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl border border-[#e7dfd8] animate-in fade-in zoom-in-95 duration-150">
-            <div className="flex items-center justify-between pb-3 border-b border-[#e7dfd8]">
+        <div className="fixed inset-0 z-50 bg-[#0A1931]/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl border border-slate-200 animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <div>
-                <h3 className="text-lg font-serif font-bold text-[#1b1520]">Add Master Service</h3>
-                <p className="text-xs text-[#7a7180]">Add a treatment to your central organization catalog</p>
+                <h3 className="text-lg font-serif font-bold text-[#0B1B3D]">Add Master Service</h3>
+                <p className="text-xs text-slate-500">Add a treatment to your central organization catalog</p>
               </div>
               <button
                 onClick={() => setShowAddModal(false)}
-                className="text-[#7a7180] hover:text-[#1b1520] p-1.5 rounded-full hover:bg-stone-100 transition"
+                className="text-slate-400 hover:text-slate-600 p-1.5 rounded-full hover:bg-slate-100 transition"
               >
                 ✕
               </button>
@@ -334,7 +334,7 @@ export default function ServicesPage() {
 
             <form onSubmit={handleCreateService} className="mt-4 space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-[#1b1520] mb-1">
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
                   Service Name *
                 </label>
                 <input
@@ -343,19 +343,19 @@ export default function ServicesPage() {
                   onChange={(e) => setName(e.target.value)}
                   required
                   placeholder="e.g. Balayage & Silk Infusion"
-                  className="w-full px-3 py-2.5 rounded-xl bg-[#faf7f4] border border-[#e7dfd8] text-[#1b1520] text-xs focus:outline-none focus:ring-2 focus:ring-[#a3214f]/20 font-medium"
+                  className="w-full px-3 py-2.5 rounded-xl bg-[#F8FAFC] border border-slate-200 text-[#0B1B3D] text-xs focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 font-medium"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-[#1b1520] mb-1">
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">
                     Category
                   </label>
                   <select
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
-                    className="w-full px-3 py-2.5 rounded-xl bg-[#faf7f4] border border-[#e7dfd8] text-[#1b1520] text-xs focus:outline-none focus:ring-2 focus:ring-[#a3214f]/20"
+                    className="w-full px-3 py-2.5 rounded-xl bg-[#F8FAFC] border border-slate-200 text-[#0B1B3D] text-xs focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
                   >
                     <option value="Haircut & Styling">Haircut &amp; Styling</option>
                     <option value="Beard Styling & Shave">Beard Styling &amp; Shave</option>
@@ -369,7 +369,7 @@ export default function ServicesPage() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-[#1b1520] mb-1">
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">
                     Base Price (Rs.) *
                   </label>
                   <input
@@ -378,14 +378,14 @@ export default function ServicesPage() {
                     value={price}
                     onChange={(e) => setPrice(e.target.value)}
                     required
-                    className="w-full px-3 py-2.5 rounded-xl bg-[#faf7f4] border border-[#e7dfd8] text-[#1b1520] text-xs focus:outline-none focus:ring-2 focus:ring-[#a3214f]/20 font-medium"
+                    className="w-full px-3 py-2.5 rounded-xl bg-[#F8FAFC] border border-slate-200 text-[#0B1B3D] text-xs focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 font-medium"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-[#1b1520] mb-1">
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">
                     Duration (Minutes) *
                   </label>
                   <input
@@ -393,12 +393,12 @@ export default function ServicesPage() {
                     value={duration}
                     onChange={(e) => setDuration(e.target.value)}
                     required
-                    className="w-full px-3 py-2.5 rounded-xl bg-[#faf7f4] border border-[#e7dfd8] text-[#1b1520] text-xs focus:outline-none focus:ring-2 focus:ring-[#a3214f]/20"
+                    className="w-full px-3 py-2.5 rounded-xl bg-[#F8FAFC] border border-slate-200 text-[#0B1B3D] text-xs focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-[#1b1520] mb-1">
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">
                     Buffer Reset (Mins)
                   </label>
                   <input
@@ -406,13 +406,13 @@ export default function ServicesPage() {
                     value={bufferMinutes}
                     onChange={(e) => setBufferMinutes(e.target.value)}
                     required
-                    className="w-full px-3 py-2.5 rounded-xl bg-[#faf7f4] border border-[#e7dfd8] text-[#1b1520] text-xs focus:outline-none focus:ring-2 focus:ring-[#a3214f]/20"
+                    className="w-full px-3 py-2.5 rounded-xl bg-[#F8FAFC] border border-slate-200 text-[#0B1B3D] text-xs focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-[#1b1520] mb-1">
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
                   Description
                 </label>
                 <textarea
@@ -420,7 +420,7 @@ export default function ServicesPage() {
                   onChange={(e) => setDescription(e.target.value)}
                   rows={3}
                   placeholder="Detail the treatment experience, techniques, and results..."
-                  className="w-full px-3 py-2.5 rounded-xl bg-[#faf7f4] border border-[#e7dfd8] text-[#1b1520] text-xs focus:outline-none focus:ring-2 focus:ring-[#a3214f]/20"
+                  className="w-full px-3 py-2.5 rounded-xl bg-[#F8FAFC] border border-slate-200 text-[#0B1B3D] text-xs focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
                 />
               </div>
 
@@ -428,14 +428,14 @@ export default function ServicesPage() {
                 <button
                   type="button"
                   onClick={() => setShowAddModal(false)}
-                  className="px-4 py-2.5 rounded-xl border border-[#e7dfd8] hover:bg-[#faf7f4] text-[#7a7180] text-xs font-medium transition"
+                  className="px-4 py-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-600 text-xs font-medium transition"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="px-5 py-2.5 rounded-xl bg-[#a3214f] hover:bg-[#8b1b42] text-white text-xs font-semibold shadow-sm transition"
+                  className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-[#0A1931] font-extrabold text-xs shadow-md transition"
                 >
                   {submitting ? "Saving..." : "Create Service"}
                 </button>
