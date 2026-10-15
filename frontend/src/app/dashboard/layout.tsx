@@ -76,6 +76,14 @@ export default function DashboardLayout({
     }
 
     initSession();
+
+    const handleExternalBranchChange = () => {
+      const active = localStorage.getItem("salon_active_branch");
+      if (active) setSelectedBranchId(active);
+    };
+
+    window.addEventListener("branchChanged", handleExternalBranchChange);
+    return () => window.removeEventListener("branchChanged", handleExternalBranchChange);
   }, [router, pathname]);
 
   const handleBranchChange = (newBranchId: string) => {

@@ -218,7 +218,9 @@ let inventory = [
 ];
 
 export async function GET(request: NextRequest, { params }: { params: { slug: string[] } }) {
-  const path = params.slug.join("/");
+  const path = params.slug.join("/").replace(/\/$/, "");
+  const { searchParams } = new URL(request.url);
+  const branchId = searchParams.get("branch_id") || "all";
 
   // 1. Branches
   if (path === "branches" || path === "public/branches") {
@@ -237,34 +239,358 @@ export async function GET(request: NextRequest, { params }: { params: { slug: st
     });
   }
 
-  // 3. Staff
+  // 3. Staff (Filtered by branch if specified)
   if (path === "staff") {
+    if (branchId === "b1") {
+      // Clifton Staff
+      const clfStaff = staffList.filter((s) => ["st1", "st2", "st4"].includes(s.id));
+      return NextResponse.json(clfStaff);
+    } else if (branchId === "b2") {
+      // DHA Bukhari Staff
+      const dhaStaff = staffList.filter((s) => ["st3", "st5"].includes(s.id));
+      return NextResponse.json(dhaStaff);
+    }
     return NextResponse.json(staffList);
   }
 
-  // 4. Dashboard Summary
+  // 4. Dashboard Summary (Dynamic Branch Progress & Updates)
   if (path === "dashboard/summary") {
-    const totalRev = appointments.reduce((sum, a) => sum + (Number(a.total_amount) || 0), 142500);
+    if (branchId === "b1") {
+      // Clifton Flagship Branch Specific
+      const clifAppts = appointments.filter((a) => a.branch_id === "b1" || !a.branch_id);
+      return NextResponse.json({
+        active_branch: {
+          id: "b1",
+          name: "Clifton Flagship Branch",
+          code: "CLF-01",
+          city: "Karachi",
+          address: "Block 4, Clifton, Near Bilawal House",
+          target_revenue: 120000,
+          current_revenue: 98000,
+          target_progress_percent: 81.6,
+          total_chairs: 6,
+          occupied_chairs: 5,
+          utilization_percent: 83,
+          status: "ONLINE_ACTIVE",
+        },
+        metrics: {
+          today_appointments: 15,
+          today_confirmed: 10,
+          today_completed: 5,
+          active_staff_count: 5,
+          today_revenue: 98000,
+          upcoming_appointments: 11,
+          deals_count: 4,
+          growth_percent: 8,
+        },
+        category_breakdown: {
+          hair: 26,
+          beard: 24,
+          hydra: 22,
+          deals: 32,
+          groom: 30,
+        },
+        recent_appointments: clifAppts,
+        recent_activities: [
+          {
+            id: "act-1",
+            title: "Walk-In Guest Seated",
+            detail: "Sophia Martinez (Chair 02 · Clifton Block 4)",
+            time: "10:24 AM",
+            type: "SEATED",
+            branch: "Clifton Flagship",
+          },
+          {
+            id: "act-2",
+            title: "SHAY Deal 01 Completed",
+            detail: "Ethan Johnson (Stylist: Aliya Rizvi)",
+            time: "09:15 AM",
+            type: "SERVICE_DONE",
+            branch: "Clifton Flagship",
+          },
+          {
+            id: "act-3",
+            title: "Invoice Paid (Rs. 15,820)",
+            detail: "POS Terminal 01 (Bank Alfalah) · Shayan Merchant",
+            time: "08:50 AM",
+            type: "PAYMENT",
+            branch: "Clifton Flagship",
+          },
+        ],
+        upcoming_schedule: [
+          {
+            date_label: "OCT 15",
+            title: "Royal Grooming Suite",
+            guest: "VIP Shayan Merchant · Chair 01",
+            time: "02:00 PM - 03:30 PM",
+            staff: "Aliya Rizvi",
+            branch: "Clifton Flagship",
+          },
+          {
+            date_label: "OCT 16",
+            title: "Keratin Silk Treatment",
+            guest: "Elena Rostova",
+            time: "04:00 PM - 07:00 PM",
+            staff: "Bilal Qureshi",
+            branch: "Clifton Flagship",
+          },
+        ],
+        branch_breakdown: [
+          {
+            branch_id: "b1",
+            name: "Clifton Flagship Branch",
+            city: "Karachi",
+            today_appointments: 15,
+            today_revenue: "98000.00",
+            target_revenue: "120000.00",
+            active_staff: 5,
+          },
+        ],
+      });
+    } else if (branchId === "b2") {
+      // DHA Bukhari Studio Specific
+      const dhaAppts = appointments.filter((a) => a.branch_id === "b2");
+      return NextResponse.json({
+        active_branch: {
+          id: "b2",
+          name: "DHA Bukhari Studio",
+          code: "DHA-02",
+          city: "Karachi",
+          address: "Bukhari Commercial Lane 3, Phase 6",
+          target_revenue: 75000,
+          current_revenue: 58500,
+          target_progress_percent: 78.0,
+          total_chairs: 4,
+          occupied_chairs: 3,
+          utilization_percent: 75,
+          status: "ONLINE_ACTIVE",
+        },
+        metrics: {
+          today_appointments: 9,
+          today_confirmed: 6,
+          today_completed: 3,
+          active_staff_count: 3,
+          today_revenue: 58500,
+          upcoming_appointments: 7,
+          deals_count: 2,
+          growth_percent: 11,
+        },
+        category_breakdown: {
+          hair: 16,
+          beard: 14,
+          hydra: 18,
+          deals: 20,
+          groom: 20,
+        },
+        recent_appointments: dhaAppts.length > 0 ? dhaAppts : [
+          {
+            id: "app-102",
+            booking_reference: "SHAY-DHA-4412",
+            customer_name: "Zainab Tariq",
+            customer_phone: "+92 321 9876543",
+            service_names: ["Hydra-Glow Luxury Facial"],
+            staff_name: "Dr. Sana Hashmi",
+            branch_name: "DHA Bukhari Studio",
+            branch_id: "b2",
+            start_time: new Date(Date.now() + 1800000).toISOString(),
+            status: "CONFIRMED",
+            source: "ONLINE",
+            total_amount: 9500,
+          },
+        ],
+        recent_activities: [
+          {
+            id: "act-d1",
+            title: "Hydra-Luxe Facial Session Active",
+            detail: "Dr. Sana Hashmi with Zainab Tariq (Suite B)",
+            time: "11:15 AM",
+            type: "SERVICE_ACTIVE",
+            branch: "DHA Bukhari Studio",
+          },
+          {
+            id: "act-d2",
+            title: "WhatsApp Booking Request",
+            detail: "Mrs. Thompson (Hydra-Glow Facial inquiry)",
+            time: "09:40 AM",
+            type: "WHATSAPP",
+            branch: "DHA Bukhari Studio",
+          },
+          {
+            id: "act-d3",
+            title: "Invoice Paid (Rs. 6,215)",
+            detail: "Farhan Siddiqui · Deluxe Spa Mani-Pedi",
+            time: "08:30 AM",
+            type: "PAYMENT",
+            branch: "DHA Bukhari Studio",
+          },
+        ],
+        upcoming_schedule: [
+          {
+            date_label: "OCT 15",
+            title: "Hydra-Glow Luxury Facial",
+            guest: "Zainab Tariq · Esthetics Suite B",
+            time: "01:30 PM - 02:45 PM",
+            staff: "Dr. Sana Hashmi",
+            branch: "DHA Bukhari Studio",
+          },
+          {
+            date_label: "OCT 17",
+            title: "Bridal Consultation & Glow Prep",
+            guest: "Amina Alvi",
+            time: "03:00 PM - 04:30 PM",
+            staff: "Mehak Fatima",
+            branch: "DHA Bukhari Studio",
+          },
+        ],
+        branch_breakdown: [
+          {
+            branch_id: "b2",
+            name: "DHA Bukhari Studio",
+            city: "Karachi",
+            today_appointments: 9,
+            today_revenue: "58500.00",
+            target_revenue: "75000.00",
+            active_staff: 3,
+          },
+        ],
+      });
+    }
+
+    // Consolidated (All Branches)
     return NextResponse.json({
+      active_branch: {
+        id: "all",
+        name: "Consolidated Karachi Network",
+        code: "ALL-HQ",
+        city: "Karachi",
+        address: "HQ Multi-Branch Real-Time Monitoring",
+        target_revenue: 195000,
+        current_revenue: 156500,
+        target_progress_percent: 80.2,
+        total_chairs: 10,
+        occupied_chairs: 8,
+        utilization_percent: 80,
+        status: "NETWORK_HEALTHY",
+      },
       metrics: {
-        today_appointments: appointments.length || 24,
+        today_appointments: 24,
         today_confirmed: 16,
         today_completed: 8,
         active_staff_count: 8,
-        today_revenue: totalRev,
+        today_revenue: 156500,
         upcoming_appointments: 18,
+        deals_count: 6,
+        growth_percent: 12,
+      },
+      category_breakdown: {
+        hair: 42,
+        beard: 38,
+        hydra: 40,
+        deals: 52,
+        groom: 50,
       },
       recent_appointments: appointments,
+      recent_activities: [
+        {
+          id: "act-1",
+          title: "Walk-In Guest Seated",
+          detail: "Sophia Martinez (Chair 02 · Clifton)",
+          time: "10:24 AM",
+          type: "SEATED",
+          branch: "Clifton Flagship",
+        },
+        {
+          id: "act-2",
+          title: "SHAY Deal 01 Completed",
+          detail: "Ethan Johnson (Aliya Rizvi · Clifton)",
+          time: "09:15 AM",
+          type: "SERVICE_DONE",
+          branch: "Clifton Flagship",
+        },
+        {
+          id: "act-3",
+          title: "WhatsApp Booking Request",
+          detail: "Mrs. Thompson (Hydra-Glow Facial · DHA)",
+          time: "08:42 AM",
+          type: "WHATSAPP",
+          branch: "DHA Bukhari",
+        },
+        {
+          id: "act-4",
+          title: "Invoice Paid (Rs. 19,500)",
+          detail: "Card Terminal Alfalah · Royal Groom Package",
+          time: "Yesterday",
+          type: "PAYMENT",
+          branch: "Clifton Flagship",
+        },
+      ],
+      upcoming_schedule: [
+        {
+          date_label: "OCT 15",
+          title: "Royal Grooming Suite",
+          guest: "VIP Shayan Merchant · 02:00 PM",
+          time: "02:00 PM - 04:30 PM",
+          staff: "Aliya Rizvi",
+          branch: "Clifton Flagship",
+        },
+        {
+          date_label: "OCT 15",
+          title: "Hydra-Glow Luxury Facial",
+          guest: "Zainab Tariq · 01:30 PM",
+          time: "01:30 PM - 02:45 PM",
+          staff: "Dr. Sana Hashmi",
+          branch: "DHA Bukhari",
+        },
+        {
+          date_label: "OCT 16",
+          title: "Keratin Silk Treatment",
+          guest: "Elena Rostova · 04:00 PM",
+          time: "04:00 PM - 07:00 PM",
+          staff: "Bilal Qureshi",
+          branch: "Clifton Flagship",
+        },
+      ],
+      branch_breakdown: [
+        {
+          branch_id: "b1",
+          name: "Clifton Flagship Branch",
+          city: "Karachi",
+          today_appointments: 15,
+          today_revenue: "98000.00",
+          target_revenue: "120000.00",
+          active_staff: 5,
+          progress_percent: 81.6,
+        },
+        {
+          branch_id: "b2",
+          name: "DHA Bukhari Studio",
+          city: "Karachi",
+          today_appointments: 9,
+          today_revenue: "58500.00",
+          target_revenue: "75000.00",
+          active_staff: 3,
+          progress_percent: 78.0,
+        },
+      ],
     });
   }
 
-  // 5. Appointments
+  // 5. Appointments (Filter by branch if provided)
   if (path === "appointments") {
+    if (branchId && branchId !== "all") {
+      const filtered = appointments.filter((a) => a.branch_id === branchId);
+      return NextResponse.json(filtered);
+    }
     return NextResponse.json(appointments);
   }
 
-  // 6. Invoices
+  // 6. Invoices (Filter by branch if provided)
   if (path === "billing/invoices") {
+    if (branchId === "b1") {
+      return NextResponse.json(invoices.filter((inv) => inv.branch_name?.includes("Clifton")));
+    } else if (branchId === "b2") {
+      return NextResponse.json(invoices.filter((inv) => inv.branch_name?.includes("DHA")));
+    }
     return NextResponse.json(invoices);
   }
 
@@ -280,15 +606,24 @@ export async function GET(request: NextRequest, { params }: { params: { slug: st
 
   // 9. Daily Sales Report
   if (path === "reports/daily-sales") {
+    const isClifton = branchId === "b1";
+    const isDha = branchId === "b2";
+    const salesTotal = isClifton ? 98000 : isDha ? 58500 : 156500;
+    const cashTotal = isClifton ? 28000 : isDha ? 17000 : 45000;
+    const cardTotal = salesTotal - cashTotal;
+    const srbTax = Math.round(salesTotal * 0.13);
+
     return NextResponse.json({
       date: new Date().toISOString().split("T")[0],
-      total_sales: 142500,
-      cash_sales: 45000,
-      card_sales: 97500,
-      tax_collected: 18525, // 13% SRB
-      staff_commissions: 21375,
-      total_invoices: invoices.length,
-      appointments_served: 24,
+      branch_id: branchId,
+      branch_name: isClifton ? "Clifton Flagship Branch" : isDha ? "DHA Bukhari Studio" : "Consolidated Network",
+      total_sales: salesTotal,
+      cash_sales: cashTotal,
+      card_sales: cardTotal,
+      tax_collected: srbTax, // 13% SRB SST
+      staff_commissions: Math.round(salesTotal * 0.15),
+      total_invoices: isClifton ? 15 : isDha ? 9 : 24,
+      appointments_served: isClifton ? 15 : isDha ? 9 : 24,
     });
   }
 

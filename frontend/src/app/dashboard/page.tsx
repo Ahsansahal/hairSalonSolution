@@ -7,7 +7,8 @@ import {
   CreditCard, TrendingUp, Sun, ChevronRight, UserPlus,
   CheckCircle2, ArrowUpRight, DollarSign, CalendarCheck,
   Gift, Heart, Shield, RefreshCw, Printer, Search,
-  Phone, MessageSquare, AlertCircle, FileText, Settings
+  Phone, MessageSquare, AlertCircle, FileText, Settings,
+  MapPin, Check, Building2, BarChart3, Activity, Store
 } from "lucide-react";
 import { apiFetch } from "@/lib/api";
 import { Badge } from "@/components/ui/badge";
@@ -20,6 +21,8 @@ import { formatCurrency } from "@/lib/format";
 export default function DashboardHomePage() {
   const [data, setData] = useState<any | null>(null);
   const [staffList, setStaffList] = useState<any[]>([]);
+  const [branches, setBranches] = useState<any[]>([]);
+  const [activeBranch, setActiveBranch] = useState<string>("all");
   const [user, setUser] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
   const [walkInOpen, setWalkInOpen] = useState(false);
@@ -29,8 +32,9 @@ export default function DashboardHomePage() {
 
   const loadDashboard = () => {
     setLoading(true);
-    const activeBranch = typeof window !== "undefined" ? (localStorage.getItem("salon_active_branch") || "all") : "all";
-    const branchParam = activeBranch !== "all" ? `?branch_id=${activeBranch}` : "";
+    const branchFromStorage = typeof window !== "undefined" ? (localStorage.getItem("salon_active_branch") || "all") : "all";
+    setActiveBranch(branchFromStorage);
+    const branchParam = branchFromStorage !== "all" ? `?branch_id=${branchFromStorage}` : "";
 
     const storedUser = typeof window !== "undefined" ? localStorage.getItem("salon_user") : null;
     if (storedUser) {
@@ -42,10 +46,12 @@ export default function DashboardHomePage() {
     Promise.all([
       apiFetch(`/dashboard/summary/${branchParam}`),
       apiFetch(`/staff/${branchParam}`),
+      apiFetch("/branches/"),
     ])
-      .then(([res, stData]) => {
+      .then(([res, stData, brData]) => {
         setData(res);
         setStaffList(Array.isArray(stData) ? stData : stData.results || []);
+        setBranches(Array.isArray(brData) ? brData : brData.results || []);
       })
       .catch((err) => {
         console.error("Dashboard load failed", err);
@@ -60,9 +66,40 @@ export default function DashboardHomePage() {
     return () => window.removeEventListener("branchChanged", handleBranchChange);
   }, []);
 
+  const switchBranch = (branchId: string) => {
+    setActiveBranch(branchId);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("salon_active_branch", branchId);
+      window.dispatchEvent(new Event("branchChanged"));
+    }
+  };
+
   const metrics = data?.metrics || {};
   const recentAppts = data?.recent_appointments || [];
+  const activeBranchInfo = data?.active_branch || {
+    id: activeBranch,
+    name: activeBranch === "b1" ? "Clifton Flagship Branch" : activeBranch === "b2" ? "DHA Bukhari Studio" : "Consolidated Karachi Network",
+    address: activeBranch === "b1" ? "Block 4, Clifton" : activeBranch === "b2" ? "Phase 6 Commercial, DHA" : "All Branches Overview",
+    target_progress_percent: 80.2,
+    target_revenue: 195000,
+    current_revenue: 156500,
+    utilization_percent: 80,
+    total_chairs: 10,
+    occupied_chairs: 8,
+  };
+  const categoryData = data?.category_breakdown || {
+    hair: activeBranch === "b1" ? 26 : activeBranch === "b2" ? 16 : 42,
+    beard: activeBranch === "b1" ? 24 : activeBranch === "b2" ? 14 : 38,
+    hydra: activeBranch === "b1" ? 22 : activeBranch === "b2" ? 18 : 40,
+    deals: activeBranch === "b1" ? 32 : activeBranch === "b2" ? 20 : 52,
+    groom: activeBranch === "b1" ? 30 : activeBranch === "b2" ? 20 : 50,
+  };
+  const activities = data?.recent_activities || [];
+  const upcomingList = data?.upcoming_schedule || [];
+  const branchBreakdown = data?.branch_breakdown || [];
+
   const userName = user?.full_name?.split(" ")[0] || "Admin";
+  const isOwner = user?.system_role === "BUSINESS_OWNER" || user?.system_role === "PLATFORM_ADMIN";
 
   // Mock receipt for quick print demo
   const sampleInvoice = {
@@ -84,24 +121,32 @@ export default function DashboardHomePage() {
 
   return (
     <div className="space-y-6 pb-12">
-      {/* 1. Contextual Greeting Banner matching Screenshot */}
+      {/* 1. Contextual Greeting Banner with Live Branch Indicator */}
       <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4">
-        {/* Left: Good morning, Admin! */}
+        {/* Left: Good morning, Admin! + Active Branch Tag */}
         <div className="flex items-center space-x-3.5">
-          <div className="w-12 h-12 rounded-2xl bg-amber-100/80 border border-amber-200 flex items-center justify-center text-amber-500 shadow-xs">
+          <div className="w-12 h-12 rounded-2xl bg-amber-100/80 border border-amber-200 flex items-center justify-center text-amber-500 shadow-xs shrink-0">
             <Sun className="w-7 h-7 fill-amber-400 text-amber-500 animate-spin-slow" />
           </div>
           <div>
-            <h1 className="text-2xl sm:text-3xl font-serif font-extrabold text-[#0B1B3D] tracking-tight">
-              Good morning, {userName}!
-            </h1>
+            <div className="flex items-center gap-2 flex-wrap">
+              <h1 className="text-2xl sm:text-3xl font-serif font-extrabold text-[#0B1B3D] tracking-tight">
+                Good morning, {userName}!
+              </h1>
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#0A1931] text-amber-400 shadow-2xs">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                <span>{activeBranchInfo.name}</span>
+              </span>
+            </div>
             <p className="text-xs text-slate-500 font-medium mt-0.5">
-              Here&apos;s an overview of your salon&apos;s performance today across Karachi.
+              {activeBranch === "all"
+                ? "Real-time consolidated analytics across Clifton & DHA Bukhari studios."
+                : `Live operational feed for ${activeBranchInfo.name} (${activeBranchInfo.address}).`}
             </p>
           </div>
         </div>
 
-        {/* Right: Inspirational Art Card */}
+        {/* Right: Inspirational Art Card with View Switcher */}
         <div className="bg-gradient-to-r from-[#0B1B3D] via-[#12285A] to-[#1E3A6E] rounded-2xl p-4 px-6 text-white shadow-md border border-slate-700/40 flex items-center justify-between gap-4">
           <div>
             <p className="text-xs font-semibold text-amber-400 uppercase tracking-widest">
@@ -111,7 +156,7 @@ export default function DashboardHomePage() {
               Empowering Luxury Hair, Esthetics &amp; Bridal Artistry.
             </p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 shrink-0">
             <button
               onClick={() => setViewMode(viewMode === "overview" ? "floor" : "overview")}
               className="px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-[#0B1B3D] text-xs font-extrabold shadow-sm transition"
@@ -119,6 +164,64 @@ export default function DashboardHomePage() {
               {viewMode === "overview" ? "Floor Stations Map" : "Executive View"}
             </button>
           </div>
+        </div>
+      </div>
+
+      {/* 2. Owner Interactive Branch Switcher Pills (Always Visible & Instant) */}
+      <div className="bg-white rounded-2xl p-3.5 border border-slate-200/80 shadow-xs flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+        <div className="flex items-center gap-2 text-xs font-bold text-slate-700 shrink-0">
+          <Store className="w-4 h-4 text-amber-500" />
+          <span>Switch Branch View:</span>
+        </div>
+
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
+          {/* Consolidated Network Pill */}
+          <button
+            onClick={() => switchBranch("all")}
+            className={`px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition-all flex items-center gap-1.5 shrink-0 ${
+              activeBranch === "all"
+                ? "bg-[#0A1931] text-amber-400 shadow-md ring-2 ring-amber-400/30"
+                : "bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200"
+            }`}
+          >
+            <Building2 className="w-3.5 h-3.5" />
+            <span>Consolidated (All Karachi)</span>
+            {activeBranch === "all" && <Check className="w-3.5 h-3.5 text-amber-400 ml-1" />}
+          </button>
+
+          {/* Clifton Flagship Branch Pill */}
+          <button
+            onClick={() => switchBranch("b1")}
+            className={`px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition-all flex items-center gap-1.5 shrink-0 ${
+              activeBranch === "b1"
+                ? "bg-[#FBB040] text-[#0A1931] shadow-md ring-2 ring-amber-500/40"
+                : "bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200"
+            }`}
+          >
+            <MapPin className="w-3.5 h-3.5" />
+            <span>Clifton Flagship (CLF-01)</span>
+            {activeBranch === "b1" && <Check className="w-3.5 h-3.5 text-[#0A1931] ml-1" />}
+          </button>
+
+          {/* DHA Bukhari Studio Pill */}
+          <button
+            onClick={() => switchBranch("b2")}
+            className={`px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition-all flex items-center gap-1.5 shrink-0 ${
+              activeBranch === "b2"
+                ? "bg-[#FBB040] text-[#0A1931] shadow-md ring-2 ring-amber-500/40"
+                : "bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200"
+            }`}
+          >
+            <MapPin className="w-3.5 h-3.5" />
+            <span>DHA Bukhari Studio (DHA-02)</span>
+            {activeBranch === "b2" && <Check className="w-3.5 h-3.5 text-[#0A1931] ml-1" />}
+          </button>
+        </div>
+
+        {/* Quick Branch Status badge */}
+        <div className="hidden md:flex items-center gap-2 text-[11px] font-semibold text-slate-500 shrink-0">
+          <span className="w-2 h-2 rounded-full bg-emerald-500" />
+          <span>POS &amp; SRB Tax Live</span>
         </div>
       </div>
 
@@ -134,7 +237,7 @@ export default function DashboardHomePage() {
         />
       )}
 
-      {/* 2. Top 4 Pastel Metric Cards (Exact match from screenshot) */}
+      {/* 3. Top 4 Pastel Metric Cards (Dynamic per Branch) */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Blue Card: Total Bookings */}
         <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs flex items-center justify-between hover:shadow-md transition">
@@ -142,10 +245,14 @@ export default function DashboardHomePage() {
             <span className="text-3xl font-serif font-extrabold text-[#0B1B3D] block">
               {metrics.today_appointments ?? 24}
             </span>
-            <span className="text-xs font-semibold text-slate-500 block">Today&apos;s Appointments</span>
+            <span className="text-xs font-semibold text-slate-500 block">
+              {activeBranch === "all" ? "Total Network Appointments" : "Branch Appointments"}
+            </span>
             <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-600 pt-1">
-              <span>&uarr; 6%</span>
-              <span className="text-slate-400 font-normal">from last month</span>
+              <span>&uarr; {metrics.growth_percent ?? 6}%</span>
+              <span className="text-slate-400 font-normal">
+                {metrics.today_confirmed ?? 16} confirmed · {metrics.today_completed ?? 8} done
+              </span>
             </span>
           </div>
           <div className="w-13 h-13 rounded-2xl bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-600 shadow-2xs">
@@ -159,10 +266,12 @@ export default function DashboardHomePage() {
             <span className="text-3xl font-serif font-extrabold text-[#0B1B3D] block">
               {metrics.active_staff_count ?? 8}
             </span>
-            <span className="text-xs font-semibold text-slate-500 block">Artisans on Floor</span>
+            <span className="text-xs font-semibold text-slate-500 block">Artisans on Duty</span>
             <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-600 pt-1">
-              <span>&uarr; 3%</span>
-              <span className="text-slate-400 font-normal">full shift attendance</span>
+              <span>&uarr; 100%</span>
+              <span className="text-slate-400 font-normal">
+                {activeBranch === "b1" ? "5 Clifton Stylists" : activeBranch === "b2" ? "3 DHA Stylists" : "Full attendance"}
+              </span>
             </span>
           </div>
           <div className="w-13 h-13 rounded-2xl bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-600 shadow-2xs">
@@ -174,7 +283,7 @@ export default function DashboardHomePage() {
         <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs flex items-center justify-between hover:shadow-md transition">
           <div className="space-y-1">
             <span className="text-3xl font-serif font-extrabold text-[#0B1B3D] block">
-              6
+              {metrics.deals_count ?? 6}
             </span>
             <span className="text-xs font-semibold text-slate-500 block">Active Signature Deals</span>
             <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-600 pt-1">
@@ -191,7 +300,7 @@ export default function DashboardHomePage() {
         <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs flex items-center justify-between hover:shadow-md transition">
           <div className="space-y-1">
             <span className="text-2xl font-serif font-extrabold text-[#0B1B3D] block">
-              Rs. {Number(metrics.today_revenue ?? 142500).toLocaleString()}
+              Rs. {Number(metrics.today_revenue ?? 156500).toLocaleString()}
             </span>
             <span className="text-xs font-semibold text-slate-500 block">Today&apos;s Net Sales (PKR)</span>
             <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-600 pt-1">
@@ -205,7 +314,146 @@ export default function DashboardHomePage() {
         </div>
       </div>
 
-      {/* 3. Mid Section Charts (Line Chart Overview + Vertical Bar Chart) */}
+      {/* 4. Dedicated Branch Progress & Operational Target Tracker (What User Requested) */}
+      <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-600">
+              <BarChart3 className="w-5 h-5" />
+            </div>
+            <div>
+              <h2 className="font-serif font-bold text-base text-[#0B1B3D] flex items-center gap-2">
+                <span>Branch Progress &amp; Operational Updates</span>
+                <span className="text-[10px] uppercase font-extrabold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200">
+                  {activeBranchInfo.name}
+                </span>
+              </h2>
+              <p className="text-xs text-slate-500">
+                Live performance tracking against daily fiscal targets and station capacity.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3 self-stretch sm:self-auto justify-between sm:justify-end text-xs">
+            <div className="px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-700 font-bold border border-emerald-200 flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span>{activeBranchInfo.occupied_chairs} / {activeBranchInfo.total_chairs} Chairs Seated ({activeBranchInfo.utilization_percent}%)</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Progress Bars & Targets */}
+        {activeBranch === "all" ? (
+          /* Multi-Branch Comparison Grid */
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-5">
+            {branchBreakdown.map((b: any) => (
+              <div key={b.branch_id} className="p-4 rounded-xl bg-[#F8FAFC] border border-slate-200/90 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <MapPin className="w-4 h-4 text-amber-500" />
+                    <span className="font-bold text-sm text-[#0B1B3D]">{b.name}</span>
+                  </div>
+                  <span className="text-xs font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">
+                    {b.progress_percent || 80}% Target
+                  </span>
+                </div>
+
+                {/* Progress bar */}
+                <div>
+                  <div className="flex justify-between text-xs font-semibold text-slate-600 mb-1">
+                    <span>Sales: Rs. {Number(b.today_revenue).toLocaleString()}</span>
+                    <span>Target: Rs. {Number(b.target_revenue).toLocaleString()}</span>
+                  </div>
+                  <div className="w-full bg-slate-200 h-2.5 rounded-full overflow-hidden">
+                    <div
+                      className="bg-gradient-to-r from-amber-400 to-amber-600 h-2.5 rounded-full transition-all duration-500"
+                      style={{ width: `${Math.min(100, b.progress_percent || 80)}%` }}
+                    />
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between text-[11px] text-slate-500 pt-1 border-t border-slate-200/60">
+                  <span>{b.today_appointments} Appointments Today</span>
+                  <span>{b.active_staff} Active Stylists</span>
+                  <button
+                    onClick={() => switchBranch(b.branch_id)}
+                    className="font-bold text-blue-600 hover:underline"
+                  >
+                    View Station &rarr;
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          /* Single Selected Branch Deep-Dive */
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-5">
+            {/* Target Progress */}
+            <div className="p-4 rounded-xl bg-[#F8FAFC] border border-slate-200/90 space-y-2">
+              <span className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
+                Daily Revenue Target
+              </span>
+              <div className="flex items-baseline gap-2">
+                <span className="text-2xl font-serif font-extrabold text-[#0B1B3D]">
+                  Rs. {Number(activeBranchInfo.current_revenue).toLocaleString()}
+                </span>
+                <span className="text-xs text-slate-400 font-semibold">
+                  / Rs. {Number(activeBranchInfo.target_revenue).toLocaleString()}
+                </span>
+              </div>
+              <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+                <div
+                  className="bg-amber-500 h-2 rounded-full transition-all duration-500"
+                  style={{ width: `${Math.min(100, activeBranchInfo.target_progress_percent)}%` }}
+                />
+              </div>
+              <span className="text-[11px] font-bold text-emerald-600 block">
+                {activeBranchInfo.target_progress_percent}% Achieved today
+              </span>
+            </div>
+
+            {/* Station Occupancy */}
+            <div className="p-4 rounded-xl bg-[#F8FAFC] border border-slate-200/90 space-y-2">
+              <span className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
+                Chair / Station Occupancy
+              </span>
+              <div className="flex items-baseline gap-2">
+                <span className="text-2xl font-serif font-extrabold text-[#0B1B3D]">
+                  {activeBranchInfo.occupied_chairs} of {activeBranchInfo.total_chairs}
+                </span>
+                <span className="text-xs text-slate-400 font-semibold">Chairs in Service</span>
+              </div>
+              <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+                <div
+                  className="bg-blue-600 h-2 rounded-full transition-all duration-500"
+                  style={{ width: `${Math.min(100, activeBranchInfo.utilization_percent)}%` }}
+                />
+              </div>
+              <span className="text-[11px] font-bold text-blue-600 block">
+                {activeBranchInfo.utilization_percent}% Station floor utilization
+              </span>
+            </div>
+
+            {/* SRB SST Tax & POS Terminal */}
+            <div className="p-4 rounded-xl bg-[#F8FAFC] border border-slate-200/90 space-y-2">
+              <span className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
+                SRB SST 13% Tax Compliance
+              </span>
+              <div className="flex items-baseline gap-2">
+                <span className="text-2xl font-serif font-extrabold text-emerald-600">
+                  Rs. {Math.round(activeBranchInfo.current_revenue * 0.13).toLocaleString()}
+                </span>
+                <span className="text-xs text-slate-400 font-semibold">SNTN Recorded</span>
+              </div>
+              <p className="text-[11px] text-slate-500">
+                POS Alfalah terminal integrated · Auto-synced with 80mm thermal receipts.
+              </p>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* 5. Mid Section Charts (Dynamic by Selected Branch) */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left: Enrollment / Revenue Overview Line Chart (2 Columns wide) */}
         <div className="lg:col-span-2 bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs">
@@ -213,7 +461,7 @@ export default function DashboardHomePage() {
             <div className="flex items-center gap-2">
               <div className="w-2.5 h-2.5 rounded-full bg-blue-600" />
               <h2 className="font-serif font-bold text-base text-[#0B1B3D]">
-                Sales &amp; Booking Growth Overview
+                Sales &amp; Booking Growth ({activeBranchInfo.name})
               </h2>
             </div>
             <div className="flex items-center gap-2">
@@ -279,19 +527,19 @@ export default function DashboardHomePage() {
             <div className="space-y-4 border-l border-slate-100 pl-4 flex flex-col justify-center">
               <div>
                 <span className="text-2xl font-serif font-extrabold text-[#0B1B3D] block">
-                  248
+                  {activeBranch === "b1" ? "154" : activeBranch === "b2" ? "94" : "248"}
                 </span>
-                <span className="text-[11px] text-slate-500 font-medium">Total Monthly Guests</span>
+                <span className="text-[11px] text-slate-500 font-medium">Monthly Guests</span>
               </div>
               <div>
                 <span className="text-2xl font-serif font-extrabold text-emerald-600 block">
-                  +36
+                  {activeBranch === "b1" ? "+22" : activeBranch === "b2" ? "+14" : "+36"}
                 </span>
                 <span className="text-[11px] text-slate-500 font-medium">New First-Time Clients</span>
               </div>
               <div>
                 <span className="text-2xl font-serif font-extrabold text-purple-600 block">
-                  68%
+                  {activeBranch === "b1" ? "71%" : activeBranch === "b2" ? "64%" : "68%"}
                 </span>
                 <span className="text-[11px] text-slate-500 font-medium">Combo Deal Conversion</span>
               </div>
@@ -299,12 +547,15 @@ export default function DashboardHomePage() {
           </div>
         </div>
 
-        {/* Right: Vertical Bar Chart (Services by Category) */}
+        {/* Right: Vertical Bar Chart (Services by Category - Dynamic) */}
         <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs flex flex-col justify-between">
           <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-            <h2 className="font-serif font-bold text-base text-[#0B1B3D]">
-              Services by Category
-            </h2>
+            <div>
+              <h2 className="font-serif font-bold text-base text-[#0B1B3D]">
+                Services by Category
+              </h2>
+              <span className="text-[10px] text-slate-400 font-medium">{activeBranchInfo.name}</span>
+            </div>
             <Link href="/dashboard/services" className="text-xs font-bold text-blue-600 hover:underline flex items-center">
               <span>View All</span>
               <ChevronRight className="w-3.5 h-3.5" />
@@ -315,50 +566,65 @@ export default function DashboardHomePage() {
           <div className="pt-4 h-48 flex items-end justify-between gap-3 px-2">
             {/* Bar 1: Hair (Sky Blue) */}
             <div className="flex-1 flex flex-col items-center gap-2">
-              <span className="text-xs font-bold text-slate-600">42</span>
-              <div className="w-full bg-[#38BDF8] rounded-t-xl h-28 shadow-xs" />
+              <span className="text-xs font-bold text-slate-600">{categoryData.hair}</span>
+              <div
+                className="w-full bg-[#38BDF8] rounded-t-xl transition-all duration-500 shadow-xs"
+                style={{ height: `${Math.max(20, Math.min(140, categoryData.hair * 2.8))}px` }}
+              />
               <span className="text-[10px] font-semibold text-slate-500 truncate w-full text-center">Hair</span>
             </div>
 
             {/* Bar 2: Beard (Emerald Green) */}
             <div className="flex-1 flex flex-col items-center gap-2">
-              <span className="text-xs font-bold text-slate-600">38</span>
-              <div className="w-full bg-[#34D399] rounded-t-xl h-24 shadow-xs" />
+              <span className="text-xs font-bold text-slate-600">{categoryData.beard}</span>
+              <div
+                className="w-full bg-[#34D399] rounded-t-xl transition-all duration-500 shadow-xs"
+                style={{ height: `${Math.max(20, Math.min(140, categoryData.beard * 2.8))}px` }}
+              />
               <span className="text-[10px] font-semibold text-slate-500 truncate w-full text-center">Beard</span>
             </div>
 
             {/* Bar 3: Facial (Amber Gold) */}
             <div className="flex-1 flex flex-col items-center gap-2">
-              <span className="text-xs font-bold text-slate-600">40</span>
-              <div className="w-full bg-[#FBBF24] rounded-t-xl h-26 shadow-xs" />
+              <span className="text-xs font-bold text-slate-600">{categoryData.hydra}</span>
+              <div
+                className="w-full bg-[#FBBF24] rounded-t-xl transition-all duration-500 shadow-xs"
+                style={{ height: `${Math.max(20, Math.min(140, categoryData.hydra * 2.8))}px` }}
+              />
               <span className="text-[10px] font-semibold text-slate-500 truncate w-full text-center">Hydra</span>
             </div>
 
             {/* Bar 4: Deals (Purple) */}
             <div className="flex-1 flex flex-col items-center gap-2">
-              <span className="text-xs font-bold text-slate-600">52</span>
-              <div className="w-full bg-[#A855F7] rounded-t-xl h-36 shadow-xs" />
+              <span className="text-xs font-bold text-slate-600">{categoryData.deals}</span>
+              <div
+                className="w-full bg-[#A855F7] rounded-t-xl transition-all duration-500 shadow-xs"
+                style={{ height: `${Math.max(20, Math.min(140, categoryData.deals * 2.8))}px` }}
+              />
               <span className="text-[10px] font-semibold text-slate-500 truncate w-full text-center">Deals</span>
             </div>
 
             {/* Bar 5: Bridal (Deep Navy) */}
             <div className="flex-1 flex flex-col items-center gap-2">
-              <span className="text-xs font-bold text-slate-600">50</span>
-              <div className="w-full bg-[#0B1B3D] rounded-t-xl h-32 shadow-xs" />
+              <span className="text-xs font-bold text-slate-600">{categoryData.groom}</span>
+              <div
+                className="w-full bg-[#0B1B3D] rounded-t-xl transition-all duration-500 shadow-xs"
+                style={{ height: `${Math.max(20, Math.min(140, categoryData.groom * 2.8))}px` }}
+              />
               <span className="text-[10px] font-semibold text-slate-500 truncate w-full text-center">Groom</span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* 4. Bottom Row: Recent Activity | Upcoming Schedule | 2-Column Pastel Quick Actions */}
+      {/* 6. Bottom Row: Branch Recent Activity | Upcoming Schedule | 2-Column Pastel Quick Actions */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {/* Column 1: Recent Activity */}
+        {/* Column 1: Recent Activity (Filtered by Branch) */}
         <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs flex flex-col justify-between">
           <div className="flex items-center justify-between pb-3 border-b border-slate-100">
             <h3 className="font-serif font-bold text-sm text-[#0B1B3D] flex items-center gap-2">
               <Clock className="w-4 h-4 text-blue-600" />
-              <span>Recent Salon Activity</span>
+              <span>Recent Activity ({activeBranchInfo.name})</span>
             </h3>
             <Link href="/dashboard/appointments" className="text-[11px] font-bold text-blue-600 hover:underline">
               View All &rarr;
@@ -366,49 +632,38 @@ export default function DashboardHomePage() {
           </div>
 
           <div className="space-y-3.5 py-3 text-xs">
-            <div className="flex items-start gap-3">
-              <div className="w-7 h-7 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0">
-                <CheckCircle2 className="w-4 h-4" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="font-bold text-[#0B1B3D] truncate">Walk-In Guest Seated</p>
-                <p className="text-slate-500 text-[11px] truncate">Sophia Martinez (Chair 02 · Clifton)</p>
-              </div>
-              <span className="text-[10px] text-slate-400 font-medium">10:24 AM</span>
-            </div>
-
-            <div className="flex items-start gap-3">
-              <div className="w-7 h-7 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center shrink-0">
-                <Sparkles className="w-4 h-4" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="font-bold text-[#0B1B3D] truncate">SHAY Deal 01 Completed</p>
-                <p className="text-slate-500 text-[11px] truncate">Ethan Johnson (Aliya Rizvi)</p>
-              </div>
-              <span className="text-[10px] text-slate-400 font-medium">09:15 AM</span>
-            </div>
-
-            <div className="flex items-start gap-3">
-              <div className="w-7 h-7 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center shrink-0">
-                <MessageSquare className="w-4 h-4" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="font-bold text-[#0B1B3D] truncate">WhatsApp Booking Request</p>
-                <p className="text-slate-500 text-[11px] truncate">Mrs. Thompson (Hydra-Glow Facial)</p>
-              </div>
-              <span className="text-[10px] text-slate-400 font-medium">08:42 AM</span>
-            </div>
-
-            <div className="flex items-start gap-3">
-              <div className="w-7 h-7 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center shrink-0">
-                <CreditCard className="w-4 h-4" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="font-bold text-[#0B1B3D] truncate">Invoice Paid (Rs. 19,500)</p>
-                <p className="text-slate-500 text-[11px] truncate">Card Terminal Alfalah · Groom Package</p>
-              </div>
-              <span className="text-[10px] text-slate-400 font-medium">Yesterday</span>
-            </div>
+            {activities.length > 0 ? (
+              activities.map((act: any) => (
+                <div key={act.id} className="flex items-start gap-3">
+                  <div className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 ${
+                    act.type === "SEATED"
+                      ? "bg-emerald-100 text-emerald-600"
+                      : act.type === "SERVICE_DONE"
+                      ? "bg-purple-100 text-purple-600"
+                      : act.type === "WHATSAPP"
+                      ? "bg-rose-100 text-rose-600"
+                      : "bg-blue-100 text-blue-600"
+                  }`}>
+                    {act.type === "SEATED" ? (
+                      <CheckCircle2 className="w-4 h-4" />
+                    ) : act.type === "SERVICE_DONE" ? (
+                      <Sparkles className="w-4 h-4" />
+                    ) : act.type === "WHATSAPP" ? (
+                      <MessageSquare className="w-4 h-4" />
+                    ) : (
+                      <CreditCard className="w-4 h-4" />
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-bold text-[#0B1B3D] truncate">{act.title}</p>
+                    <p className="text-slate-500 text-[11px] truncate">{act.detail}</p>
+                  </div>
+                  <span className="text-[10px] text-slate-400 font-medium shrink-0">{act.time}</span>
+                </div>
+              ))
+            ) : (
+              <div className="py-6 text-center text-slate-400 text-xs">No recent activity recorded.</div>
+            )}
           </div>
         </div>
 
@@ -425,42 +680,30 @@ export default function DashboardHomePage() {
           </div>
 
           <div className="space-y-3 py-3 text-xs">
-            <div className="flex items-center gap-3 p-2 rounded-xl hover:bg-slate-50 transition">
-              <div className="w-11 h-11 rounded-xl bg-amber-50 border border-amber-200 text-amber-700 flex flex-col items-center justify-center shrink-0">
-                <span className="text-[8px] uppercase font-extrabold tracking-wider">OCT</span>
-                <span className="text-sm font-bold leading-none">15</span>
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="font-bold text-[#0B1B3D] truncate">Royal Grooming Suite</p>
-                <p className="text-slate-500 text-[11px]">VIP Guest · 02:00 PM - 04:30 PM</p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3 p-2 rounded-xl hover:bg-slate-50 transition">
-              <div className="w-11 h-11 rounded-xl bg-blue-50 border border-blue-200 text-blue-700 flex flex-col items-center justify-center shrink-0">
-                <span className="text-[8px] uppercase font-extrabold tracking-wider">OCT</span>
-                <span className="text-sm font-bold leading-none">16</span>
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="font-bold text-[#0B1B3D] truncate">Keratin Silk Treatment</p>
-                <p className="text-slate-500 text-[11px]">Elena Rostova · 04:00 PM</p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3 p-2 rounded-xl hover:bg-slate-50 transition">
-              <div className="w-11 h-11 rounded-xl bg-purple-50 border border-purple-200 text-purple-700 flex flex-col items-center justify-center shrink-0">
-                <span className="text-[8px] uppercase font-extrabold tracking-wider">OCT</span>
-                <span className="text-sm font-bold leading-none">18</span>
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="font-bold text-[#0B1B3D] truncate">Hydra-Luxe Facial Session</p>
-                <p className="text-slate-500 text-[11px]">Dr. Maya Lin · 11:30 AM</p>
-              </div>
-            </div>
+            {upcomingList.length > 0 ? (
+              upcomingList.map((item: any, idx: number) => (
+                <div key={idx} className="flex items-center gap-3 p-2 rounded-xl hover:bg-slate-50 transition">
+                  <div className="w-11 h-11 rounded-xl bg-amber-50 border border-amber-200 text-amber-700 flex flex-col items-center justify-center shrink-0">
+                    <span className="text-[8px] uppercase font-extrabold tracking-wider">
+                      {item.date_label.split(" ")[0]}
+                    </span>
+                    <span className="text-sm font-bold leading-none">
+                      {item.date_label.split(" ")[1]}
+                    </span>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-bold text-[#0B1B3D] truncate">{item.title}</p>
+                    <p className="text-slate-500 text-[11px] truncate">{item.guest} · {item.staff}</p>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="py-6 text-center text-slate-400 text-xs">No upcoming appointments.</div>
+            )}
           </div>
         </div>
 
-        {/* Column 3: 2-Column Pastel "Quick Actions" Grid (Exact match from screenshot) */}
+        {/* Column 3: 2-Column Pastel "Quick Actions" Grid */}
         <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs flex flex-col justify-between">
           <div className="pb-3 border-b border-slate-100 flex items-center justify-between">
             <h3 className="font-serif font-bold text-sm text-[#0B1B3D] flex items-center gap-2">
