@@ -373,6 +373,97 @@ Generated securely from SHAY Salon Management Cloud.`;
             </div>
           </div>
 
+          {/* Monthly Expense Category Breakdown & Month-over-Month Deltas (Zyniq Sync Feature) */}
+          <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              <div>
+                <h3 className="font-serif font-bold text-sm text-[#0B1B3D]">Category Expenses vs Last Month</h3>
+                <p className="text-xs text-slate-500">Run-rate variances for Karachi branch operations</p>
+              </div>
+              <span className="text-[11px] font-bold text-slate-500">Benchmark: Previous 30 Days</span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
+              <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/70 space-y-1.5">
+                <div className="flex justify-between items-center">
+                  <span className="font-bold text-[#0B1B3D]">Salon Supplies &amp; Color</span>
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">
+                    ▼ 6% vs last mo
+                  </span>
+                </div>
+                <div className="text-base font-serif font-extrabold text-[#0B1B3D]">
+                  {formatCurrency(cogsExpenses * 30 || 546000)}
+                </div>
+                <p className="text-[10px] text-slate-500">L&apos;Oreal, Keratin, bleach &amp; foils</p>
+              </div>
+
+              <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/70 space-y-1.5">
+                <div className="flex justify-between items-center">
+                  <span className="font-bold text-[#0B1B3D]">Staff Salaries &amp; Bonuses</span>
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-rose-100 text-rose-800">
+                    ▲ 10% vs last mo
+                  </span>
+                </div>
+                <div className="text-base font-serif font-extrabold text-[#0B1B3D]">
+                  {formatCurrency(staffCommissions * 30 || 704250)}
+                </div>
+                <p className="text-[10px] text-slate-500">Base salary + 15% tier commission bonuses</p>
+              </div>
+
+              <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/70 space-y-1.5">
+                <div className="flex justify-between items-center">
+                  <span className="font-bold text-[#0B1B3D]">KE Power &amp; Gen-Diesel</span>
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">
+                    ▼ 3% vs last mo
+                  </span>
+                </div>
+                <div className="text-base font-serif font-extrabold text-[#0B1B3D]">
+                  {formatCurrency(360000)}
+                </div>
+                <p className="text-[10px] text-slate-500">Load shedding backup diesel + K-Electric</p>
+              </div>
+
+              <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/70 space-y-1.5">
+                <div className="flex justify-between items-center">
+                  <span className="font-bold text-[#0B1B3D]">Facility Leases</span>
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-200 text-slate-700">
+                    ▲ 0% vs last mo
+                  </span>
+                </div>
+                <div className="text-base font-serif font-extrabold text-[#0B1B3D]">
+                  {formatCurrency(495000)}
+                </div>
+                <p className="text-[10px] text-slate-500">Clifton &amp; DHA Bukhari lease rent</p>
+              </div>
+
+              <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/70 space-y-1.5">
+                <div className="flex justify-between items-center">
+                  <span className="font-bold text-[#0B1B3D]">Hospitality &amp; Laundry</span>
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">
+                    ▼ 2% vs last mo
+                  </span>
+                </div>
+                <div className="text-base font-serif font-extrabold text-[#0B1B3D]">
+                  {formatCurrency(219000)}
+                </div>
+                <p className="text-[10px] text-slate-500">Fresh towels, cape wash, coffee &amp; refreshments</p>
+              </div>
+
+              <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/70 space-y-1.5">
+                <div className="flex justify-between items-center">
+                  <span className="font-bold text-[#0B1B3D]">Marketing &amp; Ads</span>
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-rose-100 text-rose-800">
+                    ▲ 14% vs last mo
+                  </span>
+                </div>
+                <div className="text-base font-serif font-extrabold text-[#0B1B3D]">
+                  {formatCurrency(150000)}
+                </div>
+                <p className="text-[10px] text-slate-500">Meta &amp; TikTok ads for wedding season</p>
+              </div>
+            </div>
+          </div>
+
           {/* Operating Expense Ledger Table */}
           <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">

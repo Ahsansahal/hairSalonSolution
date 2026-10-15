@@ -20,6 +20,7 @@ export function BookingDialog({ appointment, onClose, onStatusChanged }: Booking
   const [showCheckout, setShowCheckout] = useState(false);
   const [payMethod, setPayMethod] = useState("CASH");
   const [payAmount, setPayAmount] = useState(appointment?.total_amount || "");
+  const [discountPercent, setDiscountPercent] = useState<number>(0);
 
   if (!appointment) return null;
 
@@ -183,58 +184,118 @@ export function BookingDialog({ appointment, onClose, onStatusChanged }: Booking
             )}
           </div>
 
-          {/* Quick Checkout Form (when user clicks Checkout & Pay) */}
+          {/* Quick Checkout Form matching Zyniq Sync Checkout */}
           {showCheckout ? (
-            <form onSubmit={handleCheckoutPayment} className="p-4 rounded-2xl bg-[#e3f5e8]/50 border border-[#bbf0cb] space-y-3">
-              <div className="flex items-center justify-between pb-1.5 border-b border-[#bbf0cb]">
-                <span className="text-xs font-bold text-[#15803d] flex items-center gap-1.5">
-                  <CreditCard className="w-4 h-4" />
-                  <span>Instant POS Checkout</span>
-                </span>
+            <form onSubmit={handleCheckoutPayment} className="p-4 rounded-2xl bg-[#0A1931] border border-[#1E3A6E] text-white space-y-4">
+              <div className="flex items-center justify-between pb-2 border-b border-[#15284F]">
+                <div>
+                  <h4 className="font-serif font-bold text-sm text-white">Checkout</h4>
+                  <p className="text-[10px] text-slate-300">
+                    {appointment.service_name || "Salon Treatment"} — {appointment.customer_name}
+                  </p>
+                </div>
                 <button
                   type="button"
                   onClick={() => setShowCheckout(false)}
-                  className="text-xs font-semibold text-[#7a7180] hover:text-[#1b1520]"
+                  className="text-xs font-semibold text-slate-400 hover:text-white"
                 >
-                  Cancel
+                  Back
                 </button>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-[11px] font-bold text-[#4a4250] mb-1">Tender Type</label>
-                  <select
-                    value={payMethod}
-                    onChange={(e) => setPayMethod(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl bg-white border border-[#e7dfd8] text-xs font-bold focus:outline-none"
-                  >
-                    <option value="CASH">Cash</option>
-                    <option value="CARD">Credit / Debit Card</option>
-                    <option value="BANK_TRANSFER">Bank Wire</option>
-                    <option value="WALLET">Apple / Google Pay</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-[11px] font-bold text-[#4a4250] mb-1">Amount ($)</label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    value={payAmount}
-                    onChange={(e) => setPayAmount(e.target.value)}
-                    required
-                    className="w-full px-3 py-2 rounded-xl bg-white border border-[#e7dfd8] text-xs font-bold focus:outline-none"
-                  />
+              {/* Discount Caps (up to 10%) */}
+              <div>
+                <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-300 mb-1.5">
+                  Discount (up to 10%)
+                </label>
+                <div className="grid grid-cols-3 gap-2">
+                  {[
+                    { label: "No discount", percent: 0 },
+                    { label: "5% off", percent: 5 },
+                    { label: "10% off", percent: 10 },
+                  ].map((d) => (
+                    <button
+                      type="button"
+                      key={d.percent}
+                      onClick={() => {
+                        setDiscountPercent(d.percent);
+                        const discounted = Math.round((Number(appointment.total_amount) || 2000) * (1 - d.percent / 100));
+                        setPayAmount(discounted);
+                      }}
+                      className={`py-2 px-2 rounded-xl text-xs font-bold transition text-center ${
+                        discountPercent === d.percent
+                          ? "bg-amber-500 text-[#0A1931] shadow-md ring-2 ring-amber-400/40"
+                          : "bg-[#0E2246] hover:bg-[#15284F] text-slate-300 border border-[#1E3A6E]"
+                      }`}
+                    >
+                      {d.label}
+                    </button>
+                  ))}
                 </div>
               </div>
 
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full py-3 rounded-xl bg-gradient-to-r from-[#15803d] to-[#166534] hover:from-[#136e34] hover:to-[#115029] text-white font-bold text-xs shadow-sm transition"
-              >
-                {loading ? "Processing..." : `Complete & Disburse (${formatCurrency(payAmount || appointment.total_amount)})`}
-              </button>
+              {/* Amount (RS) Input & Savings */}
+              <div>
+                <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-300 mb-1">
+                  Amount (Rs)
+                </label>
+                <input
+                  type="number"
+                  value={payAmount}
+                  onChange={(e) => setPayAmount(Number(e.target.value))}
+                  required
+                  className="w-full px-3 py-2 rounded-xl bg-[#08152A] border border-[#1E3A6E] text-white text-base font-extrabold focus:outline-none focus:border-amber-400"
+                />
+                {discountPercent > 0 && (
+                  <span className="text-[11px] font-bold text-emerald-400 block mt-1.5">
+                    {discountPercent}% off Rs {Number(appointment.total_amount || 2000).toLocaleString()} — saving Rs {Math.round(((Number(appointment.total_amount) || 2000) * discountPercent) / 100).toLocaleString()}
+                  </span>
+                )}
+              </div>
+
+              {/* Payment Method Selector */}
+              <div>
+                <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-300 mb-1.5">
+                  Payment Method
+                </label>
+                <div className="grid grid-cols-3 gap-2">
+                  {[
+                    { id: "CASH", label: "Cash" },
+                    { id: "CARD", label: "Card" },
+                    { id: "BANK_TRANSFER", label: "Bank transfer" },
+                  ].map((m) => (
+                    <button
+                      type="button"
+                      key={m.id}
+                      onClick={() => setPayMethod(m.id)}
+                      className={`py-2 px-2 rounded-xl text-xs font-bold transition text-center ${
+                        payMethod === m.id
+                          ? "bg-emerald-500 text-white shadow-md ring-2 ring-emerald-400/30"
+                          : "bg-[#0E2246] hover:bg-[#15284F] text-slate-300 border border-[#1E3A6E]"
+                      }`}
+                    >
+                      {m.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="pt-2 flex items-center justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setShowCheckout(false)}
+                  className="px-4 py-2.5 rounded-xl border border-[#1E3A6E] text-xs font-bold text-slate-300 hover:text-white"
+                >
+                  Back
+                </button>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="flex-1 py-2.5 px-4 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-extrabold text-xs shadow-md transition disabled:opacity-50"
+                >
+                  {loading ? "Recording..." : `Record payment (Rs ${Number(payAmount).toLocaleString()})`}
+                </button>
+              </div>
             </form>
           ) : (
             /* Action Buttons */

@@ -13,6 +13,18 @@ export default function ServicesPage() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const [user, setUser] = useState<any | null>(null);
+
+  useEffect(() => {
+    const stored = localStorage.getItem("salon_user");
+    if (stored) {
+      try {
+        setUser(JSON.parse(stored));
+      } catch (e) {}
+    }
+  }, []);
+
+  const isOwner = user?.system_role === "BUSINESS_OWNER" || user?.system_role === "PLATFORM_ADMIN";
 
   // New service modal
   const [showAddModal, setShowAddModal] = useState(false);
@@ -101,13 +113,19 @@ export default function ServicesPage() {
         title="Services & Treatments"
         description="Master treatment catalog with transparent pricing and customizable branch overrides"
         actions={
-          <button
-            onClick={() => setShowAddModal(true)}
-            className="inline-flex items-center gap-2 rounded-xl bg-[#a3214f] px-4 py-2.5 text-xs font-semibold text-white shadow-sm transition hover:bg-[#8b1b42]"
-          >
-            <Plus className="h-4 w-4" />
-            <span>Add New Service</span>
-          </button>
+          isOwner ? (
+            <button
+              onClick={() => setShowAddModal(true)}
+              className="inline-flex items-center gap-2 rounded-xl bg-[#a3214f] px-4 py-2.5 text-xs font-semibold text-white shadow-sm transition hover:bg-[#8b1b42]"
+            >
+              <Plus className="h-4 w-4" />
+              <span>Add New Service</span>
+            </button>
+          ) : (
+            <div className="inline-flex items-center gap-2 rounded-xl bg-[#faf7f4] border border-[#e7dfd8] px-3.5 py-2 text-xs font-medium text-[#7a7180]">
+              <span>🔒 Staff View (Pricing Locked by Owner)</span>
+            </div>
+          )
         }
       />
 
@@ -203,7 +221,7 @@ export default function ServicesPage() {
                   <p className="text-xs text-[#7a7180] mt-1.5 line-clamp-2 leading-relaxed">
                     {s.description || "Indulgent bespoke salon treatment tailored to your style."}
                   </p>
-                  <div className="mt-4 flex items-center gap-4 text-xs text-[#7a7180]">
+                  <div className="mt-4 flex flex-wrap items-center gap-3 text-xs text-[#7a7180]">
                     <span className="flex items-center gap-1.5">
                       <Clock className="w-3.5 h-3.5 text-[#a3214f]" />
                       <span className="font-medium text-[#1b1520]">{s.default_duration_minutes} mins</span>
@@ -211,6 +229,9 @@ export default function ServicesPage() {
                     <span className="flex items-center gap-1.5">
                       <Tag className="w-3.5 h-3.5 text-[#7a7180]" />
                       <span>+{s.buffer_minutes || 15}m reset</span>
+                    </span>
+                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded bg-purple-50 text-purple-700 border border-purple-200/60">
+                      Cap: 10% max disc.
                     </span>
                   </div>
                 </div>
@@ -234,6 +255,17 @@ export default function ServicesPage() {
           })}
         </div>
       )}
+
+      {/* Role Protection Banner */}
+      <div className="rounded-2xl bg-amber-50/70 border border-amber-200/80 p-4 flex items-center gap-3 text-xs text-amber-900">
+        <span className="text-lg">🔒</span>
+        <div>
+          <p className="font-semibold text-amber-950">Role-Based Catalog Protection</p>
+          <p className="text-amber-800 text-[11px] mt-0.5">
+            Only business owners can add, price, or delete services — receptionists and front-desk staff have read-only menu access.
+          </p>
+        </div>
+      </div>
 
       {/* Add Modal */}
       {showAddModal && (

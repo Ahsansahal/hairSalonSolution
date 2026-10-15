@@ -46,6 +46,43 @@ export default function InventoryPage() {
   const [salePayMethod, setSalePayMethod] = useState("CARD");
   const [submittingSale, setSubmittingSale] = useState(false);
 
+  // Zyniq Sync Supplies & Stock Usage states
+  const [stockFilter, setStockFilter] = useState<"all" | "low" | "out">("all");
+  const [recentUsage, setRecentUsage] = useState<Array<{
+    id: string;
+    itemId: string;
+    productName: string;
+    user: string;
+    time: string;
+  }>>([
+    { id: "u-1", itemId: "1", productName: "Keratin Infusion Mask", user: "Sara (Stylist)", time: "18m ago" },
+    { id: "u-2", itemId: "2", productName: "Olaplex No. 4 Bond Shampoo", user: "Front Desk", time: "1h ago" },
+  ]);
+
+  const handleUseItem = (item: any) => {
+    if (item.quantity_on_hand <= 0) return;
+    setInventory((prev) =>
+      prev.map((i) => (i.id === item.id ? { ...i, quantity_on_hand: i.quantity_on_hand - 1 } : i))
+    );
+    const newEntry = {
+      id: `u-${Date.now()}`,
+      itemId: item.id,
+      productName: item.product_name,
+      user: "Front Desk",
+      time: "Just now",
+    };
+    setRecentUsage((prev) => [newEntry, ...prev.slice(0, 9)]);
+  };
+
+  const handleUndoUsage = (usageId: string) => {
+    const usage = recentUsage.find((u) => u.id === usageId);
+    if (!usage) return;
+    setInventory((prev) =>
+      prev.map((i) => (i.id === usage.itemId ? { ...i, quantity_on_hand: i.quantity_on_hand + 1 } : i))
+    );
+    setRecentUsage((prev) => prev.filter((u) => u.id !== usageId));
+  };
+
   const loadData = () => {
     setLoading(true);
     const activeBranch = localStorage.getItem("salon_active_branch") || "all";
@@ -267,12 +304,40 @@ export default function InventoryPage() {
 
       {/* Stock Balances Section */}
       <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs">
-        <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100 mb-4">
           <div>
-            <h2 className="text-[15px] font-bold text-[#0B1B3D]">Branch Inventory Balances</h2>
-            <p className="text-xs text-slate-500">Real-time shelf counts for consumables &amp; luxury retail products</p>
+            <h2 className="text-[15px] font-bold text-[#0B1B3D]">Branch Supplies &amp; Inventory</h2>
+            <p className="text-xs text-slate-500">Real-time shelf counts, instant salon consumption &amp; retail sales</p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
+            {/* Filter Pills matching Zyniq Sync */}
+            <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl">
+              <button
+                onClick={() => setStockFilter("all")}
+                className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition ${
+                  stockFilter === "all" ? "bg-white text-[#0B1B3D] shadow-xs" : "text-slate-500 hover:text-slate-800"
+                }`}
+              >
+                All ({inventory.length})
+              </button>
+              <button
+                onClick={() => setStockFilter("low")}
+                className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition ${
+                  stockFilter === "low" ? "bg-white text-rose-700 shadow-xs" : "text-slate-500 hover:text-slate-800"
+                }`}
+              >
+                Low ({inventory.filter((i) => i.quantity_on_hand > 0 && i.quantity_on_hand <= 15).length})
+              </button>
+              <button
+                onClick={() => setStockFilter("out")}
+                className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition ${
+                  stockFilter === "out" ? "bg-white text-slate-900 shadow-xs" : "text-slate-500 hover:text-slate-800"
+                }`}
+              >
+                Out ({inventory.filter((i) => i.quantity_on_hand <= 0).length})
+              </button>
+            </div>
+
             <button
               onClick={() => setShowRetailSaleModal(true)}
               className="text-xs font-bold text-amber-600 hover:underline flex items-center gap-1"
@@ -292,69 +357,121 @@ export default function InventoryPage() {
           <div className="py-8 text-center text-xs text-slate-400">No inventory items tracked yet.</div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {inventory.map((item) => {
-              const isLow = item.quantity_on_hand <= 15;
-              return (
+            {inventory
+              .filter((item) => {
+                if (stockFilter === "low") return item.quantity_on_hand > 0 && item.quantity_on_hand <= 15;
+                if (stockFilter === "out") return item.quantity_on_hand <= 0;
+                return true;
+              })
+              .map((item) => {
+                const isOut = item.quantity_on_hand <= 0;
+                const isLow = !isOut && item.quantity_on_hand <= 15;
+                return (
+                  <div
+                    key={item.id}
+                    className={`p-4 rounded-xl border transition space-y-2.5 ${
+                      isOut
+                        ? "bg-slate-100/70 border-slate-300 opacity-80"
+                        : isLow
+                        ? "bg-rose-50/40 border-rose-200"
+                        : "bg-[#F8FAFC] border-slate-200/80 hover:border-slate-300"
+                    }`}
+                  >
+                    <div className="flex justify-between items-start gap-1">
+                      <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-white border border-slate-200 text-slate-600">
+                        {item.sku || "SHAY-SKU"}
+                      </span>
+                      <span
+                        className={`text-[9px] font-extrabold uppercase px-2 py-0.5 rounded-full ${
+                          isOut
+                            ? "bg-slate-200 text-slate-700"
+                            : isLow
+                            ? "bg-rose-100 text-rose-700 border border-rose-300"
+                            : "bg-emerald-100 text-emerald-700"
+                        }`}
+                      >
+                        {isOut ? "Out of Stock" : isLow ? "Low Stock" : "In Stock"}
+                      </span>
+                    </div>
+
+                    <div>
+                      <h4 className="text-xs font-bold text-[#0B1B3D] line-clamp-1">{item.product_name}</h4>
+                      <p className="text-[11px] text-slate-500 font-semibold mt-0.5">
+                        Retail: {formatCurrency(item.unit_retail_price || 3500)}
+                      </p>
+                    </div>
+
+                    <div className="pt-2 flex justify-between items-baseline border-t border-slate-200/70">
+                      <span className="text-[11px] text-slate-500">Available:</span>
+                      <span className={`text-lg font-serif font-extrabold tabular-nums ${isOut ? "text-slate-500" : isLow ? "text-rose-600" : "text-[#0B1B3D]"}`}>
+                        {item.quantity_on_hand} <span className="text-xs font-sans font-normal text-slate-500">units</span>
+                      </span>
+                    </div>
+
+                    {/* Quick action buttons including [- Use] from Zyniq Sync */}
+                    <div className="pt-1 flex items-center justify-between text-xs gap-1.5">
+                      <button
+                        onClick={() => handleUseItem(item)}
+                        disabled={isOut}
+                        className="px-2.5 py-1 rounded-lg bg-white border border-slate-200 hover:bg-slate-50 text-[11px] font-bold text-slate-800 disabled:opacity-40 transition shadow-2xs"
+                      >
+                        - 1 Use
+                      </button>
+                      <button
+                        onClick={() => {
+                          setSaleProduct(item);
+                          setShowRetailSaleModal(true);
+                        }}
+                        className="font-bold text-amber-600 hover:underline text-[11px]"
+                      >
+                        Sell Item &rarr;
+                      </button>
+                      <button
+                        onClick={() => {
+                          setSelectedInvId(item.id);
+                          setShowStockModal(true);
+                        }}
+                        className="text-slate-400 hover:text-slate-600 text-[11px]"
+                      >
+                        Restock
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+          </div>
+        )}
+
+        {/* RECENT USAGE LOG with Undo (Zyniq Sync Feature) */}
+        {recentUsage.length > 0 && (
+          <div className="mt-5 pt-4 border-t border-slate-100">
+            <div className="flex items-center justify-between mb-2.5">
+              <span className="text-[11px] uppercase tracking-wider font-extrabold text-slate-500">
+                Recent Usage Activity (Station Consumptions)
+              </span>
+              <span className="text-[10px] text-slate-400">Accidental deduction? Click undo anytime</span>
+            </div>
+            <div className="space-y-1.5">
+              {recentUsage.map((u) => (
                 <div
-                  key={item.id}
-                  className={`p-4 rounded-xl border transition space-y-2.5 ${
-                    isLow
-                      ? "bg-rose-50/40 border-rose-200"
-                      : "bg-[#F8FAFC] border-slate-200/80 hover:border-slate-300"
-                  }`}
+                  key={u.id}
+                  className="flex items-center justify-between px-3 py-2 rounded-xl bg-slate-50 border border-slate-200/70 text-xs"
                 >
-                  <div className="flex justify-between items-start gap-1">
-                    <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-white border border-slate-200 text-slate-600">
-                      {item.sku || "SHAY-SKU"}
-                    </span>
-                    <span
-                      className={`text-[9px] font-extrabold uppercase px-2 py-0.5 rounded-full ${
-                        isLow
-                          ? "bg-rose-100 text-rose-700 border border-rose-300"
-                          : "bg-emerald-100 text-emerald-700"
-                      }`}
-                    >
-                      {isLow ? "Low Stock" : "In Stock"}
-                    </span>
+                  <div className="flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                    <span className="font-semibold text-[#0B1B3D]">{u.productName}</span>
+                    <span className="text-slate-400">&times; 1</span>
+                    <span className="text-[11px] text-slate-500">&mdash; {u.user}, {u.time}</span>
                   </div>
-
-                  <div>
-                    <h4 className="text-xs font-bold text-[#0B1B3D] line-clamp-1">{item.product_name}</h4>
-                    <p className="text-[11px] text-slate-500 font-semibold mt-0.5">
-                      Retail: {formatCurrency(item.unit_retail_price || 3500)}
-                    </p>
-                  </div>
-
-                  <div className="pt-2 flex justify-between items-baseline border-t border-slate-200/70">
-                    <span className="text-[11px] text-slate-500">Available:</span>
-                    <span className={`text-lg font-serif font-extrabold tabular-nums ${isLow ? "text-rose-600" : "text-[#0B1B3D]"}`}>
-                      {item.quantity_on_hand} <span className="text-xs font-sans font-normal text-slate-500">units</span>
-                    </span>
-                  </div>
-
-                  <div className="pt-1 flex items-center justify-between text-xs">
-                    <button
-                      onClick={() => {
-                        setSaleProduct(item);
-                        setShowRetailSaleModal(true);
-                      }}
-                      className="font-bold text-amber-600 hover:underline"
-                    >
-                      Sell Item &rarr;
-                    </button>
-                    <button
-                      onClick={() => {
-                        setSelectedInvId(item.id);
-                        setShowStockModal(true);
-                      }}
-                      className="text-slate-400 hover:text-slate-600"
-                    >
-                      Restock
-                    </button>
-                  </div>
+                  <button
+                    onClick={() => handleUndoUsage(u.id)}
+                    className="text-[11px] font-bold text-[#be123c] hover:underline px-2 py-0.5 rounded hover:bg-rose-50 transition"
+                  >
+                    Undo
+                  </button>
                 </div>
-              );
-            })}
+              ))}
+            </div>
           </div>
         )}
       </div>
