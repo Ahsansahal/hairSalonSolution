@@ -28,6 +28,20 @@ export default function StaffPage() {
   const [formBonusTarget, setFormBonusTarget] = useState("10000");
   const [saving, setSaving] = useState(false);
 
+  const [statusFilter, setStatusFilter] = useState<"all" | "active" | "resigned">("active");
+
+  const toggleStaffStatus = (staffId: string) => {
+    setStaffList((prev) =>
+      prev.map((s) => {
+        if (s.id === staffId) {
+          const nextActive = !s.is_active;
+          return { ...s, is_active: nextActive };
+        }
+        return s;
+      })
+    );
+  };
+
   const loadStaff = () => {
     setLoading(true);
     const activeBranch = localStorage.getItem("salon_active_branch") || "all";
@@ -52,6 +66,7 @@ export default function StaffPage() {
 
           return {
             ...s,
+            is_active: s.is_active !== undefined ? s.is_active : idx !== 4, // idx 4 demo resigned
             base_salary: base,
             commission_rate: commRate,
             earned_commission: earnedCommission,
@@ -154,6 +169,8 @@ export default function StaffPage() {
   };
 
   const filteredStaff = staffList.filter((st) => {
+    if (statusFilter === "active" && !st.is_active) return false;
+    if (statusFilter === "resigned" && st.is_active) return false;
     if (!searchTerm) return true;
     const term = searchTerm.toLowerCase();
     return (
@@ -165,9 +182,10 @@ export default function StaffPage() {
   });
 
   const activeStaffCount = staffList.filter((s) => s.is_active).length;
-  const totalPayrollBudget = staffList.reduce((acc, s) => acc + (s.total_compensation || 0), 0);
-  const totalCommissionsPaid = staffList.reduce((acc, s) => acc + (s.earned_commission || 0), 0);
-  const totalBonusesPaid = staffList.reduce((acc, s) => acc + (s.monthly_bonus || 0), 0);
+  const resignedStaffCount = staffList.filter((s) => !s.is_active).length;
+  const totalPayrollBudget = staffList.filter((s) => s.is_active).reduce((acc, s) => acc + (s.total_compensation || 0), 0);
+  const totalCommissionsPaid = staffList.filter((s) => s.is_active).reduce((acc, s) => acc + (s.earned_commission || 0), 0);
+  const totalBonusesPaid = staffList.filter((s) => s.is_active).reduce((acc, s) => acc + (s.monthly_bonus || 0), 0);
 
   return (
     <div className="space-y-6 max-w-6xl mx-auto pb-12">
@@ -187,16 +205,27 @@ export default function StaffPage() {
         }
       />
 
+      {/* Handover & Continuity Banner */}
+      <div className="rounded-2xl bg-blue-50/70 border border-blue-200/80 p-4 flex items-start gap-3.5 text-xs text-blue-950">
+        <span className="text-xl">🤝</span>
+        <div>
+          <p className="font-bold text-[#0B1B3D]">Seamless Staff Handover &amp; Branch Continuity</p>
+          <p className="text-blue-900/80 text-[11px] mt-0.5 leading-relaxed">
+            When a receptionist or stylist resigns, mark them as <strong>Resigned</strong> to instantly revoke system login credentials. All their past client formulas, appointments, and financial records remain permanently intact. When you assign a new team member to the branch, they immediately see all previous client records, stock balances, and today&apos;s live schedule.
+          </p>
+        </div>
+      </div>
+
       {/* 4 Pastel Overview Metrics */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <Stat
-          label="Total Artisans on Duty"
+          label="Active Staff on Duty"
           value={activeStaffCount}
           tone="brand"
           icon={<Users className="h-4 w-4 text-blue-600" />}
         />
         <Stat
-          label="Monthly Payroll Budget"
+          label="Active Monthly Payroll"
           value={formatCurrency(totalPayrollBudget)}
           tone="default"
           icon={<DollarSign className="h-4 w-4 text-[#0B1B3D]" />}
@@ -216,8 +245,8 @@ export default function StaffPage() {
       </div>
 
       {/* Search & Filter Bar */}
-      <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-3">
-        <div className="relative w-full sm:w-80">
+      <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col md:flex-row items-center justify-between gap-3">
+        <div className="relative w-full md:w-80">
           <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
           <input
             type="text"
@@ -228,8 +257,38 @@ export default function StaffPage() {
           />
         </div>
 
-        <div className="text-xs text-slate-500 font-medium">
-          Showing <span className="font-bold text-[#0B1B3D]">{filteredStaff.length}</span> verified stylists across Karachi
+        {/* Status Filter Buttons */}
+        <div className="flex items-center gap-1.5 w-full md:w-auto overflow-x-auto">
+          <button
+            onClick={() => setStatusFilter("active")}
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
+              statusFilter === "active"
+                ? "bg-[#0A1931] text-white shadow-xs"
+                : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+            }`}
+          >
+            Active Team ({activeStaffCount})
+          </button>
+          <button
+            onClick={() => setStatusFilter("resigned")}
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
+              statusFilter === "resigned"
+                ? "bg-[#0A1931] text-white shadow-xs"
+                : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+            }`}
+          >
+            Resigned / Inactive ({resignedStaffCount})
+          </button>
+          <button
+            onClick={() => setStatusFilter("all")}
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
+              statusFilter === "all"
+                ? "bg-[#0A1931] text-white shadow-xs"
+                : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+            }`}
+          >
+            All ({staffList.length})
+          </button>
         </div>
       </div>
 
@@ -255,13 +314,21 @@ export default function StaffPage() {
             return (
               <div
                 key={st.id}
-                className="bg-white rounded-2xl p-5 border border-slate-200/90 hover:border-amber-400/50 transition-all hover:shadow-md flex flex-col justify-between space-y-4"
+                className={`bg-white rounded-2xl p-5 border transition-all hover:shadow-md flex flex-col justify-between space-y-4 ${
+                  !st.is_active
+                    ? "border-slate-300 opacity-75 bg-slate-50/50"
+                    : "border-slate-200/90 hover:border-amber-400/50"
+                }`}
               >
                 <div>
                   {/* Top Info */}
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-2xl bg-amber-100/80 border border-amber-200 text-amber-800 flex items-center justify-center font-bold text-sm shadow-2xs">
+                      <div className={`w-12 h-12 rounded-2xl border flex items-center justify-center font-bold text-sm shadow-2xs ${
+                        st.is_active
+                          ? "bg-amber-100/80 border-amber-200 text-amber-800"
+                          : "bg-slate-200 border-slate-300 text-slate-600"
+                      }`}>
                         {initials}
                       </div>
                       <div>
@@ -278,10 +345,16 @@ export default function StaffPage() {
                     </div>
 
                     <div className="flex items-center gap-2">
-                      <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1">
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                        <span>Active</span>
-                      </span>
+                      {st.is_active ? (
+                        <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                          <span>Active</span>
+                        </span>
+                      ) : (
+                        <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-rose-50 text-rose-700 border border-rose-200">
+                          Resigned
+                        </span>
+                      )}
                       <button
                         onClick={() => openCompensationModal(st)}
                         className="p-1.5 rounded-xl hover:bg-slate-100 text-slate-400 hover:text-[#0B1B3D] transition"
@@ -292,10 +365,23 @@ export default function StaffPage() {
                     </div>
                   </div>
 
-                  {/* Branch Assignment Badge */}
-                  <div className="mt-3 flex items-center gap-1.5 text-xs text-slate-600">
-                    <MapPin className="w-3.5 h-3.5 text-amber-500" />
-                    <span className="font-medium">{st.branch_assigned}</span>
+                  {/* Branch Assignment Badge & Resignation Action */}
+                  <div className="mt-3 flex items-center justify-between text-xs">
+                    <div className="flex items-center gap-1.5 text-slate-600">
+                      <MapPin className="w-3.5 h-3.5 text-amber-500" />
+                      <span className="font-medium">{st.branch_assigned}</span>
+                    </div>
+
+                    <button
+                      onClick={() => toggleStaffStatus(st.id)}
+                      className={`text-[11px] font-bold transition ${
+                        st.is_active
+                          ? "text-slate-400 hover:text-rose-600 hover:underline"
+                          : "text-emerald-600 hover:text-emerald-700 hover:underline"
+                      }`}
+                    >
+                      {st.is_active ? "Mark Resigned" : "Re-activate"}
+                    </button>
                   </div>
                 </div>
 
