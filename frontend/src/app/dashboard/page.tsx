@@ -32,16 +32,22 @@ export default function DashboardHomePage() {
 
   const loadDashboard = () => {
     setLoading(true);
-    const branchFromStorage = typeof window !== "undefined" ? (localStorage.getItem("salon_active_branch") || "all") : "all";
-    setActiveBranch(branchFromStorage);
-    const branchParam = branchFromStorage !== "all" ? `?branch_id=${branchFromStorage}` : "";
-
     const storedUser = typeof window !== "undefined" ? localStorage.getItem("salon_user") : null;
+    let isUserOwner = true;
+    let assignedBranch = "b1";
     if (storedUser) {
       try {
-        setUser(JSON.parse(storedUser));
+        const u = JSON.parse(storedUser);
+        setUser(u);
+        isUserOwner = u.system_role === "BUSINESS_OWNER" || u.system_role === "PLATFORM_ADMIN";
+        assignedBranch = u.branch_id || u.branch_roles?.[0]?.branch_id || "b1";
       } catch (e) {}
     }
+
+    const branchFromStorage = typeof window !== "undefined" ? (localStorage.getItem("salon_active_branch") || "all") : "all";
+    const effectiveBranch = !isUserOwner ? assignedBranch : branchFromStorage;
+    setActiveBranch(effectiveBranch);
+    const branchParam = effectiveBranch !== "all" ? `?branch_id=${effectiveBranch}` : "";
 
     Promise.all([
       apiFetch(`/dashboard/summary/${branchParam}`),
@@ -67,6 +73,7 @@ export default function DashboardHomePage() {
   }, []);
 
   const switchBranch = (branchId: string) => {
+    if (!isOwner) return; // Strict lock: receptionists cannot switch branches
     setActiveBranch(branchId);
     if (typeof window !== "undefined") {
       localStorage.setItem("salon_active_branch", branchId);
@@ -167,63 +174,65 @@ export default function DashboardHomePage() {
         </div>
       </div>
 
-      {/* 2. Owner Interactive Branch Switcher Pills (Always Visible & Instant) */}
-      <div className="bg-white rounded-2xl p-3.5 border border-slate-200/80 shadow-xs flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-        <div className="flex items-center gap-2 text-xs font-bold text-slate-700 shrink-0">
-          <Store className="w-4 h-4 text-amber-500" />
-          <span>Switch Branch View:</span>
+      {/* 2. Owner Interactive Branch Switcher Pills (Visible ONLY to Owner) */}
+      {isOwner && (
+        <div className="bg-white rounded-2xl p-3.5 border border-slate-200/80 shadow-xs flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-2 text-xs font-bold text-slate-700 shrink-0">
+            <Store className="w-4 h-4 text-amber-500" />
+            <span>Switch Branch View (HQ):</span>
+          </div>
+
+          <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
+            {/* Consolidated Network Pill */}
+            <button
+              onClick={() => switchBranch("all")}
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition-all flex items-center gap-1.5 shrink-0 ${
+                activeBranch === "all"
+                  ? "bg-[#0A1931] text-amber-400 shadow-md ring-2 ring-amber-400/30"
+                  : "bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200"
+              }`}
+            >
+              <Building2 className="w-3.5 h-3.5" />
+              <span>Consolidated (All Karachi)</span>
+              {activeBranch === "all" && <Check className="w-3.5 h-3.5 text-amber-400 ml-1" />}
+            </button>
+
+            {/* Clifton Flagship Branch Pill */}
+            <button
+              onClick={() => switchBranch("b1")}
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition-all flex items-center gap-1.5 shrink-0 ${
+                activeBranch === "b1"
+                  ? "bg-[#FBB040] text-[#0A1931] shadow-md ring-2 ring-amber-500/40"
+                  : "bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200"
+              }`}
+            >
+              <MapPin className="w-3.5 h-3.5" />
+              <span>Clifton Flagship (CLF-01)</span>
+              {activeBranch === "b1" && <Check className="w-3.5 h-3.5 text-[#0A1931] ml-1" />}
+            </button>
+
+            {/* DHA Bukhari Studio Pill */}
+            <button
+              onClick={() => switchBranch("b2")}
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition-all flex items-center gap-1.5 shrink-0 ${
+                activeBranch === "b2"
+                  ? "bg-[#FBB040] text-[#0A1931] shadow-md ring-2 ring-amber-500/40"
+                  : "bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200"
+              }`}
+            >
+              <MapPin className="w-3.5 h-3.5" />
+              <span>DHA Bukhari Studio (DHA-02)</span>
+              {activeBranch === "b2" && <Check className="w-3.5 h-3.5 text-[#0A1931] ml-1" />}
+            </button>
+          </div>
+
+          {/* Quick Branch Status badge */}
+          <div className="hidden md:flex items-center gap-2 text-[11px] font-semibold text-slate-500 shrink-0">
+            <span className="w-2 h-2 rounded-full bg-emerald-500" />
+            <span>POS &amp; SRB Tax Live</span>
+          </div>
         </div>
-
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
-          {/* Consolidated Network Pill */}
-          <button
-            onClick={() => switchBranch("all")}
-            className={`px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition-all flex items-center gap-1.5 shrink-0 ${
-              activeBranch === "all"
-                ? "bg-[#0A1931] text-amber-400 shadow-md ring-2 ring-amber-400/30"
-                : "bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200"
-            }`}
-          >
-            <Building2 className="w-3.5 h-3.5" />
-            <span>Consolidated (All Karachi)</span>
-            {activeBranch === "all" && <Check className="w-3.5 h-3.5 text-amber-400 ml-1" />}
-          </button>
-
-          {/* Clifton Flagship Branch Pill */}
-          <button
-            onClick={() => switchBranch("b1")}
-            className={`px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition-all flex items-center gap-1.5 shrink-0 ${
-              activeBranch === "b1"
-                ? "bg-[#FBB040] text-[#0A1931] shadow-md ring-2 ring-amber-500/40"
-                : "bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200"
-            }`}
-          >
-            <MapPin className="w-3.5 h-3.5" />
-            <span>Clifton Flagship (CLF-01)</span>
-            {activeBranch === "b1" && <Check className="w-3.5 h-3.5 text-[#0A1931] ml-1" />}
-          </button>
-
-          {/* DHA Bukhari Studio Pill */}
-          <button
-            onClick={() => switchBranch("b2")}
-            className={`px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition-all flex items-center gap-1.5 shrink-0 ${
-              activeBranch === "b2"
-                ? "bg-[#FBB040] text-[#0A1931] shadow-md ring-2 ring-amber-500/40"
-                : "bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200"
-            }`}
-          >
-            <MapPin className="w-3.5 h-3.5" />
-            <span>DHA Bukhari Studio (DHA-02)</span>
-            {activeBranch === "b2" && <Check className="w-3.5 h-3.5 text-[#0A1931] ml-1" />}
-          </button>
-        </div>
-
-        {/* Quick Branch Status badge */}
-        <div className="hidden md:flex items-center gap-2 text-[11px] font-semibold text-slate-500 shrink-0">
-          <span className="w-2 h-2 rounded-full bg-emerald-500" />
-          <span>POS &amp; SRB Tax Live</span>
-        </div>
-      </div>
+      )}
 
       {/* If in Floor View Mode, show the live chair board */}
       {viewMode === "floor" && (

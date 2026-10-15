@@ -181,19 +181,15 @@ export default function DashboardLayout({
           setBranches(branchList);
 
           const isOwner = parsedUser?.system_role === "BUSINESS_OWNER" || parsedUser?.system_role === "PLATFORM_ADMIN";
-          const currentStored = localStorage.getItem("salon_active_branch");
 
-          if (!isOwner && branchList.length > 0) {
-            const allowedIds = branchList.map((b: any) => b.id);
-            if (!currentStored || !allowedIds.includes(currentStored) || currentStored === "all") {
-              const defaultBranch = branchList[0].id;
-              localStorage.setItem("salon_active_branch", defaultBranch);
-              setSelectedBranchId(defaultBranch);
-              window.dispatchEvent(new Event("branchChanged"));
-            } else {
-              setSelectedBranchId(currentStored);
-            }
+          if (!isOwner) {
+            // Receptionists & branch staff are strictly locked to their single assigned branch
+            const userBranch = parsedUser?.branch_id || parsedUser?.branch_roles?.[0]?.branch_id || (branchList[0] ? branchList[0].id : "b1");
+            localStorage.setItem("salon_active_branch", userBranch);
+            setSelectedBranchId(userBranch);
+            window.dispatchEvent(new Event("branchChanged"));
           } else {
+            const currentStored = localStorage.getItem("salon_active_branch");
             if (currentStored) {
               setSelectedBranchId(currentStored);
             } else {
@@ -213,6 +209,24 @@ export default function DashboardLayout({
 
     const handleExternalBranchChange = () => {
       const active = localStorage.getItem("salon_active_branch");
+      const storedUser = localStorage.getItem("salon_user");
+      let isOwnerNow = true;
+      let assignedBranch = "b1";
+      if (storedUser) {
+        try {
+          const u = JSON.parse(storedUser);
+          isOwnerNow = u.system_role === "BUSINESS_OWNER" || u.system_role === "PLATFORM_ADMIN";
+          assignedBranch = u.branch_id || u.branch_roles?.[0]?.branch_id || "b1";
+        } catch (e) {}
+      }
+
+      if (!isOwnerNow) {
+        if (active !== assignedBranch) {
+          localStorage.setItem("salon_active_branch", assignedBranch);
+          setSelectedBranchId(assignedBranch);
+          return;
+        }
+      }
       if (active) setSelectedBranchId(active);
     };
 
@@ -221,6 +235,8 @@ export default function DashboardLayout({
   }, [router, pathname]);
 
   const handleBranchChange = (newBranchId: string) => {
+    // Receptionist / Staff Credibility Protection: Receptionists can NEVER switch branches
+    if (!isOwner) return;
     setSelectedBranchId(newBranchId);
     localStorage.setItem("salon_active_branch", newBranchId);
     window.dispatchEvent(new Event("branchChanged"));
@@ -300,7 +316,24 @@ export default function DashboardLayout({
   const isOwner = user?.system_role === "BUSINESS_OWNER" || user?.system_role === "PLATFORM_ADMIN";
   const userRole = user?.branch_roles?.[0]?.role || user?.system_role || "STAFF";
   const isReceptionist = userRole === "RECEPTIONIST" || user?.email?.includes("reception");
-  const assignedBranchName = branches.length > 0 ? branches[0].name : "Clifton Flagship Branch";
+  const userAssignedBranchId = user?.branch_id || user?.branch_roles?.[0]?.branch_id || (branches[0]?.id || "b1");
+  const assignedBranch = branches.find((b) => b.id === userAssignedBranchId);
+  const assignedBranchName = assignedBranch ? assignedBranch.name : "Clifton Flagship Branch";
+
+  // Strict RBAC Route Protection: Receptionists cannot access P&L, Staff Salaries, SaaS Billing, or Widget Setup
+  useEffect(() => {
+    if (authVerified && user && !isOwner) {
+      const restrictedRoutes = [
+        "/dashboard/reports",
+        "/dashboard/staff",
+        "/dashboard/branches",
+        "/dashboard/widget",
+      ];
+      if (restrictedRoutes.some((r) => pathname.startsWith(r))) {
+        router.replace("/dashboard");
+      }
+    }
+  }, [pathname, authVerified, user, isOwner, router]);
 
   const navGroups = [
     {
@@ -308,7 +341,9 @@ export default function DashboardLayout({
       items: [
         { label: "Today's Schedule", href: "/dashboard", icon: Calendar, exact: true },
         { label: "All Bookings", href: "/dashboard/appointments", icon: Clock },
-        { label: "Sales & P&L Reports", href: "/dashboard/reports", icon: TrendingUp },
+        ...(isOwner || userRole === "BRANCH_MANAGER"
+          ? [{ label: "Sales & P&L Reports", href: "/dashboard/reports", icon: TrendingUp }]
+          : []),
       ],
     },
     {
@@ -317,9 +352,15 @@ export default function DashboardLayout({
         { label: "Deals & Packages", href: "/dashboard/deals", icon: Sparkles },
         { label: "Client Records", href: "/dashboard/clients", icon: UserCheck },
         { label: "Services & Prices", href: "/dashboard/services", icon: Scissors },
-        { label: "Staff, Salary & Bonus", href: "/dashboard/staff", icon: Users },
-        { label: "Checkout & POS", href: "/dashboard/inventory", icon: CreditCard },
-        { label: "Branches (20% Off)", href: "/dashboard/branches", icon: Building },
+        ...(isOwner
+          ? [
+              { label: "Staff, Salary & Bonus", href: "/dashboard/staff", icon: Users },
+              { label: "Checkout & POS", href: "/dashboard/inventory", icon: CreditCard },
+              { label: "Branches (20% Off)", href: "/dashboard/branches", icon: Building },
+            ]
+          : [
+              { label: "Supplies & POS", href: "/dashboard/inventory", icon: CreditCard },
+            ]),
       ],
     },
     {
@@ -327,7 +368,9 @@ export default function DashboardLayout({
       items: [
         { label: "Staff Time Clock", href: "/dashboard/attendance", icon: Clock },
         { label: "WhatsApp Assistant", href: "/dashboard/whatsapp", icon: MessageSquare },
-        { label: "Website Booking Widget", href: "/dashboard/widget", icon: Globe },
+        ...(isOwner
+          ? [{ label: "Website Booking Widget", href: "/dashboard/widget", icon: Globe }]
+          : []),
       ],
     },
   ];
@@ -379,15 +422,15 @@ export default function DashboardLayout({
 
       {/* Location Switcher / Front Desk Terminal Box */}
       <div className="p-3.5 border-b border-[#15284F]">
-        {isOwner || branches.length > 1 ? (
+        {isOwner ? (
           <div className="rounded-2xl border border-[#1E3A6E] bg-[#0E2246] p-3 shadow-inner">
             <div className="flex items-center justify-between pb-1">
               <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-300 flex items-center gap-1.5">
                 <MapPin className="w-3.5 h-3.5 text-amber-400" />
-                <span>Salon Branch</span>
+                <span>Salon Branch (Owner HQ)</span>
               </span>
               <span className="text-[9px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                HQ Live
+                HQ Multi-Branch
               </span>
             </div>
 
@@ -435,10 +478,9 @@ export default function DashboardLayout({
             <p className="text-xs font-bold text-white leading-tight">{assignedBranchName}</p>
             <div className="pt-1.5 border-t border-[#15284F] flex items-center justify-between text-[11px]">
               <span className="text-slate-400">POS Terminal</span>
-              <Link href="/book" target="_blank" className="font-bold text-amber-400 hover:underline flex items-center gap-0.5">
-                <span>Guest Site</span>
-                <ExternalLink className="w-2.5 h-2.5" />
-              </Link>
+              <span className="text-[10px] text-slate-300 font-semibold px-2 py-0.5 rounded bg-[#08152A] border border-[#1E3A6E]">
+                Single-Branch Locked
+              </span>
             </div>
           </div>
         )}
