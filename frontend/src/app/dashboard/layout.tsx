@@ -8,7 +8,7 @@ import {
   CreditCard, MessageSquare, LogOut, ChevronDown, ExternalLink,
   MapPin, Plus, UserPlus, LayoutGrid, CheckCircle2, Shield, Building,
   TrendingUp, UserCheck, Search, Bell, Mail, ChevronRight, Gift,
-  Check, X, AlertTriangle, ArrowRight, Store, RefreshCw, Smartphone, Globe
+  Check, X, AlertTriangle, ArrowRight, Store, RefreshCw, Smartphone, Globe, Menu
 } from "lucide-react";
 import { apiFetch, getAuthToken, getCurrentUser, clearSession } from "@/lib/api";
 import { Badge } from "@/components/ui/badge";
@@ -26,6 +26,12 @@ export default function DashboardLayout({
   const [branches, setBranches] = useState<any[]>([]);
   const [selectedBranchId, setSelectedBranchId] = useState<string>("all");
   const [walkInOpen, setWalkInOpen] = useState(false);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
+
+  // Close mobile drawer when pathname changes
+  useEffect(() => {
+    setMobileNavOpen(false);
+  }, [pathname]);
 
   // Header Dropdown States
   const [notificationsOpen, setNotificationsOpen] = useState(false);
@@ -338,179 +344,237 @@ export default function DashboardLayout({
     );
   }
 
-  return (
-    <div className="min-h-screen bg-[#F4F7FB] text-[#1E293B] flex flex-col md:flex-row relative font-sans">
-      {/* Sidebar - Deep Midnight Navy */}
-      <aside className="w-full md:w-64 bg-[#0A1931] border-r border-[#15284F] flex flex-col flex-shrink-0 shadow-2xl z-30 text-white">
-        {/* Brand Header */}
-        <div className="h-20 px-5 border-b border-[#15284F] flex items-center justify-between bg-[#08152A]">
-          <Link href="/dashboard" className="flex items-center space-x-3 group">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-[#0A1931] shadow-md group-hover:scale-105 transition-transform duration-200">
-              <Sparkles className="w-5 h-5 font-bold" />
-            </div>
-            <div>
-              <span className="font-serif tracking-wider font-extrabold text-white text-base leading-none block">
-                SHAY
-              </span>
-              <span className="block text-[9px] uppercase tracking-[0.24em] text-amber-400 font-bold mt-1">
-                Salon &amp; Spa · Karachi
-              </span>
-            </div>
-          </Link>
-        </div>
-
-        {/* Location Switcher / Front Desk Terminal Box */}
-        <div className="p-3.5 border-b border-[#15284F]">
-          {isOwner || branches.length > 1 ? (
-            <div className="rounded-2xl border border-[#1E3A6E] bg-[#0E2246] p-3 shadow-inner">
-              <div className="flex items-center justify-between pb-1">
-                <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-300 flex items-center gap-1.5">
-                  <MapPin className="w-3.5 h-3.5 text-amber-400" />
-                  <span>Salon Branch</span>
-                </span>
-                <span className="text-[9px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                  HQ Live
-                </span>
-              </div>
-
-              <div className="relative mt-2">
-                <select
-                  value={selectedBranchId}
-                  onChange={(e) => handleBranchChange(e.target.value)}
-                  className="w-full appearance-none rounded-xl bg-[#08152A] border border-[#1E3A6E] pl-3 pr-8 py-2 text-xs font-bold text-white focus:outline-none focus:ring-2 focus:ring-amber-400/40 cursor-pointer shadow-sm hover:border-amber-400/50 transition"
-                >
-                  <option value="all" className="bg-[#0A1931] text-white">Consolidated (All Branches)</option>
-                  {branches.map((b) => (
-                    <option key={b.id} value={b.id} className="bg-[#0A1931] text-white">
-                      {b.name}
-                    </option>
-                  ))}
-                </select>
-                <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-3 pointer-events-none" />
-              </div>
-
-              <div className="mt-2 pt-2 border-t border-[#15284F] flex items-center justify-between text-[11px]">
-                <span className="text-slate-300 truncate mr-2 font-medium">
-                  {selectedBranchId === "all" ? "Cross-Branch View" : branches.find((b) => b.id === selectedBranchId)?.name}
-                </span>
-                <Link
-                  href="/book"
-                  target="_blank"
-                  className="font-bold text-amber-400 hover:text-amber-300 flex items-center gap-1 shrink-0 transition"
-                >
-                  <span>Client Site</span>
-                  <ExternalLink className="w-2.5 h-2.5" />
-                </Link>
-              </div>
-            </div>
-          ) : (
-            <div className="rounded-2xl border border-amber-500/30 bg-[#0E2246] p-3 space-y-1.5 shadow-inner">
-              <div className="flex items-center justify-between">
-                <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-amber-400">
-                  Front Desk Station
-                </span>
-                <span className="text-[9px] font-bold uppercase px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                  <span>Active</span>
-                </span>
-              </div>
-              <p className="text-xs font-bold text-white leading-tight">{assignedBranchName}</p>
-              <div className="pt-1.5 border-t border-[#15284F] flex items-center justify-between text-[11px]">
-                <span className="text-slate-400">POS Terminal</span>
-                <Link href="/book" target="_blank" className="font-bold text-amber-400 hover:underline flex items-center gap-0.5">
-                  <span>Guest Site</span>
-                  <ExternalLink className="w-2.5 h-2.5" />
-                </Link>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Quick Add Walk-In Button */}
-        <div className="px-3.5 py-3">
+  // Helper to render responsive sidebar navigation
+  const renderSidebarContent = (isMobile = false) => (
+    <div className="flex flex-col h-full">
+      {/* Brand Header */}
+      <div className="h-20 px-5 border-b border-[#15284F] flex items-center justify-between bg-[#08152A]">
+        <Link
+          href="/dashboard"
+          onClick={() => isMobile && setMobileNavOpen(false)}
+          className="flex items-center space-x-3 group"
+        >
+          <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-[#0A1931] shadow-md group-hover:scale-105 transition-transform duration-200">
+            <Sparkles className="w-5 h-5 font-bold" />
+          </div>
+          <div>
+            <span className="font-serif tracking-wider font-extrabold text-white text-base leading-none block">
+              SHAY
+            </span>
+            <span className="block text-[9px] uppercase tracking-[0.24em] text-amber-400 font-bold mt-1">
+              Salon &amp; Spa · Karachi
+            </span>
+          </div>
+        </Link>
+        {isMobile && (
           <button
-            onClick={() => setWalkInOpen(true)}
-            className="w-full py-2.5 px-3.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-[#0A1931] text-xs font-extrabold shadow-md shadow-amber-500/20 transition-all duration-200 flex items-center justify-center gap-2 group active:scale-[0.98]"
+            onClick={() => setMobileNavOpen(false)}
+            className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/10 transition"
+            aria-label="Close Navigation Menu"
           >
-            <UserPlus className="w-4 h-4 text-[#0A1931] group-hover:scale-110 transition-transform" />
-            <span>+ Add Walk-In Client</span>
+            <X className="w-5 h-5" />
+          </button>
+        )}
+      </div>
+
+      {/* Location Switcher / Front Desk Terminal Box */}
+      <div className="p-3.5 border-b border-[#15284F]">
+        {isOwner || branches.length > 1 ? (
+          <div className="rounded-2xl border border-[#1E3A6E] bg-[#0E2246] p-3 shadow-inner">
+            <div className="flex items-center justify-between pb-1">
+              <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-300 flex items-center gap-1.5">
+                <MapPin className="w-3.5 h-3.5 text-amber-400" />
+                <span>Salon Branch</span>
+              </span>
+              <span className="text-[9px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                HQ Live
+              </span>
+            </div>
+
+            <div className="relative mt-2">
+              <select
+                value={selectedBranchId}
+                onChange={(e) => handleBranchChange(e.target.value)}
+                className="w-full appearance-none rounded-xl bg-[#08152A] border border-[#1E3A6E] pl-3 pr-8 py-2 text-xs font-bold text-white focus:outline-none focus:ring-2 focus:ring-amber-400/40 cursor-pointer shadow-sm hover:border-amber-400/50 transition"
+              >
+                <option value="all" className="bg-[#0A1931] text-white">Consolidated (All Branches)</option>
+                {branches.map((b) => (
+                  <option key={b.id} value={b.id} className="bg-[#0A1931] text-white">
+                    {b.name}
+                  </option>
+                ))}
+              </select>
+              <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-3 pointer-events-none" />
+            </div>
+
+            <div className="mt-2 pt-2 border-t border-[#15284F] flex items-center justify-between text-[11px]">
+              <span className="text-slate-300 truncate mr-2 font-medium">
+                {selectedBranchId === "all" ? "Cross-Branch View" : branches.find((b) => b.id === selectedBranchId)?.name}
+              </span>
+              <Link
+                href="/book"
+                target="_blank"
+                className="font-bold text-amber-400 hover:text-amber-300 flex items-center gap-1 shrink-0 transition"
+              >
+                <span>Client Site</span>
+                <ExternalLink className="w-2.5 h-2.5" />
+              </Link>
+            </div>
+          </div>
+        ) : (
+          <div className="rounded-2xl border border-amber-500/30 bg-[#0E2246] p-3 space-y-1.5 shadow-inner">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-amber-400">
+                Front Desk Station
+              </span>
+              <span className="text-[9px] font-bold uppercase px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span>Active</span>
+              </span>
+            </div>
+            <p className="text-xs font-bold text-white leading-tight">{assignedBranchName}</p>
+            <div className="pt-1.5 border-t border-[#15284F] flex items-center justify-between text-[11px]">
+              <span className="text-slate-400">POS Terminal</span>
+              <Link href="/book" target="_blank" className="font-bold text-amber-400 hover:underline flex items-center gap-0.5">
+                <span>Guest Site</span>
+                <ExternalLink className="w-2.5 h-2.5" />
+              </Link>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Quick Add Walk-In Button */}
+      <div className="px-3.5 py-3">
+        <button
+          onClick={() => {
+            setWalkInOpen(true);
+            if (isMobile) setMobileNavOpen(false);
+          }}
+          className="w-full py-2.5 px-3.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-[#0A1931] text-xs font-extrabold shadow-md shadow-amber-500/20 transition-all duration-200 flex items-center justify-center gap-2 group active:scale-[0.98]"
+        >
+          <UserPlus className="w-4 h-4 text-[#0A1931] group-hover:scale-110 transition-transform" />
+          <span>+ Add Walk-In Client</span>
+        </button>
+      </div>
+
+      {/* Navigation Groups */}
+      <nav className="flex-1 px-3.5 py-2 space-y-5 overflow-y-auto">
+        {navGroups.map((grp, idx) => (
+          <div key={idx}>
+            <p className="px-3 pb-1.5 text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">
+              {grp.title}
+            </p>
+            <div className="space-y-1">
+              {grp.items.map((n) => {
+                const Icon = n.icon;
+                const isActive = n.exact ? pathname === n.href : pathname.startsWith(n.href);
+                return (
+                  <Link
+                    key={n.href}
+                    href={n.href}
+                    onClick={() => isMobile && setMobileNavOpen(false)}
+                    className={`flex items-center justify-between rounded-xl px-3 py-2.5 text-xs transition-all ${
+                      isActive
+                        ? "bg-[#FBB040] text-[#0A1931] font-extrabold shadow-md shadow-amber-500/20"
+                        : "text-slate-300 hover:text-white hover:bg-white/10 font-semibold"
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <Icon className={`h-4 w-4 shrink-0 ${isActive ? "text-[#0A1931]" : "text-slate-400"}`} />
+                      <span>{n.label}</span>
+                    </div>
+                    {!isActive && (
+                      <ChevronDown className="w-3.5 h-3.5 text-slate-500 -rotate-90 opacity-60" />
+                    )}
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        ))}
+      </nav>
+
+      {/* User Footer with Avatar and Sign Out */}
+      <div className="p-3.5 border-t border-[#15284F] bg-[#08152A] mt-auto">
+        <div className="flex items-center justify-between p-2.5 rounded-2xl bg-[#0E2246] border border-[#1E3A6E]">
+          <div className="flex items-center gap-2.5 min-w-0 mr-2">
+            <div className="w-8 h-8 rounded-full bg-amber-500 text-[#0A1931] flex items-center justify-center font-bold text-xs shrink-0 shadow-sm">
+              {(user?.full_name || user?.email || "U")[0].toUpperCase()}
+            </div>
+            <div className="truncate">
+              <span className="block text-xs font-bold text-white truncate">
+                {user?.full_name || user?.email || "Admin"}
+              </span>
+              <span className="block text-[10px] text-amber-400 font-semibold truncate">
+                {isOwner
+                  ? "Super Administrator"
+                  : isReceptionist
+                  ? `${assignedBranchName} Desk`
+                  : userRole === "BRANCH_MANAGER"
+                  ? `${assignedBranchName} Manager`
+                  : user?.email}
+              </span>
+            </div>
+          </div>
+          <button
+            onClick={handleLogout}
+            title="Sign Out"
+            className="p-2 rounded-xl text-slate-400 hover:text-rose-400 hover:bg-white/10 transition shrink-0"
+          >
+            <LogOut className="w-4 h-4" />
           </button>
         </div>
+      </div>
+    </div>
+  );
 
-        {/* Navigation Groups */}
-        <nav className="flex-1 px-3.5 py-2 space-y-5 overflow-y-auto">
-          {navGroups.map((grp, idx) => (
-            <div key={idx}>
-              <p className="px-3 pb-1.5 text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">
-                {grp.title}
-              </p>
-              <div className="space-y-1">
-                {grp.items.map((n) => {
-                  const Icon = n.icon;
-                  const isActive = n.exact ? pathname === n.href : pathname.startsWith(n.href);
-                  return (
-                    <Link
-                      key={n.href}
-                      href={n.href}
-                      className={`flex items-center justify-between rounded-xl px-3 py-2.5 text-xs transition-all ${
-                        isActive
-                          ? "bg-[#FBB040] text-[#0A1931] font-extrabold shadow-md shadow-amber-500/20"
-                          : "text-slate-300 hover:text-white hover:bg-white/10 font-semibold"
-                      }`}
-                    >
-                      <div className="flex items-center gap-3">
-                        <Icon className={`h-4 w-4 shrink-0 ${isActive ? "text-[#0A1931]" : "text-slate-400"}`} />
-                        <span>{n.label}</span>
-                      </div>
-                      {!isActive && (
-                        <ChevronDown className="w-3.5 h-3.5 text-slate-500 -rotate-90 opacity-60" />
-                      )}
-                    </Link>
-                  );
-                })}
-              </div>
-            </div>
-          ))}
-        </nav>
+  return (
+    <div className="min-h-screen bg-[#F4F7FB] text-[#1E293B] flex flex-col md:flex-row relative font-sans">
+      {/* Desktop Sidebar - Deep Midnight Navy (Fixed on MD+) */}
+      <aside className="hidden md:flex md:w-64 bg-[#0A1931] border-r border-[#15284F] flex-col flex-shrink-0 shadow-2xl z-30 text-white min-h-screen sticky top-0 h-screen overflow-y-auto">
+        {renderSidebarContent(false)}
+      </aside>
 
-        {/* User Footer with Avatar and Sign Out */}
-        <div className="p-3.5 border-t border-[#15284F] bg-[#08152A]">
-          <div className="flex items-center justify-between p-2.5 rounded-2xl bg-[#0E2246] border border-[#1E3A6E]">
-            <div className="flex items-center gap-2.5 min-w-0 mr-2">
-              <div className="w-8 h-8 rounded-full bg-amber-500 text-[#0A1931] flex items-center justify-center font-bold text-xs shrink-0 shadow-sm">
-                {(user?.full_name || user?.email || "U")[0].toUpperCase()}
-              </div>
-              <div className="truncate">
-                <span className="block text-xs font-bold text-white truncate">
-                  {user?.full_name || user?.email || "Admin"}
-                </span>
-                <span className="block text-[10px] text-amber-400 font-semibold truncate">
-                  {isOwner
-                    ? "Super Administrator"
-                    : isReceptionist
-                    ? `${assignedBranchName} Desk`
-                    : userRole === "BRANCH_MANAGER"
-                    ? `${assignedBranchName} Manager`
-                    : user?.email}
-                </span>
-              </div>
-            </div>
-            <button
-              onClick={handleLogout}
-              title="Sign Out"
-              className="p-2 rounded-xl text-slate-400 hover:text-rose-400 hover:bg-white/10 transition shrink-0"
-            >
-              <LogOut className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
+      {/* Mobile Drawer Backdrop */}
+      {mobileNavOpen && (
+        <div
+          onClick={() => setMobileNavOpen(false)}
+          className="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 md:hidden transition-opacity"
+        />
+      )}
+
+      {/* Mobile Navigation Drawer */}
+      <aside
+        className={`fixed inset-y-0 left-0 z-50 w-72 bg-[#0A1931] border-r border-[#15284F] flex flex-col shadow-2xl text-white transform transition-transform duration-300 ease-in-out md:hidden ${
+          mobileNavOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
+        {renderSidebarContent(true)}
       </aside>
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0">
-        {/* Top Header Bar matching Screenshot */}
-        <header className="h-20 bg-white border-b border-slate-200/80 px-6 sm:px-8 flex items-center justify-between sticky top-0 z-40 shadow-xs">
-          {/* Search Bar with Live Suggestions Dropdown */}
+        {/* Top Header Bar */}
+        <header className="h-16 sm:h-20 bg-white border-b border-slate-200/80 px-4 sm:px-8 flex items-center justify-between sticky top-0 z-40 shadow-xs">
+          {/* Mobile Hamburger & Logo (Only visible on < md) */}
+          <div className="flex items-center gap-2.5 md:hidden">
+            <button
+              onClick={() => setMobileNavOpen(true)}
+              className="p-2 -ml-1 rounded-xl text-slate-700 hover:bg-slate-100 transition active:scale-95"
+              aria-label="Open Navigation Menu"
+            >
+              <Menu className="w-5 h-5 text-[#0A1931]" />
+            </button>
+            <Link href="/dashboard" className="flex items-center gap-1.5">
+              <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-[#0A1931] shadow-2xs">
+                <Sparkles className="w-3.5 h-3.5 font-bold" />
+              </div>
+              <span className="font-serif font-extrabold text-base tracking-wide text-[#0A1931]">SHAY</span>
+            </Link>
+          </div>
+
+          {/* Search Bar with Live Suggestions Dropdown (Hidden on tiny screens, expandable) */}
           <div className="relative w-full max-w-md hidden sm:block">
             <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
             <input
@@ -931,10 +995,56 @@ export default function DashboardLayout({
         </header>
 
         {/* Page Content Viewport */}
-        <main className="flex-1 p-5 md:p-8 max-w-7xl w-full mx-auto overflow-y-auto">
+        <main className="flex-1 p-4 sm:p-6 md:p-8 max-w-7xl w-full mx-auto pb-24 md:pb-8 overflow-y-auto">
           {children}
         </main>
       </div>
+
+      {/* Mobile Bottom Navigation Bar - Native App Feel */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-[#0A1931]/95 backdrop-blur-md border-t border-[#15284F] z-40 px-3 py-1.5 flex items-center justify-around shadow-2xl">
+        <Link
+          href="/dashboard"
+          className={`flex flex-col items-center py-1 px-2 rounded-lg text-[10px] font-semibold transition ${
+            pathname === "/dashboard" ? "text-amber-400 font-bold" : "text-slate-400 hover:text-white"
+          }`}
+        >
+          <LayoutGrid className="w-4 h-4 mb-0.5" />
+          <span>Today</span>
+        </Link>
+        <Link
+          href="/dashboard/appointments"
+          className={`flex flex-col items-center py-1 px-2 rounded-lg text-[10px] font-semibold transition ${
+            pathname.startsWith("/dashboard/appointments") ? "text-amber-400 font-bold" : "text-slate-400 hover:text-white"
+          }`}
+        >
+          <Calendar className="w-4 h-4 mb-0.5" />
+          <span>Bookings</span>
+        </Link>
+        {/* Elevated Walk-in Center Button */}
+        <button
+          onClick={() => setWalkInOpen(true)}
+          className="flex flex-col items-center -mt-5 bg-gradient-to-tr from-amber-500 to-amber-400 text-[#0A1931] p-2.5 rounded-full shadow-lg shadow-amber-500/40 border-2 border-[#0A1931] active:scale-95 transition"
+        >
+          <UserPlus className="w-5 h-5 stroke-[2.5]" />
+          <span className="text-[8px] font-extrabold uppercase mt-0.5">Walk-In</span>
+        </button>
+        <Link
+          href="/dashboard/inventory"
+          className={`flex flex-col items-center py-1 px-2 rounded-lg text-[10px] font-semibold transition ${
+            pathname.startsWith("/dashboard/inventory") ? "text-amber-400 font-bold" : "text-slate-400 hover:text-white"
+          }`}
+        >
+          <Store className="w-4 h-4 mb-0.5" />
+          <span>Retail POS</span>
+        </Link>
+        <button
+          onClick={() => setMobileNavOpen(true)}
+          className="flex flex-col items-center py-1 px-2 rounded-lg text-[10px] font-semibold text-slate-400 hover:text-white transition"
+        >
+          <Menu className="w-4 h-4 mb-0.5" />
+          <span>Menu</span>
+        </button>
+      </nav>
 
       {/* Walk-in dialog */}
       <WalkInDialog
