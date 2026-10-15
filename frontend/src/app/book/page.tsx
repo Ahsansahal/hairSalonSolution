@@ -53,6 +53,7 @@ export default function BookingPage() {
   const [services, setServices] = useState<Service[]>([]);
   const [staffMembers, setStaffMembers] = useState<Staff[]>([]);
   const [selectedServices, setSelectedServices] = useState<string[]>([]);
+  const [bookingTypeFilter, setBookingTypeFilter] = useState<"all" | "single" | "deal">("all");
   const [serviceCategory, setServiceCategory] = useState<string>("all");
   const [selectedStaff, setSelectedStaff] = useState<string>("");
 
@@ -146,8 +147,8 @@ export default function BookingPage() {
     }
   };
 
-  const handleBookingSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleBookingSubmit = async (e?: React.FormEvent, openWhatsApp: boolean = false) => {
+    if (e) e.preventDefault();
     if (!selectedBranch || selectedServices.length === 0 || !selectedSlot) {
       setErrorMsg("Please choose your service and time slot.");
       return;
@@ -179,6 +180,24 @@ export default function BookingPage() {
       });
 
       setConfirmedBooking(result);
+
+      if (openWhatsApp) {
+        const servicesText = selectedServiceObjects.map((s) => s.name).join(", ");
+        const targetPhone = selectedBranch.phone ? selectedBranch.phone.replace(/[^0-9]/g, "") : "923323238540";
+        const message = encodeURIComponent(
+          `*Appointment Request - SHAY Men's Salon Karachi*\n\n` +
+          `• Branch: ${selectedBranch.name}\n` +
+          `• Guest Name: ${fullName}\n` +
+          `• Contact: ${phone}\n` +
+          `• Treatments: ${servicesText}\n` +
+          `• Scheduled Slot: ${selectedDate} at ${selectedSlot.time} (${selectedSlot.staff_name})\n` +
+          `• Total Amount: Rs. ${Number(totalCost).toLocaleString()}\n` +
+          `• Booking Ref: ${result.booking_reference || "CONFIRMED"}\n` +
+          (notes ? `• Special Notes: ${notes}\n\n` : `\n`) +
+          `Please confirm my appointment. Thank you!`
+        );
+        window.open(`https://wa.me/${targetPhone}?text=${message}`, "_blank");
+      }
     } catch (err: any) {
       setErrorMsg(err.message || "This time slot is no longer available. Please select another time.");
     } finally {
@@ -221,17 +240,30 @@ export default function BookingPage() {
 
   // Categories calculation
   const categories = useMemo(() => {
+    const relevantServices = services.filter((s) => {
+      const isDeal = s.category === "Deals & Packages" || s.category === "Wedding & Groom Packages" || s.name?.toLowerCase().includes("deal");
+      if (bookingTypeFilter === "deal") return isDeal;
+      if (bookingTypeFilter === "single") return !isDeal;
+      return true;
+    });
     const set = new Set<string>();
-    services.forEach((s) => {
+    relevantServices.forEach((s) => {
       if (s.category) set.add(s.category);
     });
     return ["all", ...Array.from(set)];
-  }, [services]);
+  }, [services, bookingTypeFilter]);
 
   const filteredServices = useMemo(() => {
-    if (serviceCategory === "all") return services;
-    return services.filter((s) => s.category === serviceCategory);
-  }, [services, serviceCategory]);
+    return services.filter((s) => {
+      const isDeal = s.category === "Deals & Packages" || s.category === "Wedding & Groom Packages" || s.name?.toLowerCase().includes("deal");
+      const matchesType =
+        bookingTypeFilter === "all" ||
+        (bookingTypeFilter === "deal" && isDeal) ||
+        (bookingTypeFilter === "single" && !isDeal);
+      const matchesCat = serviceCategory === "all" || s.category === serviceCategory;
+      return matchesType && matchesCat;
+    });
+  }, [services, bookingTypeFilter, serviceCategory]);
 
   // Selected services objects
   const selectedServiceObjects = useMemo(() => {
@@ -554,6 +586,14 @@ export default function BookingPage() {
                 </div>
 
                 <div className="mt-8 flex flex-col sm:flex-row gap-3">
+                  <a
+                    href={`https://wa.me/${selectedBranch?.phone ? selectedBranch.phone.replace(/[^0-9]/g, "") : "923323238540"}?text=${encodeURIComponent(`Salam! I just confirmed reservation ${confirmedBooking.booking_reference} at ${selectedBranch?.name || "SHAY Salon"}. Please acknowledge.`)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="py-3 px-5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm transition flex items-center justify-center gap-1.5"
+                  >
+                    <span>💬 Chat on WhatsApp</span>
+                  </a>
                   <button
                     onClick={() => {
                       setConfirmedBooking(null);
@@ -566,7 +606,7 @@ export default function BookingPage() {
                   </button>
                   <Link
                     href="/"
-                    className="py-3 px-6 rounded-xl border border-[#e7dfd8] hover:bg-[#faf7f4] text-[#1b1520] font-semibold text-xs transition"
+                    className="py-3 px-6 rounded-xl border border-[#e7dfd8] hover:bg-[#faf7f4] text-[#1b1520] font-semibold text-xs transition text-center"
                   >
                     Back to Home
                   </Link>
@@ -610,6 +650,48 @@ export default function BookingPage() {
                       </div>
                     </div>
 
+                    {/* Booking Type Segmented Switch (Single Services vs Combo Deals) */}
+                    <div className="flex items-center p-1.5 rounded-2xl bg-[#f4efea] border border-[#e7dfd8] text-xs">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setBookingTypeFilter("all");
+                          setServiceCategory("all");
+                        }}
+                        className={`flex-1 py-2 rounded-xl font-bold transition text-center ${
+                          bookingTypeFilter === "all" ? "bg-white text-[#1b1520] shadow-xs" : "text-[#7a7180] hover:text-[#1b1520]"
+                        }`}
+                      >
+                        All Treatments ({services.length})
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setBookingTypeFilter("single");
+                          setServiceCategory("all");
+                        }}
+                        className={`flex-1 py-2 rounded-xl font-bold transition text-center flex items-center justify-center gap-1.5 ${
+                          bookingTypeFilter === "single" ? "bg-[#a3214f] text-white shadow-xs" : "text-[#7a7180] hover:text-[#1b1520]"
+                        }`}
+                      >
+                        <Scissors className="w-3.5 h-3.5" />
+                        <span>Single Services</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setBookingTypeFilter("deal");
+                          setServiceCategory("all");
+                        }}
+                        className={`flex-1 py-2 rounded-xl font-bold transition text-center flex items-center justify-center gap-1.5 ${
+                          bookingTypeFilter === "deal" ? "bg-[#b38742] text-white shadow-xs" : "text-[#7a7180] hover:text-[#1b1520]"
+                        }`}
+                      >
+                        <Sparkles className="w-3.5 h-3.5" />
+                        <span>Combo Deals</span>
+                      </button>
+                    </div>
+
                     {/* Category Filter Chips */}
                     {categories.length > 2 && (
                       <div className="flex items-center gap-1.5 flex-wrap">
@@ -624,7 +706,7 @@ export default function BookingPage() {
                                 : "bg-[#faf7f4] text-[#7a7180] hover:text-[#1b1520] hover:bg-[#f2ece6] border border-[#e7dfd8]"
                             }`}
                           >
-                            {cat === "all" ? "All Treatments" : cat}
+                            {cat === "all" ? "All Categories" : cat}
                           </button>
                         ))}
                       </div>
@@ -634,6 +716,7 @@ export default function BookingPage() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                       {filteredServices.map((s) => {
                         const isSelected = selectedServices.includes(s.id);
+                        const isDeal = s.category === "Deals & Packages" || s.category === "Wedding & Groom Packages" || s.name?.toLowerCase().includes("deal");
                         return (
                           <div
                             key={s.id}
@@ -654,6 +737,20 @@ export default function BookingPage() {
                                   {isSelected && <Check className="w-3.5 h-3.5" />}
                                 </div>
                                 <div>
+                                  <div className="flex items-center gap-1.5 mb-1">
+                                    {isDeal ? (
+                                      <span className="px-2 py-0.5 rounded-md text-[9px] font-bold uppercase tracking-wider bg-amber-100 text-amber-900 border border-amber-200">
+                                        Combo Deal
+                                      </span>
+                                    ) : (
+                                      <span className="px-2 py-0.5 rounded-md text-[9px] font-bold uppercase tracking-wider bg-emerald-50 text-emerald-800 border border-emerald-200">
+                                        Single Service
+                                      </span>
+                                    )}
+                                    <span className="text-[10px] text-[#7a7180] font-medium">
+                                      {s.category}
+                                    </span>
+                                  </div>
                                   <h4 className="text-xs font-bold text-[#1b1520] group-hover:text-[#a3214f] transition">
                                     {s.name}
                                   </h4>
@@ -918,24 +1015,35 @@ export default function BookingPage() {
                         </div>
                       )}
 
-                      <div className="pt-4 border-t border-[#e7dfd8] flex items-center justify-between">
-                        <div className="text-xs text-[#7a7180]">
+                      <div className="pt-4 border-t border-[#e7dfd8] flex flex-col sm:flex-row items-center justify-between gap-3">
+                        <div className="text-xs text-[#7a7180] text-center sm:text-left">
                           {selectedSlot ? (
                             <span>
                               Selected: <strong className="text-[#1b1520]">{selectedDate} at {selectedSlot.time}</strong> with {selectedSlot.staff_name}
                             </span>
                           ) : (
-                            <span>Please choose your date & time slot above</span>
+                            <span>Please choose your date &amp; time slot above</span>
                           )}
                         </div>
 
-                        <button
-                          type="submit"
-                          disabled={submitting || !selectedSlot}
-                          className="px-8 py-3.5 rounded-xl bg-gradient-to-r from-[#a3214f] to-[#88183f] hover:from-[#8b1b42] hover:to-[#6f1232] disabled:opacity-50 text-white font-bold text-xs shadow-md transition transform hover:-translate-y-0.5"
-                        >
-                          {submitting ? "Securing Your Reservation..." : "Confirm Reservation"}
-                        </button>
+                        <div className="flex items-center gap-2.5 w-full sm:w-auto">
+                          <button
+                            type="button"
+                            disabled={submitting || !selectedSlot}
+                            onClick={() => handleBookingSubmit(undefined, true)}
+                            className="flex-1 sm:flex-none px-5 py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white font-bold text-xs shadow-md transition transform hover:-translate-y-0.5 flex items-center justify-center gap-1.5"
+                          >
+                            <span>Continue on WhatsApp 💬</span>
+                          </button>
+
+                          <button
+                            type="submit"
+                            disabled={submitting || !selectedSlot}
+                            className="flex-1 sm:flex-none px-6 py-3.5 rounded-xl bg-gradient-to-r from-[#a3214f] to-[#88183f] hover:from-[#8b1b42] hover:to-[#6f1232] disabled:opacity-50 text-white font-bold text-xs shadow-md transition transform hover:-translate-y-0.5"
+                          >
+                            {submitting ? "Securing..." : "Confirm Online"}
+                          </button>
+                        </div>
                       </div>
                     </form>
                   </div>

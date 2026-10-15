@@ -30,6 +30,7 @@ export default function AppointmentsPage() {
   // Walk-in modal
   const [showWalkInModal, setShowWalkInModal] = useState(false);
   const [walkInBranch, setWalkInBranch] = useState("");
+  const [walkInBookingType, setWalkInBookingType] = useState<"all" | "single" | "deal">("all");
   const [walkInService, setWalkInService] = useState("");
   const [walkInStaff, setWalkInStaff] = useState("");
   const [walkInName, setWalkInName] = useState("");
@@ -698,45 +699,111 @@ export default function AppointmentsPage() {
               </button>
             </div>
 
-            <form onSubmit={handleCreateWalkIn} className="mt-5 space-y-4">
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-bold text-[#4a4250] mb-1">Branch Location</label>
-                  {isOwner ? (
-                    <select
-                      value={walkInBranch}
-                      onChange={(e) => setWalkInBranch(e.target.value)}
-                      required
-                      className="w-full px-3 py-2.5 rounded-xl bg-[#faf7f4] border border-[#e7dfd8] text-[#1b1520] text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-[#a3214f]/20"
-                    >
-                      {branches.map((b) => (
-                        <option key={b.id} value={b.id}>{b.name}</option>
-                      ))}
-                    </select>
-                  ) : (
-                    <div className="w-full px-3 py-2.5 rounded-xl bg-[#faf7f4] border border-[#e7dfd8] text-[#1b1520] text-xs font-semibold flex items-center justify-between cursor-not-allowed select-none">
-                      <span className="truncate">{branches.find((b) => b.id === (walkInBranch || userAssignedBranch))?.name || "Clifton Flagship Branch"}</span>
-                      <span className="text-[10px] text-amber-800 bg-amber-100 border border-amber-200 px-2 py-0.5 rounded-md font-bold shrink-0">
-                        🔒 Station Locked
-                      </span>
-                    </div>
-                  )}
-                </div>
+            {(() => {
+              const filteredWalkInServices = services.filter((s) => {
+                const isDeal = s.category === "Deals & Packages" || s.category === "Wedding & Groom Packages" || s.name?.toLowerCase().includes("deal");
+                if (walkInBookingType === "single") return !isDeal;
+                if (walkInBookingType === "deal") return isDeal;
+                return true;
+              });
+              const walkInCategories = Array.from(new Set(filteredWalkInServices.map((s) => s.category || "General Grooming")));
 
-                <div>
-                  <label className="block text-xs font-bold text-[#4a4250] mb-1">Treatment</label>
-                  <select
-                    value={walkInService}
-                    onChange={(e) => setWalkInService(e.target.value)}
-                    required
-                    className="w-full px-3 py-2.5 rounded-xl bg-[#faf7f4] border border-[#e7dfd8] text-[#1b1520] text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-[#a3214f]/20"
-                  >
-                    {services.map((s) => (
-                      <option key={s.id} value={s.id}>{s.name} (Rs. {Number(s.base_price).toLocaleString()})</option>
-                    ))}
-                  </select>
-                </div>
-              </div>
+              return (
+                <form onSubmit={handleCreateWalkIn} className="mt-5 space-y-4">
+                  {/* Booking Type Filter Tabs */}
+                  <div className="flex items-center justify-between p-1 rounded-xl bg-[#f4efea] border border-[#e7dfd8] text-xs">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setWalkInBookingType("all");
+                        if (filteredWalkInServices.length > 0 && !filteredWalkInServices.find(s => s.id === walkInService)) {
+                          setWalkInService(filteredWalkInServices[0].id);
+                        }
+                      }}
+                      className={`flex-1 py-1.5 rounded-lg font-bold transition text-center ${
+                        walkInBookingType === "all" ? "bg-white text-[#1b1520] shadow-xs" : "text-[#7a7180] hover:text-[#1b1520]"
+                      }`}
+                    >
+                      All Treatments
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setWalkInBookingType("single");
+                        const singles = services.filter(s => !(s.category === "Deals & Packages" || s.category === "Wedding & Groom Packages" || s.name?.toLowerCase().includes("deal")));
+                        if (singles.length > 0 && !singles.find(s => s.id === walkInService)) {
+                          setWalkInService(singles[0].id);
+                        }
+                      }}
+                      className={`flex-1 py-1.5 rounded-lg font-bold transition text-center ${
+                        walkInBookingType === "single" ? "bg-[#a3214f] text-white shadow-xs" : "text-[#7a7180] hover:text-[#1b1520]"
+                      }`}
+                    >
+                      ✂️ Single Services
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setWalkInBookingType("deal");
+                        const deals = services.filter(s => (s.category === "Deals & Packages" || s.category === "Wedding & Groom Packages" || s.name?.toLowerCase().includes("deal")));
+                        if (deals.length > 0 && !deals.find(s => s.id === walkInService)) {
+                          setWalkInService(deals[0].id);
+                        }
+                      }}
+                      className={`flex-1 py-1.5 rounded-lg font-bold transition text-center ${
+                        walkInBookingType === "deal" ? "bg-[#b38742] text-white shadow-xs" : "text-[#7a7180] hover:text-[#1b1520]"
+                      }`}
+                    >
+                      🎁 Combo Deals
+                    </button>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs font-bold text-[#4a4250] mb-1">Branch Location</label>
+                      {isOwner ? (
+                        <select
+                          value={walkInBranch}
+                          onChange={(e) => setWalkInBranch(e.target.value)}
+                          required
+                          className="w-full px-3 py-2.5 rounded-xl bg-[#faf7f4] border border-[#e7dfd8] text-[#1b1520] text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-[#a3214f]/20"
+                        >
+                          {branches.map((b) => (
+                            <option key={b.id} value={b.id}>{b.name}</option>
+                          ))}
+                        </select>
+                      ) : (
+                        <div className="w-full px-3 py-2.5 rounded-xl bg-[#faf7f4] border border-[#e7dfd8] text-[#1b1520] text-xs font-semibold flex items-center justify-between cursor-not-allowed select-none">
+                          <span className="truncate">{branches.find((b) => b.id === (walkInBranch || userAssignedBranch))?.name || "Clifton Flagship Branch"}</span>
+                          <span className="text-[10px] text-amber-800 bg-amber-100 border border-amber-200 px-2 py-0.5 rounded-md font-bold shrink-0">
+                            🔒 Station Locked
+                          </span>
+                        </div>
+                      )}
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold text-[#4a4250] mb-1">Treatment</label>
+                      <select
+                        value={walkInService}
+                        onChange={(e) => setWalkInService(e.target.value)}
+                        required
+                        className="w-full px-3 py-2.5 rounded-xl bg-[#faf7f4] border border-[#e7dfd8] text-[#1b1520] text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-[#a3214f]/20"
+                      >
+                        {walkInCategories.map((cat) => (
+                          <optgroup key={cat} label={`── ${cat} ──`}>
+                            {filteredWalkInServices
+                              .filter((s) => (s.category || "General Grooming") === cat)
+                              .map((s) => (
+                                <option key={s.id} value={s.id}>
+                                  {s.name} ({s.default_duration_minutes || 30}m · Rs. {Number(s.base_price).toLocaleString()})
+                                </option>
+                              ))}
+                          </optgroup>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
@@ -817,6 +884,8 @@ export default function AppointmentsPage() {
                 </button>
               </div>
             </form>
+          );
+        })()}
           </div>
         </div>
       )}

@@ -18,6 +18,7 @@ export function WalkInDialog({ isOpen, onClose, onSuccess, initialServiceId }: W
 
   const [branchId, setBranchId] = useState("");
   const [serviceId, setServiceId] = useState(initialServiceId || "");
+  const [bookingType, setBookingType] = useState<"all" | "single" | "deal">("all");
   const [staffId, setStaffId] = useState("");
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
@@ -121,6 +122,14 @@ export function WalkInDialog({ isOpen, onClose, onSuccess, initialServiceId }: W
     }
   };
 
+  const filteredServices = services.filter((s) => {
+    const isDeal = s.category === "Deals & Packages" || s.category === "Wedding & Groom Packages" || s.name?.toLowerCase().includes("deal");
+    if (bookingType === "single") return !isDeal;
+    if (bookingType === "deal") return isDeal;
+    return true;
+  });
+
+  const categories = Array.from(new Set(filteredServices.map((s) => s.category || "General Grooming")));
   const selectedSvc = services.find((s) => s.id === serviceId);
 
   return (
@@ -152,6 +161,54 @@ export function WalkInDialog({ isOpen, onClose, onSuccess, initialServiceId }: W
 
         {/* Form Body */}
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
+          {/* Booking Type Filter Tabs */}
+          <div className="flex items-center justify-between p-1 rounded-xl bg-[#f4efea] border border-[#e7dfd8] text-xs">
+            <button
+              type="button"
+              onClick={() => {
+                setBookingType("all");
+                if (filteredServices.length > 0 && !filteredServices.find(s => s.id === serviceId)) {
+                  setServiceId(filteredServices[0].id);
+                }
+              }}
+              className={`flex-1 py-1.5 rounded-lg font-bold transition text-center ${
+                bookingType === "all" ? "bg-white text-[#1b1520] shadow-xs" : "text-[#7a7180] hover:text-[#1b1520]"
+              }`}
+            >
+              All Treatments
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setBookingType("single");
+                const singles = services.filter(s => !(s.category === "Deals & Packages" || s.category === "Wedding & Groom Packages" || s.name?.toLowerCase().includes("deal")));
+                if (singles.length > 0 && !singles.find(s => s.id === serviceId)) {
+                  setServiceId(singles[0].id);
+                }
+              }}
+              className={`flex-1 py-1.5 rounded-lg font-bold transition text-center ${
+                bookingType === "single" ? "bg-[#a3214f] text-white shadow-xs" : "text-[#7a7180] hover:text-[#1b1520]"
+              }`}
+            >
+              ✂️ Single Services
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setBookingType("deal");
+                const deals = services.filter(s => (s.category === "Deals & Packages" || s.category === "Wedding & Groom Packages" || s.name?.toLowerCase().includes("deal")));
+                if (deals.length > 0 && !deals.find(s => s.id === serviceId)) {
+                  setServiceId(deals[0].id);
+                }
+              }}
+              className={`flex-1 py-1.5 rounded-lg font-bold transition text-center ${
+                bookingType === "deal" ? "bg-[#b38742] text-white shadow-xs" : "text-[#7a7180] hover:text-[#1b1520]"
+              }`}
+            >
+              🎁 Combo Deals
+            </button>
+          </div>
+
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-xs font-bold text-[#4a4250] mb-1">Salon Branch</label>
@@ -186,10 +243,16 @@ export function WalkInDialog({ isOpen, onClose, onSuccess, initialServiceId }: W
                 required
                 className="w-full px-3 py-2 rounded-xl bg-[#faf7f4] border border-[#e7dfd8] text-xs font-bold text-[#1b1520] focus:outline-none focus:ring-2 focus:ring-[#a3214f]/20"
               >
-                {services.map((s) => (
-                  <option key={s.id} value={s.id}>
-                    {s.name} (Rs. {Number(s.base_price).toLocaleString()})
-                  </option>
+                {categories.map((cat) => (
+                  <optgroup key={cat} label={`── ${cat} ──`}>
+                    {filteredServices
+                      .filter((s) => (s.category || "General Grooming") === cat)
+                      .map((s) => (
+                        <option key={s.id} value={s.id}>
+                          {s.name} ({s.default_duration_minutes || 30}m · Rs. {Number(s.base_price).toLocaleString()})
+                        </option>
+                      ))}
+                  </optgroup>
                 ))}
               </select>
             </div>

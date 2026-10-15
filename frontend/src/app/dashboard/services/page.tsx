@@ -90,15 +90,22 @@ export default function ServicesPage() {
     }
   };
 
+  const [serviceType, setServiceType] = useState<"all" | "single" | "deal">("all");
+
   const categories = ["all", ...Array.from(new Set(services.map((s) => s.category).filter(Boolean)))];
 
   const filteredServices = services.filter((s) => {
+    const isDeal = s.category === "Deals & Packages" || s.category === "Wedding & Groom Packages" || s.name?.toLowerCase().includes("deal");
+    const matchesType =
+      serviceType === "all" ||
+      (serviceType === "deal" && isDeal) ||
+      (serviceType === "single" && !isDeal);
     const matchesCategory = selectedCategory === "all" || s.category === selectedCategory;
     const matchesSearch =
       !searchTerm ||
       s.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       s.description?.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesCategory && matchesSearch;
+    return matchesType && matchesCategory && matchesSearch;
   });
 
   const avgDuration = services.length
@@ -111,7 +118,7 @@ export default function ServicesPage() {
       <PageHeader
         eyebrow="Treatment Menu"
         title="Services & Treatments"
-        description="Master treatment catalog with transparent pricing and customizable branch overrides"
+        description="Master treatment catalog: single individual grooming services and curated combo deals"
         actions={
           isOwner ? (
             <button
@@ -158,7 +165,7 @@ export default function ServicesPage() {
       </div>
 
       {/* Search and Category Filters */}
-      <Card className="p-4">
+      <Card className="p-4 space-y-3.5">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="relative w-full sm:w-80">
             <Search className="w-4 h-4 text-[#7a7180] absolute left-3.5 top-3" />
@@ -166,27 +173,57 @@ export default function ServicesPage() {
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Search treatments or descriptions..."
+              placeholder="Search services (e.g. Skin Fade, Beard, HydraFacial)..."
               className="w-full pl-10 pr-4 py-2 rounded-xl bg-[#faf7f4] border border-[#e7dfd8] text-[#1b1520] text-xs focus:outline-none focus:ring-2 focus:ring-[#a3214f]/20"
             />
           </div>
 
-          {/* Category Tabs */}
-          <div className="flex flex-wrap gap-1.5 w-full sm:w-auto">
-            {categories.map((cat) => (
-              <button
-                key={cat}
-                onClick={() => setSelectedCategory(cat)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition capitalize ${
-                  selectedCategory === cat
-                    ? "bg-[#1b1520] text-white shadow-xs"
-                    : "bg-[#faf7f4] text-[#7a7180] hover:bg-[#f2ece6] border border-[#e7dfd8]"
-                }`}
-              >
-                {cat === "all" ? "All Categories" : cat}
-              </button>
-            ))}
+          {/* Type Segmented Control (Single vs Deal) */}
+          <div className="flex items-center p-1 rounded-xl bg-[#f4efea] border border-[#e7dfd8] text-xs">
+            <button
+              onClick={() => setServiceType("all")}
+              className={`px-3 py-1.5 rounded-lg font-bold transition ${
+                serviceType === "all" ? "bg-white text-[#1b1520] shadow-xs" : "text-[#7a7180] hover:text-[#1b1520]"
+              }`}
+            >
+              All ({services.length})
+            </button>
+            <button
+              onClick={() => setServiceType("single")}
+              className={`px-3 py-1.5 rounded-lg font-bold transition flex items-center gap-1.5 ${
+                serviceType === "single" ? "bg-[#a3214f] text-white shadow-xs" : "text-[#7a7180] hover:text-[#1b1520]"
+              }`}
+            >
+              <Scissors className="w-3 h-3" />
+              <span>Single Services</span>
+            </button>
+            <button
+              onClick={() => setServiceType("deal")}
+              className={`px-3 py-1.5 rounded-lg font-bold transition flex items-center gap-1.5 ${
+                serviceType === "deal" ? "bg-[#b38742] text-white shadow-xs" : "text-[#7a7180] hover:text-[#1b1520]"
+              }`}
+            >
+              <Sparkles className="w-3 h-3" />
+              <span>Deals &amp; Packages</span>
+            </button>
           </div>
+        </div>
+
+        {/* Category Tabs */}
+        <div className="flex flex-wrap gap-1.5 pt-2 border-t border-[#e7dfd8]/60">
+          {categories.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => setSelectedCategory(cat)}
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition capitalize ${
+                selectedCategory === cat
+                  ? "bg-[#1b1520] text-white shadow-xs"
+                  : "bg-[#faf7f4] text-[#7a7180] hover:bg-[#f2ece6] border border-[#e7dfd8]"
+              }`}
+            >
+              {cat === "all" ? "All Categories" : cat}
+            </button>
+          ))}
         </div>
       </Card>
 
@@ -210,10 +247,21 @@ export default function ServicesPage() {
               >
                 <div>
                   <div className="flex items-start justify-between gap-2">
-                    <Badge tone="brand" className="text-[10px] font-semibold uppercase tracking-wider">
-                      {s.category || "Treatment"}
-                    </Badge>
-                    <span className="text-xl font-serif font-bold text-[#a3214f] tabular-nums">
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <Badge tone="brand" className="text-[10px] font-semibold uppercase tracking-wider">
+                        {s.category || "Treatment"}
+                      </Badge>
+                      {s.category === "Deals & Packages" || s.category === "Wedding & Groom Packages" || s.name?.toLowerCase().includes("deal") ? (
+                        <span className="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider bg-amber-100 text-amber-900 border border-amber-200">
+                          🎁 Combo Deal
+                        </span>
+                      ) : (
+                        <span className="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider bg-emerald-50 text-emerald-800 border border-emerald-200">
+                          ✂️ Single Service
+                        </span>
+                      )}
+                    </div>
+                    <span className="text-xl font-serif font-bold text-[#a3214f] tabular-nums shrink-0">
                       {formatCurrency(s.base_price)}
                     </span>
                   </div>
@@ -309,11 +357,14 @@ export default function ServicesPage() {
                     onChange={(e) => setCategory(e.target.value)}
                     className="w-full px-3 py-2.5 rounded-xl bg-[#faf7f4] border border-[#e7dfd8] text-[#1b1520] text-xs focus:outline-none focus:ring-2 focus:ring-[#a3214f]/20"
                   >
-                    <option value="Hair Services">Hair Services</option>
-                    <option value="Hair Color">Hair Color</option>
-                    <option value="Esthetics & Skincare">Esthetics & Skincare</option>
-                    <option value="Body Spa">Body Spa</option>
-                    <option value="Nail Care">Nail Care</option>
+                    <option value="Haircut & Styling">Haircut &amp; Styling</option>
+                    <option value="Beard Styling & Shave">Beard Styling &amp; Shave</option>
+                    <option value="Hair Color & Chemical">Hair Color &amp; Chemical</option>
+                    <option value="Facial & Skin Care">Facial &amp; Skin Care</option>
+                    <option value="Hair & Scalp Treatments">Hair &amp; Scalp Treatments</option>
+                    <option value="Mani-Pedi & Spa">Mani-Pedi &amp; Spa</option>
+                    <option value="Wedding & Groom Packages">Wedding &amp; Groom Packages</option>
+                    <option value="Deals & Packages">Deals &amp; Packages</option>
                   </select>
                 </div>
 
