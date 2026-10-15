@@ -94,6 +94,13 @@ export default function GuestDealsPage() {
 
           <div className="flex items-center space-x-3">
             <Link
+              href="/services"
+              className="inline-flex items-center space-x-1.5 px-3.5 py-2 rounded-full border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold transition shadow-2xs"
+            >
+              <Scissors className="w-3.5 h-3.5 text-amber-600" />
+              <span>Services</span>
+            </Link>
+            <Link
               href="/book"
               className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-[#0B1B3D] to-[#12285A] hover:bg-[#0A1931] text-amber-300 text-xs font-bold transition shadow-sm transform hover:-translate-y-0.5"
             >

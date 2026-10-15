@@ -2,7 +2,7 @@ import Link from "next/link";
 import {
   Sparkles, Calendar, ShieldCheck, ArrowRight, Building2,
   Clock, CheckCircle2, MapPin, Phone, Star, Scissors,
-  Heart, Award, ChevronRight
+  Heart, Award, ChevronRight, Gift
 } from "lucide-react";
 
 export default function HomePage() {
@@ -25,13 +25,20 @@ export default function HomePage() {
             </div>
           </div>
 
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-2.5">
+            <Link
+              href="/services"
+              className="inline-flex items-center space-x-1.5 px-3.5 py-2 rounded-full border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold transition shadow-2xs"
+            >
+              <Scissors className="w-3.5 h-3.5 text-amber-600" />
+              <span>Services</span>
+            </Link>
             <Link
               href="/deals"
               className="inline-flex items-center space-x-1.5 px-3.5 py-2 rounded-full border border-amber-200 bg-amber-50/70 hover:bg-amber-100 text-amber-800 text-xs font-bold transition shadow-xs"
             >
-              <Sparkles className="w-3.5 h-3.5 text-amber-600" />
-              <span>Deals &amp; Packages</span>
+              <Gift className="w-3.5 h-3.5 text-amber-600" />
+              <span>30 Deals</span>
             </Link>
             <Link
               href="/book"
@@ -277,6 +284,8 @@ export default function HomePage() {
           </div>
 
           <div className="flex items-center gap-6">
+            <Link href="/services" className="hover:text-white transition">Services</Link>
+            <Link href="/deals" className="hover:text-white transition">30 Deals</Link>
             <Link href="/book" className="hover:text-white transition">Book Appointment</Link>
             <Link href="/dashboard" className="hover:text-white transition">Manager Portal</Link>
             <Link href="/login" className="hover:text-white transition">Staff Terminal</Link>

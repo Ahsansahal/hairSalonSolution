@@ -107,6 +107,23 @@ export default function BookingPage() {
       .then((data) => {
         setServices(data.services);
         setStaffMembers(data.staff);
+
+        // Preselect service or deal from URL params if present
+        if (typeof window !== "undefined") {
+          const urlParams = new URLSearchParams(window.location.search);
+          const paramSvcId = urlParams.get("service_id");
+          const paramDeal = urlParams.get("deal");
+          if (paramSvcId && data.services.some((s) => s.id === paramSvcId)) {
+            setSelectedServices([paramSvcId]);
+          } else if (paramDeal) {
+            const found = data.services.find(
+              (s) =>
+                s.name.toLowerCase().includes(paramDeal.toLowerCase()) ||
+                s.id.toLowerCase() === paramDeal.toLowerCase()
+            );
+            if (found) setSelectedServices([found.id]);
+          }
+        }
       })
       .catch((err) => {
         console.error("Catalog load error", err);
