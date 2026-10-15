@@ -85,7 +85,18 @@ export default function InventoryPage() {
 
   const loadData = () => {
     setLoading(true);
-    const activeBranch = localStorage.getItem("salon_active_branch") || "all";
+    const stored = typeof window !== "undefined" ? localStorage.getItem("salon_user") : null;
+    let isUserOwner = true;
+    let uBranch = "b1";
+    if (stored) {
+      try {
+        const u = JSON.parse(stored);
+        isUserOwner = u.system_role === "BUSINESS_OWNER" || u.system_role === "PLATFORM_ADMIN";
+        uBranch = u.branch_id || u.branch_roles?.[0]?.branch_id || "b1";
+      } catch (e) {}
+    }
+    const branchFromStorage = typeof window !== "undefined" ? (localStorage.getItem("salon_active_branch") || "all") : "all";
+    const activeBranch = !isUserOwner ? uBranch : branchFromStorage;
     const branchParam = activeBranch !== "all" ? `?branch_id=${activeBranch}` : "";
 
     Promise.all([

@@ -38,9 +38,42 @@ export default function AppointmentsPage() {
   const [walkInSubmitting, setWalkInSubmitting] = useState(false);
   const [walkInError, setWalkInError] = useState("");
 
+  // User & RBAC state
+  const [user, setUser] = useState<any | null>(null);
+
+  useEffect(() => {
+    const stored = localStorage.getItem("salon_user");
+    if (stored) {
+      try {
+        const u = JSON.parse(stored);
+        setUser(u);
+        const isUserOwner = u.system_role === "BUSINESS_OWNER" || u.system_role === "PLATFORM_ADMIN";
+        if (!isUserOwner) {
+          const uBranch = u.branch_id || u.branch_roles?.[0]?.branch_id || "b1";
+          setWalkInBranch(uBranch);
+        }
+      } catch (e) {}
+    }
+  }, []);
+
+  const isOwner = user?.system_role === "BUSINESS_OWNER" || user?.system_role === "PLATFORM_ADMIN";
+  const userAssignedBranch = user?.branch_id || user?.branch_roles?.[0]?.branch_id || "b1";
+
   const loadAppointments = () => {
     setLoading(true);
-    const activeBranch = localStorage.getItem("salon_active_branch") || "all";
+    const stored = typeof window !== "undefined" ? localStorage.getItem("salon_user") : null;
+    let isUserOwner = true;
+    let uBranch = "b1";
+    if (stored) {
+      try {
+        const u = JSON.parse(stored);
+        isUserOwner = u.system_role === "BUSINESS_OWNER" || u.system_role === "PLATFORM_ADMIN";
+        uBranch = u.branch_id || u.branch_roles?.[0]?.branch_id || "b1";
+      } catch (e) {}
+    }
+    const branchFromStorage = typeof window !== "undefined" ? (localStorage.getItem("salon_active_branch") || "all") : "all";
+    const activeBranch = !isUserOwner ? uBranch : branchFromStorage;
+
     const params = new URLSearchParams();
     if (activeBranch !== "all") params.set("branch_id", activeBranch);
     if (statusFilter !== "all") params.set("status", statusFilter);
@@ -63,7 +96,27 @@ export default function AppointmentsPage() {
     apiFetch("/branches/").then((res) => {
       const bList = Array.isArray(res) ? res : res.results || [];
       setBranches(bList);
-      if (bList.length > 0) setWalkInBranch(bList[0].id);
+      const stored = localStorage.getItem("salon_user");
+      let isUserOwner = true;
+      let uBranch = "b1";
+      if (stored) {
+        try {
+          const u = JSON.parse(stored);
+          isUserOwner = u.system_role === "BUSINESS_OWNER" || u.system_role === "PLATFORM_ADMIN";
+          uBranch = u.branch_id || u.branch_roles?.[0]?.branch_id || "b1";
+        } catch (e) {}
+      }
+
+      if (!isUserOwner) {
+        setWalkInBranch(uBranch);
+      } else {
+        const active = localStorage.getItem("salon_active_branch");
+        if (active && active !== "all") {
+          setWalkInBranch(active);
+        } else if (bList.length > 0) {
+          setWalkInBranch(bList[0].id);
+        }
+      }
     });
 
     apiFetch("/services/").then((res) => {
@@ -649,16 +702,25 @@ export default function AppointmentsPage() {
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-bold text-[#4a4250] mb-1">Branch Location</label>
-                  <select
-                    value={walkInBranch}
-                    onChange={(e) => setWalkInBranch(e.target.value)}
-                    required
-                    className="w-full px-3 py-2.5 rounded-xl bg-[#faf7f4] border border-[#e7dfd8] text-[#1b1520] text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-[#a3214f]/20"
-                  >
-                    {branches.map((b) => (
-                      <option key={b.id} value={b.id}>{b.name}</option>
-                    ))}
-                  </select>
+                  {isOwner ? (
+                    <select
+                      value={walkInBranch}
+                      onChange={(e) => setWalkInBranch(e.target.value)}
+                      required
+                      className="w-full px-3 py-2.5 rounded-xl bg-[#faf7f4] border border-[#e7dfd8] text-[#1b1520] text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-[#a3214f]/20"
+                    >
+                      {branches.map((b) => (
+                        <option key={b.id} value={b.id}>{b.name}</option>
+                      ))}
+                    </select>
+                  ) : (
+                    <div className="w-full px-3 py-2.5 rounded-xl bg-[#faf7f4] border border-[#e7dfd8] text-[#1b1520] text-xs font-semibold flex items-center justify-between cursor-not-allowed select-none">
+                      <span className="truncate">{branches.find((b) => b.id === (walkInBranch || userAssignedBranch))?.name || "Clifton Flagship Branch"}</span>
+                      <span className="text-[10px] text-amber-800 bg-amber-100 border border-amber-200 px-2 py-0.5 rounded-md font-bold shrink-0">
+                        🔒 Station Locked
+                      </span>
+                    </div>
+                  )}
                 </div>
 
                 <div>
@@ -670,7 +732,7 @@ export default function AppointmentsPage() {
                     className="w-full px-3 py-2.5 rounded-xl bg-[#faf7f4] border border-[#e7dfd8] text-[#1b1520] text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-[#a3214f]/20"
                   >
                     {services.map((s) => (
-                      <option key={s.id} value={s.id}>{s.name} (${s.base_price})</option>
+                      <option key={s.id} value={s.id}>{s.name} (Rs. {Number(s.base_price).toLocaleString()})</option>
                     ))}
                   </select>
                 </div>
@@ -685,9 +747,11 @@ export default function AppointmentsPage() {
                     required
                     className="w-full px-3 py-2.5 rounded-xl bg-[#faf7f4] border border-[#e7dfd8] text-[#1b1520] text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-[#a3214f]/20"
                   >
-                    {staffList.map((st) => (
-                      <option key={st.id} value={st.id}>{st.full_name}</option>
-                    ))}
+                    {staffList
+                      .filter((st) => !walkInBranch || !st.branch_id || st.branch_id === walkInBranch)
+                      .map((st) => (
+                        <option key={st.id} value={st.id}>{st.full_name}</option>
+                      ))}
                   </select>
                 </div>
 
@@ -710,7 +774,7 @@ export default function AppointmentsPage() {
                     type="text"
                     value={walkInName}
                     onChange={(e) => setWalkInName(e.target.value)}
-                    placeholder="e.g. Victoria Sterling"
+                    placeholder="e.g. Ayesha Khan"
                     required
                     className="w-full px-3 py-2 rounded-xl bg-[#faf7f4] border border-[#e7dfd8] text-[#1b1520] text-xs focus:outline-none focus:ring-2 focus:ring-[#a3214f]/20"
                   />
@@ -722,7 +786,7 @@ export default function AppointmentsPage() {
                     type="tel"
                     value={walkInPhone}
                     onChange={(e) => setWalkInPhone(e.target.value)}
-                    placeholder="+1 212 555 0192"
+                    placeholder="+92 300 1234567"
                     required
                     className="w-full px-3 py-2 rounded-xl bg-[#faf7f4] border border-[#e7dfd8] text-[#1b1520] text-xs focus:outline-none focus:ring-2 focus:ring-[#a3214f]/20"
                   />

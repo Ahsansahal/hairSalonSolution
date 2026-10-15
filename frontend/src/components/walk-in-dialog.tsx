@@ -27,8 +27,22 @@ export function WalkInDialog({ isOpen, onClose, onSuccess, initialServiceId }: W
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  const [user, setUser] = useState<any | null>(null);
+
   useEffect(() => {
     if (!isOpen) return;
+
+    const stored = localStorage.getItem("salon_user");
+    let isUserOwner = true;
+    let uBranch = "b1";
+    if (stored) {
+      try {
+        const u = JSON.parse(stored);
+        setUser(u);
+        isUserOwner = u.system_role === "BUSINESS_OWNER" || u.system_role === "PLATFORM_ADMIN";
+        uBranch = u.branch_id || u.branch_roles?.[0]?.branch_id || "b1";
+      } catch (e) {}
+    }
 
     if (initialServiceId) {
       setServiceId(initialServiceId);
@@ -42,11 +56,15 @@ export function WalkInDialog({ isOpen, onClose, onSuccess, initialServiceId }: W
     apiFetch("/branches/").then((data) => {
       const bList = Array.isArray(data) ? data : data.results || [];
       setBranches(bList);
-      const activeBranch = localStorage.getItem("salon_active_branch");
-      if (activeBranch && activeBranch !== "all") {
-        setBranchId(activeBranch);
-      } else if (bList.length > 0) {
-        setBranchId(bList[0].id);
+      if (!isUserOwner) {
+        setBranchId(uBranch);
+      } else {
+        const activeBranch = localStorage.getItem("salon_active_branch");
+        if (activeBranch && activeBranch !== "all") {
+          setBranchId(activeBranch);
+        } else if (bList.length > 0) {
+          setBranchId(bList[0].id);
+        }
       }
     });
 
@@ -66,6 +84,8 @@ export function WalkInDialog({ isOpen, onClose, onSuccess, initialServiceId }: W
       if (stList.length > 0) setStaffId(stList[0].id);
     });
   }, [isOpen]);
+
+  const isOwner = user?.system_role === "BUSINESS_OWNER" || user?.system_role === "PLATFORM_ADMIN";
 
   if (!isOpen) return null;
 
@@ -135,18 +155,27 @@ export function WalkInDialog({ isOpen, onClose, onSuccess, initialServiceId }: W
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-xs font-bold text-[#4a4250] mb-1">Salon Branch</label>
-              <select
-                value={branchId}
-                onChange={(e) => setBranchId(e.target.value)}
-                required
-                className="w-full px-3 py-2 rounded-xl bg-[#faf7f4] border border-[#e7dfd8] text-xs font-bold text-[#1b1520] focus:outline-none focus:ring-2 focus:ring-[#a3214f]/20"
-              >
-                {branches.map((b) => (
-                  <option key={b.id} value={b.id}>
-                    {b.name}
-                  </option>
-                ))}
-              </select>
+              {isOwner ? (
+                <select
+                  value={branchId}
+                  onChange={(e) => setBranchId(e.target.value)}
+                  required
+                  className="w-full px-3 py-2 rounded-xl bg-[#faf7f4] border border-[#e7dfd8] text-xs font-bold text-[#1b1520] focus:outline-none focus:ring-2 focus:ring-[#a3214f]/20"
+                >
+                  {branches.map((b) => (
+                    <option key={b.id} value={b.id}>
+                      {b.name}
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                <div className="w-full px-3 py-2 rounded-xl bg-[#faf7f4] border border-[#e7dfd8] text-xs font-bold text-[#1b1520] flex items-center justify-between cursor-not-allowed select-none">
+                  <span className="truncate">{branches.find((b) => b.id === branchId)?.name || "Clifton Flagship Branch"}</span>
+                  <span className="text-[10px] text-amber-800 bg-amber-100 border border-amber-200 px-2 py-0.5 rounded-md font-bold shrink-0">
+                    🔒 Station Locked
+                  </span>
+                </div>
+              )}
             </div>
 
             <div>
@@ -159,7 +188,7 @@ export function WalkInDialog({ isOpen, onClose, onSuccess, initialServiceId }: W
               >
                 {services.map((s) => (
                   <option key={s.id} value={s.id}>
-                    {s.name} (${s.base_price})
+                    {s.name} (Rs. {Number(s.base_price).toLocaleString()})
                   </option>
                 ))}
               </select>
@@ -175,11 +204,13 @@ export function WalkInDialog({ isOpen, onClose, onSuccess, initialServiceId }: W
                 className="w-full px-3 py-2 rounded-xl bg-[#faf7f4] border border-[#e7dfd8] text-xs font-bold text-[#1b1520] focus:outline-none focus:ring-2 focus:ring-[#a3214f]/20"
               >
                 <option value="">Auto-Assign Available Stylist</option>
-                {staffList.map((st) => (
-                  <option key={st.id} value={st.id}>
-                    {st.full_name}
-                  </option>
-                ))}
+                {staffList
+                  .filter((st) => !branchId || !st.branch_id || st.branch_id === branchId)
+                  .map((st) => (
+                    <option key={st.id} value={st.id}>
+                      {st.full_name}
+                    </option>
+                  ))}
               </select>
             </div>
 
@@ -203,7 +234,7 @@ export function WalkInDialog({ isOpen, onClose, onSuccess, initialServiceId }: W
                 value={customerName}
                 onChange={(e) => setCustomerName(e.target.value)}
                 required
-                placeholder="e.g. Rachel Adams"
+                placeholder="e.g. Ayesha Khan"
                 className="w-full px-3.5 py-2.5 rounded-xl bg-[#faf7f4] border border-[#e7dfd8] text-xs font-semibold text-[#1b1520] focus:outline-none focus:ring-2 focus:ring-[#a3214f]/20"
               />
             </div>
@@ -215,7 +246,7 @@ export function WalkInDialog({ isOpen, onClose, onSuccess, initialServiceId }: W
                 value={customerPhone}
                 onChange={(e) => setCustomerPhone(e.target.value)}
                 required
-                placeholder="+1 212 555 0100"
+                placeholder="+92 300 1234567"
                 className="w-full px-3.5 py-2.5 rounded-xl bg-[#faf7f4] border border-[#e7dfd8] text-xs font-semibold text-[#1b1520] focus:outline-none focus:ring-2 focus:ring-[#a3214f]/20"
               />
             </div>
