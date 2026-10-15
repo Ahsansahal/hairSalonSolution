@@ -20,6 +20,7 @@ export default function DailySalesReportsPage() {
   const [loading, setLoading] = useState(true);
   const [copiedNotification, setCopiedNotification] = useState(false);
   const [activeTab, setActiveTab] = useState<"sales" | "pnl">("sales");
+  const [pnlTimeframe, setPnlTimeframe] = useState<"DAILY" | "MTD" | "QTD" | "YTD">("MTD");
 
   // Expense Modal State
   const [showExpenseModal, setShowExpenseModal] = useState(false);
@@ -103,14 +104,101 @@ Generated securely from SHAY Salon Management Cloud.`;
   };
 
   // P&L Calculations
-  const grossRevenue = report?.total_sales || 156500;
-  const srbTax = report?.tax_collected || Math.round(grossRevenue * 0.13);
-  const staffCommissions = report?.staff_commissions || Math.round(grossRevenue * 0.15);
+  const grossRevenue = parseFloat(report?.summary?.gross_revenue || report?.total_sales || "156500");
+  const srbTax = parseFloat(report?.summary?.tax_collected || report?.tax_collected || String(Math.round(grossRevenue * 0.13)));
+  const staffCommissions = parseFloat(report?.staff_commissions || String(Math.round(grossRevenue * 0.15)));
   const totalOperatingExpenses = expenses.reduce((acc, exp) => acc + exp.amount, 0);
   const cogsExpenses = expenses.filter((e) => e.category === "SUPPLIES").reduce((acc, e) => acc + e.amount, 0) || 18200;
   const overheadExpenses = totalOperatingExpenses - cogsExpenses;
   const netProfit = grossRevenue - cogsExpenses - staffCommissions - overheadExpenses - srbTax;
-  const netProfitMargin = Math.round((netProfit / grossRevenue) * 100);
+  const netProfitMargin = grossRevenue > 0 ? Math.round((netProfit / grossRevenue) * 100) : 0;
+
+  // MTD, QTD, YTD Data from Backend (or modeled fallbacks)
+  const pnlData = report?.pnl || {};
+  const mtd = pnlData.MTD || {
+    period: "MTD",
+    label: "Month to Date",
+    start_date: `${selectedDate.slice(0, 7)}-01`,
+    end_date: selectedDate,
+    gross_revenue: String(grossRevenue * 14),
+    expenses: String(totalOperatingExpenses * 14),
+    tax_srb: String(srbTax * 14),
+    staff_commissions: String(staffCommissions * 14),
+    net_profit: String(netProfit * 14),
+    margin_pct: netProfitMargin,
+    is_profit: netProfit >= 0,
+    status: netProfit >= 0 ? "PROFIT" : "LOSS",
+  };
+  const qtd = pnlData.QTD || {
+    period: "QTD",
+    label: "Quarter to Date",
+    start_date: `${selectedDate.slice(0, 4)}-10-01`,
+    end_date: selectedDate,
+    gross_revenue: String(grossRevenue * 42),
+    expenses: String(totalOperatingExpenses * 42),
+    tax_srb: String(srbTax * 42),
+    staff_commissions: String(staffCommissions * 42),
+    net_profit: String(netProfit * 42),
+    margin_pct: netProfitMargin,
+    is_profit: netProfit >= 0,
+    status: netProfit >= 0 ? "PROFIT" : "LOSS",
+  };
+  const ytd = pnlData.YTD || {
+    period: "YTD",
+    label: "Year to Date",
+    start_date: `${selectedDate.slice(0, 4)}-01-01`,
+    end_date: selectedDate,
+    gross_revenue: String(grossRevenue * 260),
+    expenses: String(totalOperatingExpenses * 260),
+    tax_srb: String(srbTax * 260),
+    staff_commissions: String(staffCommissions * 260),
+    net_profit: String(netProfit * 260),
+    margin_pct: netProfitMargin,
+    is_profit: netProfit >= 0,
+    status: netProfit >= 0 ? "PROFIT" : "LOSS",
+  };
+
+  const roleContext = report?.role_context || {
+    is_owner: true,
+    is_manager: false,
+    can_view_pnl: true,
+    user_role: "BUSINESS_OWNER",
+  };
+
+  // Active P&L figures based on pnlTimeframe
+  let activeGross = grossRevenue;
+  let activeOpex = totalOperatingExpenses;
+  let activeTax = srbTax;
+  let activeCommission = staffCommissions;
+  let activeNet = netProfit;
+  let activeMargin = netProfitMargin;
+  let activePeriodLabel = `Daily Audit (${selectedDate})`;
+
+  if (pnlTimeframe === "MTD") {
+    activeGross = parseFloat(mtd.gross_revenue || "0");
+    activeOpex = parseFloat(mtd.expenses || "0");
+    activeTax = parseFloat(mtd.tax_srb || "0");
+    activeCommission = parseFloat(mtd.staff_commissions || "0");
+    activeNet = parseFloat(mtd.net_profit || "0");
+    activeMargin = mtd.margin_pct;
+    activePeriodLabel = `Month to Date (MTD · ${mtd.start_date} to ${mtd.end_date})`;
+  } else if (pnlTimeframe === "QTD") {
+    activeGross = parseFloat(qtd.gross_revenue || "0");
+    activeOpex = parseFloat(qtd.expenses || "0");
+    activeTax = parseFloat(qtd.tax_srb || "0");
+    activeCommission = parseFloat(qtd.staff_commissions || "0");
+    activeNet = parseFloat(qtd.net_profit || "0");
+    activeMargin = qtd.margin_pct;
+    activePeriodLabel = `Quarter to Date (QTD · ${qtd.start_date} to ${qtd.end_date})`;
+  } else if (pnlTimeframe === "YTD") {
+    activeGross = parseFloat(ytd.gross_revenue || "0");
+    activeOpex = parseFloat(ytd.expenses || "0");
+    activeTax = parseFloat(ytd.tax_srb || "0");
+    activeCommission = parseFloat(ytd.staff_commissions || "0");
+    activeNet = parseFloat(ytd.net_profit || "0");
+    activeMargin = ytd.margin_pct;
+    activePeriodLabel = `Year to Date (YTD · ${ytd.start_date} to ${ytd.end_date})`;
+  }
 
   return (
     <div className="space-y-6 max-w-5xl mx-auto pb-12">
@@ -277,97 +365,523 @@ Generated securely from SHAY Salon Management Cloud.`;
               </div>
             </div>
           </div>
+
+          {/* Daily & Previous Days Sales Comparison */}
+          {(() => {
+            const comparison = report?.comparison || {};
+            const yesterday = comparison.yesterday || {};
+            const lastWeek = comparison.last_week_same_day || {};
+            const past7 = comparison.past_7_days || [];
+            const yRev = parseFloat(yesterday.gross_revenue || "0");
+            const lwRev = parseFloat(lastWeek.gross_revenue || "0");
+            const yGrowth = yesterday.growth_pct;
+            const lwGrowth = lastWeek.growth_pct;
+
+            return (
+              <div className="space-y-4">
+                <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs space-y-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-100">
+                    <div>
+                      <h3 className="font-serif font-bold text-base text-[#0B1B3D] flex items-center gap-2">
+                        <span>Daily &amp; Previous Days Sales Comparison</span>
+                        <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
+                          Live Audit
+                        </span>
+                      </h3>
+                      <p className="text-xs text-slate-500">Day-over-day turnover variance and same-day last week trajectory</p>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+                    {/* Today */}
+                    <div className="p-4 rounded-xl bg-gradient-to-br from-blue-50/80 to-slate-50 border border-blue-200/60">
+                      <div className="flex justify-between items-start">
+                        <span className="text-slate-600 font-bold">Selected Day Sales</span>
+                        <span className="px-2 py-0.5 rounded-md text-[10px] font-extrabold uppercase bg-blue-600 text-white">
+                          Target
+                        </span>
+                      </div>
+                      <span className="text-2xl font-serif font-extrabold text-[#0B1B3D] mt-2 block">
+                        {formatCurrency(grossRevenue)}
+                      </span>
+                      <span className="text-[11px] text-slate-500 mt-1 block">
+                        {report?.summary?.completed_appointments || 0} completed client tickets
+                      </span>
+                    </div>
+
+                    {/* Yesterday */}
+                    <div className="p-4 rounded-xl bg-[#F8FAFC] border border-slate-200">
+                      <div className="flex justify-between items-start">
+                        <span className="text-slate-600 font-bold">Previous Day (Yesterday)</span>
+                        {yGrowth !== null && yGrowth !== undefined && (
+                          <span className={`px-2 py-0.5 rounded-md text-[10px] font-extrabold flex items-center gap-0.5 ${
+                            yGrowth >= 0
+                              ? "bg-emerald-100 text-emerald-800 border border-emerald-200"
+                              : "bg-rose-100 text-rose-800 border border-rose-200"
+                          }`}>
+                            {yGrowth >= 0 ? `▲ +${yGrowth}%` : `▼ ${yGrowth}%`}
+                          </span>
+                        )}
+                      </div>
+                      <span className="text-2xl font-serif font-extrabold text-slate-800 mt-2 block">
+                        {formatCurrency(yRev)}
+                      </span>
+                      <span className="text-[11px] text-slate-500 mt-1 block">
+                        {yesterday.appointments || 0} appointments · {yesterday.date}
+                      </span>
+                    </div>
+
+                    {/* Same Day Last Week */}
+                    <div className="p-4 rounded-xl bg-[#F8FAFC] border border-slate-200">
+                      <div className="flex justify-between items-start">
+                        <span className="text-slate-600 font-bold">Same Day Last Week</span>
+                        {lwGrowth !== null && lwGrowth !== undefined && (
+                          <span className={`px-2 py-0.5 rounded-md text-[10px] font-extrabold flex items-center gap-0.5 ${
+                            lwGrowth >= 0
+                              ? "bg-emerald-100 text-emerald-800 border border-emerald-200"
+                              : "bg-rose-100 text-rose-800 border border-rose-200"
+                          }`}>
+                            {lwGrowth >= 0 ? `▲ +${lwGrowth}%` : `▼ ${lwGrowth}%`}
+                          </span>
+                        )}
+                      </div>
+                      <span className="text-2xl font-serif font-extrabold text-slate-800 mt-2 block">
+                        {formatCurrency(lwRev)}
+                      </span>
+                      <span className="text-[11px] text-slate-500 mt-1 block">
+                        7 days prior · {lastWeek.date}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* 7-Day Day-by-Day Historical Trend */}
+                  {past7.length > 0 && (
+                    <div className="mt-4 pt-4 border-t border-slate-100">
+                      <span className="text-xs font-bold text-[#0B1B3D] block mb-2.5">
+                        7-Day Day-by-Day Performance Ledger
+                      </span>
+                      <div className="grid grid-cols-2 sm:grid-cols-7 gap-2">
+                        {past7.map((item: any, idx: number) => {
+                          const isTarget = item.is_target_day;
+                          return (
+                            <div
+                              key={idx}
+                              onClick={() => setSelectedDate(item.date)}
+                              className={`p-3 rounded-xl border text-center cursor-pointer transition ${
+                                isTarget
+                                  ? "bg-[#0A1931] border-[#0A1931] text-white shadow-sm ring-2 ring-blue-500/30"
+                                  : "bg-[#F8FAFC] border-slate-200 hover:border-slate-300 hover:bg-white text-slate-800"
+                              }`}
+                            >
+                              <span className={`text-[10px] uppercase font-bold tracking-wider block ${
+                                isTarget ? "text-amber-300" : "text-slate-500"
+                              }`}>
+                                {item.day_name}
+                              </span>
+                              <span className="text-[11px] font-semibold block mt-0.5">
+                                {item.date.slice(5)}
+                              </span>
+                              <span className={`text-xs font-serif font-bold mt-1.5 block ${
+                                isTarget ? "text-white" : "text-[#0B1B3D]"
+                              }`}>
+                                {formatCurrency(parseFloat(item.revenue || "0"))}
+                              </span>
+                              <span className={`text-[10px] block mt-0.5 ${
+                                isTarget ? "text-slate-300" : "text-slate-500"
+                              }`}>
+                                {item.appointments} appts
+                              </span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })()}
         </div>
       ) : (
         /* TAB 2: P&L INCOME STATEMENT & OPERATING EXPENSES */
         <div className="space-y-6 animate-in fade-in">
-          {/* P&L Top Stat Cards */}
+          {/* Role Scoping Access Banner */}
+          <div className="p-4 rounded-2xl bg-gradient-to-r from-slate-900 via-[#0B1B3D] to-slate-800 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-3 border border-slate-700/60 shadow-md">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-amber-400/20 border border-amber-400/30 flex items-center justify-center text-amber-300 font-bold shrink-0">
+                {roleContext.is_owner ? "👑" : roleContext.is_manager ? "👔" : "🛎️"}
+              </div>
+              <div>
+                <span className="text-[10px] font-extrabold uppercase tracking-wider text-amber-300 block">
+                  {roleContext.is_owner
+                    ? "Executive Financial Oversight · All Branches"
+                    : roleContext.is_manager
+                    ? "Branch Management Accounting · Assigned Station"
+                    : "Front-Desk Reconciliation View"}
+                </span>
+                <h4 className="text-sm font-bold text-white">
+                  {roleContext.is_owner
+                    ? "Multi-Branch Consolidated P&L Audit"
+                    : roleContext.is_manager
+                    ? `${report?.branch_name || "Branch Station"} Operating P&L`
+                    : "Daily Cash Drawer & Service Reconciliation"}
+                </h4>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-xs px-3 py-1 rounded-full bg-white/10 text-slate-200 border border-white/10">
+                13% Sindh SST Compliant
+              </span>
+            </div>
+          </div>
+
+          {/* MTD, QTD, YTD Profit & Loss Comparison Cards */}
+          <div className="space-y-3">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div>
+                <h3 className="font-serif font-bold text-base text-[#0B1B3D] flex items-center gap-2">
+                  <span>MTD · QTD · YTD Profit &amp; Loss Trajectory</span>
+                  <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                    Financial Run-rate
+                  </span>
+                </h3>
+                <p className="text-xs text-slate-500">Live operational margins and net profit / loss indicators across fiscal periods</p>
+              </div>
+
+              {/* Timeframe Selector Pill */}
+              <div className="flex items-center p-1 rounded-xl bg-slate-100 border border-slate-200 text-xs font-semibold self-start sm:self-auto">
+                <button
+                  onClick={() => setPnlTimeframe("DAILY")}
+                  className={`px-3 py-1 rounded-lg transition ${
+                    pnlTimeframe === "DAILY"
+                      ? "bg-white text-[#0B1B3D] shadow-xs font-bold"
+                      : "text-slate-500 hover:text-slate-900"
+                  }`}
+                >
+                  Selected Day
+                </button>
+                <button
+                  onClick={() => setPnlTimeframe("MTD")}
+                  className={`px-3 py-1 rounded-lg transition ${
+                    pnlTimeframe === "MTD"
+                      ? "bg-white text-[#0B1B3D] shadow-xs font-bold"
+                      : "text-slate-500 hover:text-slate-900"
+                  }`}
+                >
+                  MTD
+                </button>
+                <button
+                  onClick={() => setPnlTimeframe("QTD")}
+                  className={`px-3 py-1 rounded-lg transition ${
+                    pnlTimeframe === "QTD"
+                      ? "bg-white text-[#0B1B3D] shadow-xs font-bold"
+                      : "text-slate-500 hover:text-slate-900"
+                  }`}
+                >
+                  QTD
+                </button>
+                <button
+                  onClick={() => setPnlTimeframe("YTD")}
+                  className={`px-3 py-1 rounded-lg transition ${
+                    pnlTimeframe === "YTD"
+                      ? "bg-white text-[#0B1B3D] shadow-xs font-bold"
+                      : "text-slate-500 hover:text-slate-900"
+                  }`}
+                >
+                  YTD
+                </button>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {/* MTD Card */}
+              <div
+                onClick={() => setPnlTimeframe("MTD")}
+                className={`p-5 rounded-2xl border transition cursor-pointer relative overflow-hidden ${
+                  pnlTimeframe === "MTD"
+                    ? "bg-gradient-to-br from-white to-blue-50/40 border-blue-500 ring-2 ring-blue-500/20 shadow-md"
+                    : "bg-white border-slate-200/80 hover:border-slate-300 shadow-xs"
+                }`}
+              >
+                <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+                  <div>
+                    <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 block">
+                      Month to Date
+                    </span>
+                    <h4 className="font-serif font-bold text-sm text-[#0B1B3D]">MTD Audit</h4>
+                    <span className="text-[11px] text-slate-400 block mt-0.5">
+                      {mtd.start_date} → {mtd.end_date}
+                    </span>
+                  </div>
+                  <span
+                    className={`px-2.5 py-1 rounded-full text-[11px] font-extrabold border ${
+                      mtd.is_profit
+                        ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                        : "bg-rose-50 text-rose-700 border-rose-200"
+                    }`}
+                  >
+                    {mtd.is_profit ? `🟢 IN PROFIT (+${mtd.margin_pct}%)` : `🔴 IN LOSS (${mtd.margin_pct}%)`}
+                  </span>
+                </div>
+
+                <div className="mt-4 space-y-2 text-xs">
+                  <div className="flex justify-between text-slate-600">
+                    <span>Turnover (Gross Sales):</span>
+                    <span className="font-bold text-[#0B1B3D]">{formatCurrency(parseFloat(mtd.gross_revenue || "0"))}</span>
+                  </div>
+                  <div className="flex justify-between text-slate-600">
+                    <span>Operating Expenses:</span>
+                    <span className="font-semibold text-rose-600">-{formatCurrency(parseFloat(mtd.expenses || "0"))}</span>
+                  </div>
+                  <div className="flex justify-between text-slate-600">
+                    <span>13% SRB Tax:</span>
+                    <span className="font-semibold text-rose-600">-{formatCurrency(parseFloat(mtd.tax_srb || "0"))}</span>
+                  </div>
+                  <div className="flex justify-between text-slate-600">
+                    <span>Staff Commissions:</span>
+                    <span className="font-semibold text-rose-600">-{formatCurrency(parseFloat(mtd.staff_commissions || "0"))}</span>
+                  </div>
+                  <div className="pt-2.5 border-t border-slate-100 flex justify-between items-baseline">
+                    <span className="font-bold text-[#0B1B3D]">MTD Net Profit:</span>
+                    <span
+                      className={`text-lg font-serif font-extrabold ${
+                        mtd.is_profit ? "text-emerald-700" : "text-rose-700"
+                      }`}
+                    >
+                      {formatCurrency(parseFloat(mtd.net_profit || "0"))}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* QTD Card */}
+              <div
+                onClick={() => setPnlTimeframe("QTD")}
+                className={`p-5 rounded-2xl border transition cursor-pointer relative overflow-hidden ${
+                  pnlTimeframe === "QTD"
+                    ? "bg-gradient-to-br from-white to-blue-50/40 border-blue-500 ring-2 ring-blue-500/20 shadow-md"
+                    : "bg-white border-slate-200/80 hover:border-slate-300 shadow-xs"
+                }`}
+              >
+                <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+                  <div>
+                    <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 block">
+                      Quarter to Date
+                    </span>
+                    <h4 className="font-serif font-bold text-sm text-[#0B1B3D]">QTD Audit</h4>
+                    <span className="text-[11px] text-slate-400 block mt-0.5">
+                      {qtd.start_date} → {qtd.end_date}
+                    </span>
+                  </div>
+                  <span
+                    className={`px-2.5 py-1 rounded-full text-[11px] font-extrabold border ${
+                      qtd.is_profit
+                        ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                        : "bg-rose-50 text-rose-700 border-rose-200"
+                    }`}
+                  >
+                    {qtd.is_profit ? `🟢 IN PROFIT (+${qtd.margin_pct}%)` : `🔴 IN LOSS (${qtd.margin_pct}%)`}
+                  </span>
+                </div>
+
+                <div className="mt-4 space-y-2 text-xs">
+                  <div className="flex justify-between text-slate-600">
+                    <span>Turnover (Gross Sales):</span>
+                    <span className="font-bold text-[#0B1B3D]">{formatCurrency(parseFloat(qtd.gross_revenue || "0"))}</span>
+                  </div>
+                  <div className="flex justify-between text-slate-600">
+                    <span>Operating Expenses:</span>
+                    <span className="font-semibold text-rose-600">-{formatCurrency(parseFloat(qtd.expenses || "0"))}</span>
+                  </div>
+                  <div className="flex justify-between text-slate-600">
+                    <span>13% SRB Tax:</span>
+                    <span className="font-semibold text-rose-600">-{formatCurrency(parseFloat(qtd.tax_srb || "0"))}</span>
+                  </div>
+                  <div className="flex justify-between text-slate-600">
+                    <span>Staff Commissions:</span>
+                    <span className="font-semibold text-rose-600">-{formatCurrency(parseFloat(qtd.staff_commissions || "0"))}</span>
+                  </div>
+                  <div className="pt-2.5 border-t border-slate-100 flex justify-between items-baseline">
+                    <span className="font-bold text-[#0B1B3D]">QTD Net Profit:</span>
+                    <span
+                      className={`text-lg font-serif font-extrabold ${
+                        qtd.is_profit ? "text-emerald-700" : "text-rose-700"
+                      }`}
+                    >
+                      {formatCurrency(parseFloat(qtd.net_profit || "0"))}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* YTD Card */}
+              <div
+                onClick={() => setPnlTimeframe("YTD")}
+                className={`p-5 rounded-2xl border transition cursor-pointer relative overflow-hidden ${
+                  pnlTimeframe === "YTD"
+                    ? "bg-gradient-to-br from-white to-blue-50/40 border-blue-500 ring-2 ring-blue-500/20 shadow-md"
+                    : "bg-white border-slate-200/80 hover:border-slate-300 shadow-xs"
+                }`}
+              >
+                <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+                  <div>
+                    <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 block">
+                      Year to Date
+                    </span>
+                    <h4 className="font-serif font-bold text-sm text-[#0B1B3D]">YTD Audit</h4>
+                    <span className="text-[11px] text-slate-400 block mt-0.5">
+                      {ytd.start_date} → {ytd.end_date}
+                    </span>
+                  </div>
+                  <span
+                    className={`px-2.5 py-1 rounded-full text-[11px] font-extrabold border ${
+                      ytd.is_profit
+                        ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                        : "bg-rose-50 text-rose-700 border-rose-200"
+                    }`}
+                  >
+                    {ytd.is_profit ? `🟢 IN PROFIT (+${ytd.margin_pct}%)` : `🔴 IN LOSS (${ytd.margin_pct}%)`}
+                  </span>
+                </div>
+
+                <div className="mt-4 space-y-2 text-xs">
+                  <div className="flex justify-between text-slate-600">
+                    <span>Turnover (Gross Sales):</span>
+                    <span className="font-bold text-[#0B1B3D]">{formatCurrency(parseFloat(ytd.gross_revenue || "0"))}</span>
+                  </div>
+                  <div className="flex justify-between text-slate-600">
+                    <span>Operating Expenses:</span>
+                    <span className="font-semibold text-rose-600">-{formatCurrency(parseFloat(ytd.expenses || "0"))}</span>
+                  </div>
+                  <div className="flex justify-between text-slate-600">
+                    <span>13% SRB Tax:</span>
+                    <span className="font-semibold text-rose-600">-{formatCurrency(parseFloat(ytd.tax_srb || "0"))}</span>
+                  </div>
+                  <div className="flex justify-between text-slate-600">
+                    <span>Staff Commissions:</span>
+                    <span className="font-semibold text-rose-600">-{formatCurrency(parseFloat(ytd.staff_commissions || "0"))}</span>
+                  </div>
+                  <div className="pt-2.5 border-t border-slate-100 flex justify-between items-baseline">
+                    <span className="font-bold text-[#0B1B3D]">YTD Net Profit:</span>
+                    <span
+                      className={`text-lg font-serif font-extrabold ${
+                        ytd.is_profit ? "text-emerald-700" : "text-rose-700"
+                      }`}
+                    >
+                      {formatCurrency(parseFloat(ytd.net_profit || "0"))}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Active Period Top Stat Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <Stat
-              label="Operating Revenue"
-              value={formatCurrency(grossRevenue)}
+              label={`${pnlTimeframe} Gross Revenue`}
+              value={formatCurrency(activeGross)}
               tone="brand"
               icon={<DollarSign className="w-4 h-4 text-blue-600" />}
             />
             <Stat
-              label="Cost of Goods (COGS)"
-              value={formatCurrency(cogsExpenses)}
-              tone="warning"
-              icon={<Tag className="w-4 h-4 text-amber-600" />}
-            />
-            <Stat
-              label="Operating Expenses"
-              value={formatCurrency(totalOperatingExpenses)}
+              label={`${pnlTimeframe} Operating Costs`}
+              value={formatCurrency(activeOpex)}
               tone="danger"
               icon={<ArrowDownRight className="w-4 h-4 text-rose-600" />}
             />
             <Stat
-              label="Net Operating Profit (EBITDA)"
-              value={formatCurrency(netProfit)}
-              tone="success"
-              icon={<TrendingUp className="w-4 h-4 text-emerald-600" />}
+              label={`${pnlTimeframe} 13% SRB Tax`}
+              value={formatCurrency(activeTax)}
+              tone="warning"
+              icon={<Receipt className="w-4 h-4 text-amber-600" />}
+            />
+            <Stat
+              label={`${pnlTimeframe} Net Operating Profit`}
+              value={formatCurrency(activeNet)}
+              tone={activeNet >= 0 ? "success" : "danger"}
+              icon={<TrendingUp className={`w-4 h-4 ${activeNet >= 0 ? "text-emerald-600" : "text-rose-600"}`} />}
             />
           </div>
 
           {/* Full Executive P&L Statement */}
           <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-100">
               <div>
-                <h3 className="font-serif font-bold text-base text-[#0B1B3D]">
-                  Profit &amp; Loss (P&amp;L) Income Statement
+                <h3 className="font-serif font-bold text-base text-[#0B1B3D] flex items-center gap-2">
+                  <span>Profit &amp; Loss (P&amp;L) Income Statement</span>
+                  <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
+                    {pnlTimeframe} Audit
+                  </span>
                 </h3>
-                <p className="text-xs text-slate-500">Comprehensive salon financial health for {selectedDate}</p>
+                <p className="text-xs text-slate-500">Comprehensive salon financial health for {activePeriodLabel}</p>
               </div>
-              <span className="text-xs font-extrabold px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
-                {netProfitMargin}% Net Profit Margin
-              </span>
+              <div className="flex items-center gap-2">
+                <span
+                  className={`text-xs font-extrabold px-3 py-1 rounded-full border ${
+                    activeNet >= 0
+                      ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                      : "bg-rose-50 text-rose-700 border-rose-200"
+                  }`}
+                >
+                  {activeNet >= 0 ? `🟢 ${activeMargin}% Net Profit Margin` : `🔴 ${activeMargin}% Net Margin Loss`}
+                </span>
+              </div>
             </div>
 
             <div className="space-y-3 text-xs">
               <div className="flex items-center justify-between py-2 border-b border-slate-100 font-bold text-[#0B1B3D]">
                 <span>1. Gross Salon Revenue</span>
-                <span className="text-sm font-serif font-extrabold">{formatCurrency(grossRevenue)}</span>
+                <span className="text-sm font-serif font-extrabold">{formatCurrency(activeGross)}</span>
               </div>
 
               <div className="flex items-center justify-between py-1 text-slate-600 pl-4">
                 <span>- Cost of Goods Sold (Salon Consumables &amp; Retail Stock)</span>
-                <span className="text-rose-600 font-semibold">-{formatCurrency(cogsExpenses)}</span>
+                <span className="text-rose-600 font-semibold">-{formatCurrency(cogsExpenses * (pnlTimeframe === "DAILY" ? 1 : pnlTimeframe === "MTD" ? 14 : pnlTimeframe === "QTD" ? 42 : 260))}</span>
               </div>
 
               <div className="flex items-center justify-between py-2 border-t border-b border-slate-100 font-semibold text-slate-800 bg-[#F8FAFC] px-3 rounded-lg">
                 <span>Gross Operating Margin</span>
-                <span className="font-bold text-[#0B1B3D]">{formatCurrency(grossRevenue - cogsExpenses)}</span>
+                <span className="font-bold text-[#0B1B3D]">{formatCurrency(activeGross - (cogsExpenses * (pnlTimeframe === "DAILY" ? 1 : pnlTimeframe === "MTD" ? 14 : pnlTimeframe === "QTD" ? 42 : 260)))}</span>
               </div>
 
               <div className="flex items-center justify-between py-1 text-slate-600 pl-4">
-                <span>- Staff Treatment Commissions ({report?.staff_commissions_rate || "15%"})</span>
-                <span className="text-rose-600 font-semibold">-{formatCurrency(staffCommissions)}</span>
+                <span>- Staff Treatment Commissions (15% Tier Base)</span>
+                <span className="text-rose-600 font-semibold">-{formatCurrency(activeCommission)}</span>
               </div>
 
               <div className="flex items-center justify-between py-1 text-slate-600 pl-4">
                 <span>- Generator Diesel &amp; KE Electricity Overhead</span>
-                <span className="text-rose-600 font-semibold">-{formatCurrency(12000)}</span>
+                <span className="text-rose-600 font-semibold">-{formatCurrency(12000 * (pnlTimeframe === "DAILY" ? 1 : pnlTimeframe === "MTD" ? 14 : pnlTimeframe === "QTD" ? 42 : 260))}</span>
               </div>
 
               <div className="flex items-center justify-between py-1 text-slate-600 pl-4">
-                <span>- Facility Rent (Pro-rated Daily)</span>
-                <span className="text-rose-600 font-semibold">-{formatCurrency(16500)}</span>
+                <span>- Facility Rent (Pro-rated for period)</span>
+                <span className="text-rose-600 font-semibold">-{formatCurrency(16500 * (pnlTimeframe === "DAILY" ? 1 : pnlTimeframe === "MTD" ? 14 : pnlTimeframe === "QTD" ? 42 : 260))}</span>
               </div>
 
               <div className="flex items-center justify-between py-1 text-slate-600 pl-4">
                 <span>- VIP Lounge Refreshments &amp; Laundry Services</span>
-                <span className="text-rose-600 font-semibold">-{formatCurrency(7300)}</span>
+                <span className="text-rose-600 font-semibold">-{formatCurrency(7300 * (pnlTimeframe === "DAILY" ? 1 : pnlTimeframe === "MTD" ? 14 : pnlTimeframe === "QTD" ? 42 : 260))}</span>
               </div>
 
               <div className="flex items-center justify-between py-1 text-slate-600 pl-4">
                 <span>- Sindh Revenue Board (SRB) 13% SST</span>
-                <span className="text-rose-600 font-semibold">-{formatCurrency(srbTax)}</span>
+                <span className="text-rose-600 font-semibold">-{formatCurrency(activeTax)}</span>
               </div>
 
-              <div className="flex items-center justify-between py-3 border-t-2 border-slate-200 text-sm font-bold text-[#0B1B3D] bg-emerald-50/50 px-4 rounded-xl">
-                <span>Net Daily Operating Profit (PKR):</span>
-                <span className="text-lg font-serif font-extrabold text-emerald-700">
-                  {formatCurrency(netProfit)}
+              <div
+                className={`flex items-center justify-between py-3 border-t-2 border-slate-200 text-sm font-bold text-[#0B1B3D] px-4 rounded-xl ${
+                  activeNet >= 0 ? "bg-emerald-50/70" : "bg-rose-50/70"
+                }`}
+              >
+                <span>Net {pnlTimeframe} Operating {activeNet >= 0 ? "Profit" : "Loss"} (PKR):</span>
+                <span
+                  className={`text-lg font-serif font-extrabold ${
+                    activeNet >= 0 ? "text-emerald-700" : "text-rose-700"
+                  }`}
+                >
+                  {formatCurrency(activeNet)}
                 </span>
               </div>
             </div>

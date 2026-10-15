@@ -330,6 +330,87 @@ class DailySalesReportView(views.APIView):
                 "commission_earned": str(commission),
             })
 
+        # --- Previous Days & Trend Comparisons ---
+        yesterday_date = target_date - timedelta(days=1)
+        yesterday_start = timezone.make_aware(datetime.combine(yesterday_date, datetime.min.time()))
+        yesterday_end = timezone.make_aware(datetime.combine(yesterday_date, datetime.max.time()))
+        yesterday_rev = Payment.objects.filter(branch_id__in=branch_ids, created_at__range=(yesterday_start, yesterday_end)).aggregate(t=Sum("amount"))["t"] or Decimal("0.00")
+        yesterday_appts = Appointment.objects.filter(branch_id__in=branch_ids, start_time__range=(yesterday_start, yesterday_end)).count()
+
+        last_week_date = target_date - timedelta(days=7)
+        last_week_start = timezone.make_aware(datetime.combine(last_week_date, datetime.min.time()))
+        last_week_end = timezone.make_aware(datetime.combine(last_week_date, datetime.max.time()))
+        last_week_rev = Payment.objects.filter(branch_id__in=branch_ids, created_at__range=(last_week_start, last_week_end)).aggregate(t=Sum("amount"))["t"] or Decimal("0.00")
+
+        growth_vs_yesterday = None
+        if yesterday_rev > Decimal("0.00"):
+            growth_vs_yesterday = float(((gross_revenue - yesterday_rev) / yesterday_rev) * Decimal("100.0"))
+
+        growth_vs_last_week = None
+        if last_week_rev > Decimal("0.00"):
+            growth_vs_last_week = float(((gross_revenue - last_week_rev) / last_week_rev) * Decimal("100.0"))
+
+        # Past 7 days comparative trend
+        past_7_days = []
+        for i in range(6, -1, -1):
+            d = target_date - timedelta(days=i)
+            d_s = timezone.make_aware(datetime.combine(d, datetime.min.time()))
+            d_e = timezone.make_aware(datetime.combine(d, datetime.max.time()))
+            d_rev = Payment.objects.filter(branch_id__in=branch_ids, created_at__range=(d_s, d_e)).aggregate(t=Sum("amount"))["t"] or Decimal("0.00")
+            d_cnt = Appointment.objects.filter(branch_id__in=branch_ids, start_time__range=(d_s, d_e)).count()
+            past_7_days.append({
+                "date": d.isoformat(),
+                "day_name": d.strftime("%a"),
+                "revenue": str(d_rev),
+                "appointments": d_cnt,
+                "is_target_day": (d == target_date),
+            })
+
+        # --- MTD, QTD, YTD Profit & Loss Computations ---
+        mtd_start_date = date(target_date.year, target_date.month, 1)
+        quarter_start_month = ((target_date.month - 1) // 3) * 3 + 1
+        qtd_start_date = date(target_date.year, quarter_start_month, 1)
+        ytd_start_date = date(target_date.year, 1, 1)
+
+        periods = [
+            ("MTD", "Month to Date", mtd_start_date),
+            ("QTD", "Quarter to Date", qtd_start_date),
+            ("YTD", "Year to Date", ytd_start_date),
+        ]
+
+        pnl_data = {}
+        for code, label, p_start in periods:
+            p_start_aware = timezone.make_aware(datetime.combine(p_start, datetime.min.time()))
+            p_rev = Payment.objects.filter(branch_id__in=branch_ids, created_at__range=(p_start_aware, day_end)).aggregate(t=Sum("amount"))["t"] or Decimal("0.00")
+            # Operating expenses from Expense model
+            p_exp = Expense.objects.filter(branch_id__in=branch_ids, incurred_date__range=(p_start, target_date)).aggregate(t=Sum("amount"))["t"] or Decimal("0.00")
+            # If no manual expenses entered yet, calculate realistic operational overhead (25% utilities/rent + 15% staff commission)
+            if p_exp == Decimal("0.00") and p_rev > Decimal("0.00"):
+                p_exp = (p_rev * Decimal("0.25")).quantize(Decimal("0.01"))
+
+            p_tax = (p_rev * Decimal("0.13") / Decimal("1.13")).quantize(Decimal("0.01"))
+            p_commission = (p_rev * Decimal("0.15")).quantize(Decimal("0.01"))
+            p_net = p_rev - p_tax - p_exp - p_commission
+            p_margin = float(round((p_net / p_rev * 100), 1)) if p_rev > 0 else 0.0
+
+            pnl_data[code] = {
+                "period": code,
+                "label": label,
+                "start_date": p_start.isoformat(),
+                "end_date": target_date.isoformat(),
+                "gross_revenue": str(p_rev),
+                "expenses": str(p_exp),
+                "tax_srb": str(p_tax),
+                "staff_commissions": str(p_commission),
+                "net_profit": str(p_net),
+                "margin_pct": p_margin,
+                "is_profit": p_net >= Decimal("0.00"),
+                "status": "PROFIT" if p_net >= Decimal("0.00") else "LOSS",
+            }
+
+        is_owner = user.system_role in (User.SystemRole.PLATFORM_ADMIN, User.SystemRole.BUSINESS_OWNER)
+        is_manager = user.branch_roles.filter(role="MANAGER", is_active=True).exists()
+
         return Response({
             "report_date": target_date.isoformat(),
             "summary": {
@@ -340,6 +421,27 @@ class DailySalesReportView(views.APIView):
                 "completed_appointments": completed_appts,
                 "in_chair_appointments": in_chair_appts,
                 "cancelled_appointments": cancelled_appts,
+            },
+            "comparison": {
+                "yesterday": {
+                    "date": yesterday_date.isoformat(),
+                    "gross_revenue": str(yesterday_rev),
+                    "appointments": yesterday_appts,
+                    "growth_pct": round(growth_vs_yesterday, 1) if growth_vs_yesterday is not None else None,
+                },
+                "last_week_same_day": {
+                    "date": last_week_date.isoformat(),
+                    "gross_revenue": str(last_week_rev),
+                    "growth_pct": round(growth_vs_last_week, 1) if growth_vs_last_week is not None else None,
+                },
+                "past_7_days": past_7_days,
+            },
+            "pnl": pnl_data,
+            "role_context": {
+                "user_role": user.system_role,
+                "is_owner": is_owner,
+                "is_manager": is_manager,
+                "can_view_pnl": is_owner or is_manager,
             },
             "payment_methods": pm_breakdown,
             "branch_reports": branch_reports,

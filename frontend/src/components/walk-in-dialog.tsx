@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { X, UserPlus, AlertCircle, Clock, Calendar, Scissors, Phone, Sparkles } from "lucide-react";
+import { X, UserPlus, AlertCircle, Clock, Calendar, Scissors, Phone, Sparkles, Plus } from "lucide-react";
 import { apiFetch } from "@/lib/api";
 
 interface WalkInDialogProps {
@@ -18,6 +18,7 @@ export function WalkInDialog({ isOpen, onClose, onSuccess, initialServiceId }: W
 
   const [branchId, setBranchId] = useState("");
   const [serviceId, setServiceId] = useState(initialServiceId || "");
+  const [selectedServiceIds, setSelectedServiceIds] = useState<string[]>(initialServiceId ? [initialServiceId] : []);
   const [bookingType, setBookingType] = useState<"all" | "single" | "deal">("all");
   const [staffId, setStaffId] = useState("");
   const [customerName, setCustomerName] = useState("");
@@ -74,8 +75,10 @@ export function WalkInDialog({ isOpen, onClose, onSuccess, initialServiceId }: W
       setServices(sList);
       if (initialServiceId) {
         setServiceId(initialServiceId);
-      } else if (sList.length > 0 && !serviceId) {
+        setSelectedServiceIds([initialServiceId]);
+      } else if (sList.length > 0 && selectedServiceIds.length === 0) {
         setServiceId(sList[0].id);
+        setSelectedServiceIds([sList[0].id]);
       }
     });
 
@@ -100,7 +103,7 @@ export function WalkInDialog({ isOpen, onClose, onSuccess, initialServiceId }: W
         method: "POST",
         body: JSON.stringify({
           branch_id: branchId,
-          service_ids: [serviceId],
+          service_ids: selectedServiceIds.length > 0 ? selectedServiceIds : [serviceId],
           staff_id: staffId || null,
           customer_name: customerName,
           customer_phone: customerPhone,
@@ -130,6 +133,10 @@ export function WalkInDialog({ isOpen, onClose, onSuccess, initialServiceId }: W
   });
 
   const categories = Array.from(new Set(filteredServices.map((s) => s.category || "General Grooming")));
+  const effectiveServiceIds = selectedServiceIds.length > 0 ? selectedServiceIds : (serviceId ? [serviceId] : []);
+  const selectedServicesList = services.filter((s) => effectiveServiceIds.includes(s.id));
+  const totalAmount = selectedServicesList.reduce((acc, s) => acc + Number(s.base_price || 0), 0);
+  const totalDuration = selectedServicesList.reduce((acc, s) => acc + Number(s.default_duration_minutes || 0), 0);
   const selectedSvc = services.find((s) => s.id === serviceId);
 
   return (
@@ -236,25 +243,84 @@ export function WalkInDialog({ isOpen, onClose, onSuccess, initialServiceId }: W
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-[#4a4250] mb-1">Service Treatment</label>
-              <select
-                value={serviceId}
-                onChange={(e) => setServiceId(e.target.value)}
-                required
-                className="w-full px-3 py-2 rounded-xl bg-[#faf7f4] border border-[#e7dfd8] text-xs font-bold text-[#1b1520] focus:outline-none focus:ring-2 focus:ring-[#a3214f]/20"
-              >
-                {categories.map((cat) => (
-                  <optgroup key={cat} label={`── ${cat} ──`}>
-                    {filteredServices
-                      .filter((s) => (s.category || "General Grooming") === cat)
-                      .map((s) => (
-                        <option key={s.id} value={s.id}>
-                          {s.name} ({s.default_duration_minutes || 30}m · Rs. {Number(s.base_price).toLocaleString()})
-                        </option>
-                      ))}
-                  </optgroup>
-                ))}
-              </select>
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-xs font-bold text-[#4a4250]">Service Treatment</label>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (serviceId && !selectedServiceIds.includes(serviceId)) {
+                      setSelectedServiceIds([...selectedServiceIds, serviceId]);
+                    }
+                  }}
+                  className="inline-flex items-center gap-1 text-[11px] font-bold text-[#a3214f] hover:text-[#7f1339] transition"
+                >
+                  <Plus className="w-3 h-3" />
+                  <span>+ Add More Services</span>
+                </button>
+              </div>
+              <div className="flex gap-2">
+                <select
+                  value={serviceId}
+                  onChange={(e) => {
+                    const newId = e.target.value;
+                    setServiceId(newId);
+                    if (selectedServiceIds.length <= 1) {
+                      setSelectedServiceIds([newId]);
+                    }
+                  }}
+                  required
+                  className="flex-1 px-3 py-2 rounded-xl bg-[#faf7f4] border border-[#e7dfd8] text-xs font-bold text-[#1b1520] focus:outline-none focus:ring-2 focus:ring-[#a3214f]/20"
+                >
+                  {categories.map((cat) => (
+                    <optgroup key={cat} label={`── ${cat} ──`}>
+                      {filteredServices
+                        .filter((s) => (s.category || "General Grooming") === cat)
+                        .map((s) => (
+                          <option key={s.id} value={s.id}>
+                            {s.name} ({s.default_duration_minutes || 30}m · Rs. {Number(s.base_price).toLocaleString()})
+                          </option>
+                        ))}
+                    </optgroup>
+                  ))}
+                </select>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (serviceId && !selectedServiceIds.includes(serviceId)) {
+                      setSelectedServiceIds([...selectedServiceIds, serviceId]);
+                    }
+                  }}
+                  className="px-2.5 py-2 rounded-xl bg-[#fbe9ef] border border-[#f3cad8] text-[#a3214f] text-xs font-bold hover:bg-[#f8d7e3] transition shrink-0"
+                  title="Add another service to this guest's visit"
+                >
+                  + Add
+                </button>
+              </div>
+
+              {/* Multi-service chips */}
+              {selectedServicesList.length > 0 && (
+                <div className="mt-2 flex flex-wrap gap-1.5">
+                  {selectedServicesList.map((s) => (
+                    <span
+                      key={s.id}
+                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#fbe9ef] border border-[#f3cad8] text-[11px] font-semibold text-[#1b1520]"
+                    >
+                      <span>{s.name}</span>
+                      <strong className="text-[#a3214f]">Rs. {Number(s.base_price).toLocaleString()}</strong>
+                      {selectedServicesList.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => setSelectedServiceIds(selectedServiceIds.filter((id) => id !== s.id))}
+                          className="ml-1 text-[#a3214f] hover:text-rose-900 font-bold"
+                          title="Remove service"
+                        >
+                          ✕
+                        </button>
+                      )}
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 
@@ -334,9 +400,15 @@ export function WalkInDialog({ isOpen, onClose, onSuccess, initialServiceId }: W
           )}
 
           <div className="pt-3 border-t border-[#e7dfd8] flex items-center justify-between">
-            <span className="text-xs text-[#7a7180] font-medium">
-              {selectedSvc ? `Fee: $${selectedSvc.base_price}` : "Select service"}
-            </span>
+            <div className="flex flex-col">
+              <span className="text-xs font-bold text-[#1b1520] flex items-center gap-1.5">
+                <span>Total Fee:</span>
+                <span className="text-[#a3214f] font-serif text-sm">Rs. {totalAmount.toLocaleString()}</span>
+              </span>
+              <span className="text-[10px] text-[#7a7180]">
+                {selectedServicesList.length} service(s) · {totalDuration} mins estimated
+              </span>
+            </div>
 
             <div className="flex items-center space-x-2">
               <button

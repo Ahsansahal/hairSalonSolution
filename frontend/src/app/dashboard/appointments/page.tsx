@@ -32,6 +32,7 @@ export default function AppointmentsPage() {
   const [walkInBranch, setWalkInBranch] = useState("");
   const [walkInBookingType, setWalkInBookingType] = useState<"all" | "single" | "deal">("all");
   const [walkInService, setWalkInService] = useState("");
+  const [walkInSelectedServices, setWalkInSelectedServices] = useState<string[]>([]);
   const [walkInStaff, setWalkInStaff] = useState("");
   const [walkInName, setWalkInName] = useState("");
   const [walkInPhone, setWalkInPhone] = useState("");
@@ -161,7 +162,7 @@ export default function AppointmentsPage() {
         method: "POST",
         body: JSON.stringify({
           branch_id: walkInBranch,
-          service_ids: [walkInService],
+          service_ids: walkInSelectedServices.length > 0 ? walkInSelectedServices : [walkInService],
           staff_id: walkInStaff,
           customer_name: walkInName,
           customer_phone: walkInPhone,
@@ -707,6 +708,10 @@ export default function AppointmentsPage() {
                 return true;
               });
               const walkInCategories = Array.from(new Set(filteredWalkInServices.map((s) => s.category || "General Grooming")));
+              const effectiveWalkInIds = walkInSelectedServices.length > 0 ? walkInSelectedServices : (walkInService ? [walkInService] : []);
+              const selectedWalkInServicesList = services.filter((s) => effectiveWalkInIds.includes(s.id));
+              const totalWalkInFee = selectedWalkInServicesList.reduce((acc, s) => acc + Number(s.base_price || 0), 0);
+              const totalWalkInDuration = selectedWalkInServicesList.reduce((acc, s) => acc + Number(s.default_duration_minutes || 0), 0);
 
               return (
                 <form onSubmit={handleCreateWalkIn} className="mt-5 space-y-4">
@@ -783,25 +788,85 @@ export default function AppointmentsPage() {
                     </div>
 
                     <div>
-                      <label className="block text-xs font-bold text-[#4a4250] mb-1">Treatment</label>
-                      <select
-                        value={walkInService}
-                        onChange={(e) => setWalkInService(e.target.value)}
-                        required
-                        className="w-full px-3 py-2.5 rounded-xl bg-[#faf7f4] border border-[#e7dfd8] text-[#1b1520] text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-[#a3214f]/20"
-                      >
-                        {walkInCategories.map((cat) => (
-                          <optgroup key={cat} label={`── ${cat} ──`}>
-                            {filteredWalkInServices
-                              .filter((s) => (s.category || "General Grooming") === cat)
-                              .map((s) => (
-                                <option key={s.id} value={s.id}>
-                                  {s.name} ({s.default_duration_minutes || 30}m · Rs. {Number(s.base_price).toLocaleString()})
-                                </option>
-                              ))}
-                          </optgroup>
-                        ))}
-                      </select>
+                      <div className="flex items-center justify-between mb-1">
+                        <label className="block text-xs font-bold text-[#4a4250]">Treatment</label>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (walkInService && !walkInSelectedServices.includes(walkInService)) {
+                              setWalkInSelectedServices([...walkInSelectedServices, walkInService]);
+                            }
+                          }}
+                          className="text-[11px] font-bold text-[#a3214f] hover:text-[#7f1339] transition"
+                        >
+                          + Add More Services
+                        </button>
+                      </div>
+                      <div className="flex gap-2">
+                        <select
+                          value={walkInService}
+                          onChange={(e) => {
+                            const newId = e.target.value;
+                            setWalkInService(newId);
+                            if (walkInSelectedServices.length <= 1) {
+                              setWalkInSelectedServices([newId]);
+                            }
+                          }}
+                          required
+                          className="flex-1 px-3 py-2.5 rounded-xl bg-[#faf7f4] border border-[#e7dfd8] text-[#1b1520] text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-[#a3214f]/20"
+                        >
+                          {walkInCategories.map((cat) => (
+                            <optgroup key={cat} label={`── ${cat} ──`}>
+                              {filteredWalkInServices
+                                .filter((s) => (s.category || "General Grooming") === cat)
+                                .map((s) => (
+                                  <option key={s.id} value={s.id}>
+                                    {s.name} ({s.default_duration_minutes || 30}m · Rs. {Number(s.base_price).toLocaleString()})
+                                  </option>
+                                ))}
+                            </optgroup>
+                          ))}
+                        </select>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (walkInService && !walkInSelectedServices.includes(walkInService)) {
+                              setWalkInSelectedServices([...walkInSelectedServices, walkInService]);
+                            }
+                          }}
+                          className="px-2.5 py-2 rounded-xl bg-[#fbe9ef] border border-[#f3cad8] text-[#a3214f] text-xs font-bold hover:bg-[#f8d7e3] transition shrink-0"
+                          title="Add another treatment"
+                        >
+                          + Add
+                        </button>
+                      </div>
+
+                      {/* Selected treatments pills */}
+                      {walkInSelectedServices.length > 0 && (
+                        <div className="mt-2 flex flex-wrap gap-1.5">
+                          {services
+                            .filter((s) => walkInSelectedServices.includes(s.id))
+                            .map((s) => (
+                              <span
+                                key={s.id}
+                                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#fbe9ef] border border-[#f3cad8] text-[11px] font-semibold text-[#1b1520]"
+                              >
+                                <span>{s.name}</span>
+                                <strong className="text-[#a3214f]">Rs. {Number(s.base_price).toLocaleString()}</strong>
+                                {walkInSelectedServices.length > 1 && (
+                                  <button
+                                    type="button"
+                                    onClick={() => setWalkInSelectedServices(walkInSelectedServices.filter((id) => id !== s.id))}
+                                    className="ml-1 text-[#a3214f] hover:text-rose-900 font-bold"
+                                    title="Remove treatment"
+                                  >
+                                    ✕
+                                  </button>
+                                )}
+                              </span>
+                            ))}
+                        </div>
+                      )}
                     </div>
                   </div>
 
@@ -867,21 +932,33 @@ export default function AppointmentsPage() {
                 </div>
               )}
 
-              <div className="pt-3 border-t border-[#e7dfd8] flex items-center justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={() => setShowWalkInModal(false)}
-                  className="px-4 py-2 rounded-xl border border-[#e7dfd8] text-xs font-semibold text-[#7a7180] hover:bg-[#faf7f4] transition"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={walkInSubmitting}
-                  className="px-5 py-2 rounded-xl bg-gradient-to-r from-[#a3214f] to-[#88183f] hover:from-[#8b1b42] hover:to-[#6f1232] text-white text-xs font-bold shadow-sm transition disabled:opacity-50"
-                >
-                  {walkInSubmitting ? "Locking Slot..." : "Confirm & Seat Guest"}
-                </button>
+              <div className="pt-3 border-t border-[#e7dfd8] flex items-center justify-between">
+                <div className="flex flex-col">
+                  <span className="text-xs font-bold text-[#1b1520] flex items-center gap-1.5">
+                    <span>Total Fee:</span>
+                    <span className="text-[#a3214f] font-serif text-sm">Rs. {totalWalkInFee.toLocaleString()}</span>
+                  </span>
+                  <span className="text-[10px] text-[#7a7180]">
+                    {selectedWalkInServicesList.length} service(s) · {totalWalkInDuration} mins
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setShowWalkInModal(false)}
+                    className="px-4 py-2 rounded-xl border border-[#e7dfd8] text-xs font-semibold text-[#7a7180] hover:bg-[#faf7f4] transition"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={walkInSubmitting}
+                    className="px-5 py-2 rounded-xl bg-gradient-to-r from-[#a3214f] to-[#88183f] hover:from-[#8b1b42] hover:to-[#6f1232] text-white text-xs font-bold shadow-sm transition disabled:opacity-50"
+                  >
+                    {walkInSubmitting ? "Locking Slot..." : "Confirm & Seat Guest"}
+                  </button>
+                </div>
               </div>
             </form>
           );
