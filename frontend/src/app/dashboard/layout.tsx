@@ -8,7 +8,7 @@ import {
   CreditCard, MessageSquare, LogOut, ChevronDown, ExternalLink,
   MapPin, Plus, UserPlus, LayoutGrid, CheckCircle2, Shield, Building,
   TrendingUp, UserCheck, Search, Bell, Mail, ChevronRight, Gift,
-  Check, X, AlertTriangle, ArrowRight, Store, RefreshCw, Smartphone
+  Check, X, AlertTriangle, ArrowRight, Store, RefreshCw, Smartphone, Globe
 } from "lucide-react";
 import { apiFetch, getAuthToken, getCurrentUser, clearSession } from "@/lib/api";
 import { Badge } from "@/components/ui/badge";
@@ -302,7 +302,7 @@ export default function DashboardLayout({
       items: [
         { label: "Today's Schedule", href: "/dashboard", icon: Calendar, exact: true },
         { label: "All Bookings", href: "/dashboard/appointments", icon: Clock },
-        { label: "Daily Sales Reports", href: "/dashboard/reports", icon: TrendingUp },
+        { label: "Sales & P&L Reports", href: "/dashboard/reports", icon: TrendingUp },
       ],
     },
     {
@@ -311,8 +311,9 @@ export default function DashboardLayout({
         { label: "Deals & Packages", href: "/dashboard/deals", icon: Sparkles },
         { label: "Client Records", href: "/dashboard/clients", icon: UserCheck },
         { label: "Services & Prices", href: "/dashboard/services", icon: Scissors },
-        { label: "Team & Shifts", href: "/dashboard/staff", icon: Users },
+        { label: "Staff, Salary & Bonus", href: "/dashboard/staff", icon: Users },
         { label: "Checkout & POS", href: "/dashboard/inventory", icon: CreditCard },
+        { label: "Branches (20% Off)", href: "/dashboard/branches", icon: Building },
       ],
     },
     {
@@ -320,6 +321,7 @@ export default function DashboardLayout({
       items: [
         { label: "Staff Time Clock", href: "/dashboard/attendance", icon: Clock },
         { label: "WhatsApp Assistant", href: "/dashboard/whatsapp", icon: MessageSquare },
+        { label: "Website Booking Widget", href: "/dashboard/widget", icon: Globe },
       ],
     },
   ];

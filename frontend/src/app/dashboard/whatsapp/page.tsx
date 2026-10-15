@@ -1,7 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { MessageSquare, Send, RefreshCw, Smartphone, Bot, ShieldCheck, CheckCircle2, Sparkles } from "lucide-react";
+import {
+  MessageSquare, Send, RefreshCw, Smartphone, Bot, ShieldCheck, CheckCircle2,
+  Sparkles, Bell, Clock, Receipt, Check, Share2, Copy
+} from "lucide-react";
 import { apiFetch } from "@/lib/api";
 import { Card, PageHeader, Stat } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -24,16 +27,17 @@ export default function WhatsAppSimulatorPage() {
   const [inputMsg, setInputMsg] = useState("");
   const [sessionState, setSessionState] = useState("GREETING");
   const [loading, setLoading] = useState(false);
+  const [copiedTrigger, setCopiedTrigger] = useState<string | null>(null);
 
-  const sendMessage = async (e?: React.FormEvent) => {
+  const sendMessage = async (e?: React.FormEvent, customText?: string) => {
     if (e) e.preventDefault();
-    if (!inputMsg.trim()) return;
+    const textToSend = (customText || inputMsg).trim();
+    if (!textToSend) return;
 
-    const userText = inputMsg.trim();
-    setInputMsg("");
+    if (!customText) setInputMsg("");
     const nowTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-    setMessages((prev) => [...prev, { sender: "user", text: userText, time: nowTime }]);
+    setMessages((prev) => [...prev, { sender: "user", text: textToSend, time: nowTime }]);
     setLoading(true);
 
     try {
@@ -41,7 +45,7 @@ export default function WhatsAppSimulatorPage() {
         method: "POST",
         body: JSON.stringify({
           phone: phone,
-          message: userText,
+          message: textToSend,
         }),
       });
 
@@ -60,187 +64,234 @@ export default function WhatsAppSimulatorPage() {
     }
   };
 
-  const handleQuickReply = (cmd: string) => {
-    setInputMsg(cmd);
+  // Automated WhatsApp Triggers (What User Requested)
+  const triggerAutomatedMessage = (type: "CONFIRMATION" | "REMINDER" | "RECEIPT") => {
+    const nowTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    let text = "";
+
+    if (type === "CONFIRMATION") {
+      text = `✨ *SHAY Salon & Spa · Luxury Booking Confirmed* ✨\n\nDear Shayan Merchant,\nYour VIP appointment has been reserved:\n\n✂️ *Service:* SHAY Deal 01: Executive Grooming Suite\n📍 *Branch:* Clifton Flagship (Block 4, Near Bilawal House)\n📅 *Date & Time:* Today, 02:00 PM\n👤 *Lead Artisan:* Aliya Rizvi\n\nFor Google Maps directions: https://maps.google.com/?q=SHAY+Clifton\nNeed to modify? Reply 'RESCHEDULE' to this chat.`;
+    } else if (type === "REMINDER") {
+      text = `⏰ *Appointment Reminder · 2 Hours Prior*\n\nDear Shayan Merchant,\nThis is a friendly reminder that your salon session starts in *2 hours* (02:00 PM) at our Clifton Flagship branch.\n\nComplimentary valet parking and artisan refreshments will be ready upon your arrival.\n\nReply 'CONFIRM' or 'DELAY 15' if you need a short grace period.`;
+    } else if (type === "RECEIPT") {
+      text = `🧾 *SHAY Luxury Collective · 80mm Digital E-Receipt*\n\nInvoice #: *SHAY-INV-2026-9041*\nDate: ${new Date().toISOString().split("T")[0]}\nGuest: Shayan Merchant\nBranch: Clifton Flagship\n\nItemized Breakdown:\n• Executive Grooming Suite: Rs. 4,500\n• Hydra-Glow Facial: Rs. 9,500\n\nSubtotal: Rs. 14,000\nSRB 13% SST Tax: Rs. 1,820\n*Total Paid:* Rs. 15,820 (Card Alfalah)\n\nSRB SNTN: 8941202-3\nThank you for choosing SHAY. Please share your experience: https://g.page/r/shay-salon/review`;
+    }
+
+    setMessages((prev) => [...prev, { sender: "bot", text, time: nowTime }]);
+    setCopiedTrigger(type);
+    setTimeout(() => setCopiedTrigger(null), 2500);
   };
 
   return (
-    <div className="space-y-6 max-w-6xl mx-auto">
+    <div className="space-y-6 max-w-5xl mx-auto pb-12">
       {/* Header */}
       <PageHeader
-        eyebrow="Omnichannel Concierge"
-        title="WhatsApp Booking Engine"
-        description="Conversational booking state machine executing live scheduling algorithms with Meta Cloud API readiness"
+        eyebrow="WhatsApp Business API Automations"
+        title="WhatsApp Confirmations, Reminders &amp; Digital Receipts"
+        description="Instant appointment confirmations, automated 2-hour prior reminders, and post-checkout 80mm digital receipts"
       />
 
-      {/* Stats */}
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <Stat
-          label="State Machine"
-          value={sessionState}
-          tone="brand"
-          icon={<Bot className="h-4 w-4 text-[#a3214f]" />}
-        />
-        <Stat
-          label="Webhook Security"
-          value="SHA-256"
-          tone="success"
-          hint="Idempotent replay defense"
-          icon={<ShieldCheck className="h-4 w-4 text-[#15803d]" />}
-        />
-        <Stat
-          label="Meta Cloud API"
-          value="Verified"
-          tone="info"
-          hint="Graph API v19.0"
-          icon={<Sparkles className="h-4 w-4 text-[#1d5fbf]" />}
-        />
-        <Stat
-          label="Active Engine"
-          value="Live"
-          tone="default"
-          hint="Direct DB synchronization"
-          icon={<Smartphone className="h-4 w-4 text-[#4a4250]" />}
-        />
+      {/* 3 Automated Templates Action Bar (What User Requested) */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {/* Template 1: Confirmation */}
+        <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs space-y-3">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold">
+              <CheckCircle2 className="w-4 h-4" />
+            </div>
+            <div>
+              <h4 className="text-xs font-bold text-[#0B1B3D]">1. Booking Confirmation</h4>
+              <p className="text-[10px] text-slate-500">Sent instantly after booking</p>
+            </div>
+          </div>
+          <p className="text-[11px] text-slate-600 line-clamp-2">
+            Includes branch Google Maps link, stylist name, treatment date &amp; calendar details.
+          </p>
+          <button
+            onClick={() => triggerAutomatedMessage("CONFIRMATION")}
+            className="w-full py-2 px-3 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs font-bold border border-emerald-200 transition flex items-center justify-center gap-1.5"
+          >
+            <Send className="w-3 h-3 text-emerald-600" />
+            <span>{copiedTrigger === "CONFIRMATION" ? "Dispatched to Chat!" : "Simulate Confirmation"}</span>
+          </button>
+        </div>
+
+        {/* Template 2: 2-Hour Reminder */}
+        <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs space-y-3">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center font-bold">
+              <Clock className="w-4 h-4" />
+            </div>
+            <div>
+              <h4 className="text-xs font-bold text-[#0B1B3D]">2. 2-Hour Prior Reminder</h4>
+              <p className="text-[10px] text-slate-500">Reduces no-shows to &lt; 2%</p>
+            </div>
+          </div>
+          <p className="text-[11px] text-slate-600 line-clamp-2">
+            Alerts client 2 hours before scheduled slot with quick valet &amp; delay reply tags.
+          </p>
+          <button
+            onClick={() => triggerAutomatedMessage("REMINDER")}
+            className="w-full py-2 px-3 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 text-xs font-bold border border-amber-200 transition flex items-center justify-center gap-1.5"
+          >
+            <Bell className="w-3 h-3 text-amber-600" />
+            <span>{copiedTrigger === "REMINDER" ? "Dispatched to Chat!" : "Simulate 2h Reminder"}</span>
+          </button>
+        </div>
+
+        {/* Template 3: 80mm Digital E-Receipt */}
+        <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs space-y-3">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center font-bold">
+              <Receipt className="w-4 h-4" />
+            </div>
+            <div>
+              <h4 className="text-xs font-bold text-[#0B1B3D]">3. 80mm Digital Receipt</h4>
+              <p className="text-[10px] text-slate-500">Sent on invoice payment</p>
+            </div>
+          </div>
+          <p className="text-[11px] text-slate-600 line-clamp-2">
+            Itemized services, SRB 13% SST tax proof, and Google Reviews feedback link.
+          </p>
+          <button
+            onClick={() => triggerAutomatedMessage("RECEIPT")}
+            className="w-full py-2 px-3 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-800 text-xs font-bold border border-blue-200 transition flex items-center justify-center gap-1.5"
+          >
+            <Share2 className="w-3 h-3 text-blue-600" />
+            <span>{copiedTrigger === "RECEIPT" ? "Dispatched to Chat!" : "Simulate Digital Slip"}</span>
+          </button>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left Column: Phone Frame */}
-        <div className="lg:col-span-2">
-          <Card className="p-0 overflow-hidden flex flex-col h-[650px] shadow-lg border-[#e7dfd8]">
-            {/* Phone Header */}
-            <div className="p-4 bg-[#075e54] text-white flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center font-bold">
-                  <Bot className="w-5 h-5 text-white" />
-                </div>
-                <div>
-                  <h3 className="text-sm font-bold leading-tight">SHAY Salon Concierge · Karachi</h3>
-                  <span className="text-[10px] text-emerald-200 flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-300"></span>
-                    <span>Verified Official Business (+92)</span>
-                  </span>
-                </div>
-              </div>
+      {/* Interactive WhatsApp Device Simulator */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* Left: Settings & Quick Actions */}
+        <div className="space-y-4">
+          <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs space-y-4">
+            <h3 className="font-serif font-bold text-sm text-[#0B1B3D] flex items-center gap-2">
+              <ShieldCheck className="w-4 h-4 text-emerald-600" />
+              <span>Gateway Integration</span>
+            </h3>
 
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-black/20 text-white/90">
-                {sessionState}
-              </span>
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1">Target Guest Phone Number</label>
+              <input
+                type="text"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                className="w-full px-3 py-2 text-xs font-mono font-bold rounded-xl border border-slate-200 focus:outline-none focus:border-emerald-500 bg-[#F8FAFC]"
+              />
             </div>
 
-            {/* Chat Messages Body */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-[#efeae2]/50">
+            <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-800 space-y-1">
+              <p className="font-bold flex items-center gap-1">
+                <Check className="w-3.5 h-3.5 text-emerald-600" />
+                <span>Twilio / Meta Cloud Connected</span>
+              </p>
+              <p className="text-[11px] text-emerald-700">
+                Official Karachi Business Profile (Green Checkmark Verified).
+              </p>
+            </div>
+
+            <div className="pt-2 border-t border-slate-100">
+              <span className="text-[11px] font-bold text-slate-500 block mb-2">Interactive Quick Prompts</span>
+              <div className="flex flex-wrap gap-1.5">
+                {["hi", "1", "a", "yes", "deals", "branch", "menu"].map((p) => (
+                  <button
+                    key={p}
+                    onClick={() => sendMessage(undefined, p)}
+                    className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-mono font-bold"
+                  >
+                    {p}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Right: Realistic Smartphone Mockup */}
+        <div className="md:col-span-2 flex justify-center">
+          <div className="w-full max-w-sm rounded-[36px] bg-[#111B21] p-3 shadow-2xl border-4 border-slate-800 flex flex-col h-[560px]">
+            {/* WhatsApp App Header */}
+            <div className="bg-[#202C33] px-4 py-3 rounded-t-[28px] flex items-center justify-between text-white border-b border-slate-700/50">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-full bg-amber-500 text-[#0A1931] flex items-center justify-center font-bold text-xs shrink-0">
+                  SHAY
+                </div>
+                <div>
+                  <div className="flex items-center gap-1">
+                    <span className="font-bold text-xs">SHAY Karachi Concierge</span>
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                  </div>
+                  <span className="text-[10px] text-emerald-400 font-medium">Official Business Account</span>
+                </div>
+              </div>
+              <button
+                onClick={() =>
+                  setMessages([
+                    {
+                      sender: "bot",
+                      text: "👋 Welcome to SHAY Salon & Spa (Karachi) WhatsApp Concierge!\nType 'hi' or 'menu' to begin your luxury booking.",
+                      time: "Just now",
+                    },
+                  ])
+                }
+                className="p-1.5 rounded-full hover:bg-white/10 text-slate-400"
+                title="Reset Chat"
+              >
+                <RefreshCw className="w-3.5 h-3.5" />
+              </button>
+            </div>
+
+            {/* Chat Body */}
+            <div className="flex-1 overflow-y-auto p-3 space-y-3 bg-[#0B141A] text-xs">
               {messages.map((m, idx) => (
                 <div
                   key={idx}
                   className={`flex flex-col ${m.sender === "user" ? "items-end" : "items-start"}`}
                 >
                   <div
-                    className={`max-w-[80%] rounded-2xl px-4 py-2.5 text-xs whitespace-pre-wrap leading-relaxed shadow-xs ${
+                    className={`max-w-[85%] rounded-2xl p-3 shadow-xs whitespace-pre-wrap leading-relaxed ${
                       m.sender === "user"
-                        ? "bg-[#dcf8c6] text-[#1b1520] rounded-tr-none border border-[#c5e6ad]"
-                        : "bg-white text-[#1b1520] rounded-tl-none border border-[#e7dfd8]"
+                        ? "bg-[#005C4B] text-white rounded-br-xs"
+                        : "bg-[#202C33] text-[#E9EDEF] rounded-bl-xs border border-slate-700/40"
                     }`}
                   >
-                    {m.text}
+                    <p className="text-xs">{m.text}</p>
+                    <span className="text-[9px] text-slate-400 float-right mt-1 ml-2 font-mono">
+                      {m.time}
+                    </span>
                   </div>
-                  <span className="text-[9px] text-[#7a7180] mt-1 px-1">{m.time}</span>
                 </div>
               ))}
               {loading && (
-                <div className="flex items-center gap-2 text-xs text-[#7a7180] bg-white px-3 py-1.5 rounded-full w-fit border border-[#e7dfd8] shadow-xs">
-                  <RefreshCw className="w-3.5 h-3.5 animate-spin text-[#a3214f]" />
-                  <span>Concierge is typing...</span>
+                <div className="flex items-center gap-1.5 text-[11px] text-slate-400 italic">
+                  <span className="w-1.5 h-1.5 rounded-full bg-slate-400 animate-ping" />
+                  <span>SHAY Concierge is typing...</span>
                 </div>
               )}
             </div>
 
-            {/* Quick Reply Shortcuts */}
-            <div className="p-2.5 bg-white border-t border-[#e7dfd8] flex gap-2 overflow-x-auto text-[11px]">
-              <button
-                onClick={() => handleQuickReply("hi")}
-                className="px-3 py-1 rounded-lg bg-[#faf7f4] hover:bg-[#f2ece6] text-[#1b1520] border border-[#e7dfd8] whitespace-nowrap font-medium transition"
-              >
-                "hi" (Start)
-              </button>
-              <button
-                onClick={() => handleQuickReply("1")}
-                className="px-3 py-1 rounded-lg bg-[#faf7f4] hover:bg-[#f2ece6] text-[#1b1520] border border-[#e7dfd8] whitespace-nowrap font-medium transition"
-              >
-                "1" (Clifton Flagship)
-              </button>
-              <button
-                onClick={() => handleQuickReply("2")}
-                className="px-3 py-1 rounded-lg bg-[#faf7f4] hover:bg-[#f2ece6] text-[#1b1520] border border-[#e7dfd8] whitespace-nowrap font-medium transition"
-              >
-                "2" (DHA Bukhari)
-              </button>
-              <button
-                onClick={() => handleQuickReply("1")}
-                className="px-3 py-1 rounded-lg bg-[#faf7f4] hover:bg-[#f2ece6] text-[#1b1520] border border-[#e7dfd8] whitespace-nowrap font-medium transition"
-              >
-                "1" (Select Item)
-              </button>
-              <button
-                onClick={() => handleQuickReply("Mahnoor Baloch")}
-                className="px-3 py-1 rounded-lg bg-[#faf7f4] hover:bg-[#f2ece6] text-[#1b1520] border border-[#e7dfd8] whitespace-nowrap font-medium transition"
-              >
-                "Mahnoor Baloch"
-              </button>
-            </div>
-
-            {/* Chat Input */}
-            <form onSubmit={sendMessage} className="p-3 bg-white border-t border-[#e7dfd8] flex gap-2">
+            {/* Input Bar */}
+            <form onSubmit={(e) => sendMessage(e)} className="p-2 bg-[#202C33] rounded-b-[28px] flex items-center gap-2">
               <input
                 type="text"
                 value={inputMsg}
                 onChange={(e) => setInputMsg(e.target.value)}
-                placeholder="Type reply or pick quick option..."
-                className="flex-1 px-4 py-2.5 rounded-xl bg-[#faf7f4] border border-[#e7dfd8] text-[#1b1520] text-xs focus:outline-none focus:ring-2 focus:ring-[#075e54]/20"
+                placeholder="Type 'hi', '1', or reply..."
+                className="flex-1 bg-[#2A3942] text-white placeholder-slate-400 text-xs px-3.5 py-2 rounded-full focus:outline-none focus:ring-1 focus:ring-emerald-500"
               />
               <button
                 type="submit"
                 disabled={loading || !inputMsg.trim()}
-                className="px-4 py-2.5 rounded-xl bg-[#075e54] hover:bg-[#064e46] text-white text-xs font-semibold transition shadow-xs flex items-center justify-center disabled:opacity-50"
+                className="p-2 rounded-full bg-[#00A884] hover:bg-[#029071] text-white transition disabled:opacity-50"
               >
                 <Send className="w-3.5 h-3.5" />
               </button>
             </form>
-          </Card>
+          </div>
         </div>
-
-        {/* Right Column: Meta Cloud Architecture Card */}
-        <Card className="p-5 space-y-4 h-fit">
-          <div className="flex items-center gap-2 pb-3 border-b border-[#e7dfd8]">
-            <Smartphone className="w-4 h-4 text-[#a3214f]" />
-            <h3 className="font-serif font-bold text-sm text-[#1b1520]">Meta Cloud Integration</h3>
-          </div>
-
-          <div className="space-y-3 text-xs text-[#7a7180]">
-            <p className="leading-relaxed">
-              The salon conversational booking engine runs independently from delivery channels:
-            </p>
-
-            <div className="p-3.5 rounded-xl bg-[#faf7f4] border border-[#e7dfd8] space-y-2 text-[11px]">
-              <div className="flex justify-between">
-                <span className="text-[#7a7180]">Webhook Path:</span>
-                <span className="font-mono text-[#a3214f] font-semibold">/api/v1/webhooks/whatsapp/</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-[#7a7180]">Replay Protection:</span>
-                <span className="text-emerald-700 font-medium">SHA-256 Event Dedup</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-[#7a7180]">Session Persistence:</span>
-                <span className="text-[#1b1520] font-medium">Postgres / SQLite ORM</span>
-              </div>
-            </div>
-
-            <div className="p-3.5 rounded-xl bg-[#fbe9ef] border border-[#f3cad8] text-[#a3214f] text-xs leading-relaxed">
-              <strong>Production Deployment:</strong> Add <code className="bg-white px-1 py-0.5 rounded font-mono text-[10px]">WHATSAPP_PHONE_NUMBER_ID</code> and <code className="bg-white px-1 py-0.5 rounded font-mono text-[10px]">WHATSAPP_ACCESS_TOKEN</code> in your environment when connected to your live Meta Business Manager account.
-            </div>
-          </div>
-        </Card>
       </div>
     </div>
   );

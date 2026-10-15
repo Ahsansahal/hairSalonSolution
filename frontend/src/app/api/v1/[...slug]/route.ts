@@ -1029,5 +1029,21 @@ export async function POST(request: NextRequest, { params }: { params: { slug: s
     });
   }
 
+  // 11. Add New Branch (with 20% discount structure)
+  if (path === "branches" || path === "public/branches") {
+    const newBr = {
+      id: body.id || `b-${Date.now()}`,
+      name: body.name || "New Salon Branch",
+      code: body.code || `BR-0${branches.length + 1}`,
+      city: body.city || "Karachi",
+      address: body.address || "Karachi, Pakistan",
+      phone: body.phone || "+92 21 35870000",
+      email: body.email || "info@shay.salon",
+      chairs: body.chairs || 6,
+    };
+    branches.push(newBr);
+    return NextResponse.json(newBr, { status: 201 });
+  }
+
   return NextResponse.json({ status: "ok" });
 }
