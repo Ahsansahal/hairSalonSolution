@@ -1,4 +1,13 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000/api/v1";
+const getApiBaseUrl = () => {
+  if (process.env.NEXT_PUBLIC_API_BASE_URL) {
+    return process.env.NEXT_PUBLIC_API_BASE_URL.replace(/\/$/, "");
+  }
+  if (typeof window !== "undefined") {
+    // On Vercel, relative /api/v1 calls the embedded serverless cloud API
+    return "/api/v1";
+  }
+  return "http://localhost:8000/api/v1";
+};
 
 export function getAuthToken(): string | null {
   if (typeof window === "undefined") return null;
@@ -52,7 +61,9 @@ export function clearSession() {
 }
 
 export async function apiFetch<T = any>(endpoint: string, options: RequestInit = {}): Promise<T> {
-  const url = `${API_BASE_URL}${endpoint.startsWith("/") ? endpoint : `/${endpoint}`}`;
+  const baseUrl = getApiBaseUrl();
+  const cleanEndpoint = endpoint.startsWith("/") ? endpoint : `/${endpoint}`;
+  const url = `${baseUrl}${cleanEndpoint}`;
 
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
