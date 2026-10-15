@@ -627,6 +627,147 @@ export async function GET(request: NextRequest, { params }: { params: { slug: st
     });
   }
 
+  // 10. Attendance Devices
+  if (path === "attendance/devices") {
+    const devicesList = [
+      {
+        id: "dev1",
+        device_name: "Clifton Front Desk Biometric Terminal",
+        ip_address: "192.168.1.101",
+        is_online: true,
+        branch_name: "Clifton Flagship Branch",
+        branch_id: "b1",
+        serial_number: "ZK-BIO-9021",
+        last_heartbeat: new Date().toISOString(),
+      },
+      {
+        id: "dev2",
+        device_name: "DHA Reception Face Scanner",
+        ip_address: "192.168.2.102",
+        is_online: true,
+        branch_name: "DHA Bukhari Studio",
+        branch_id: "b2",
+        serial_number: "ZK-FACE-8812",
+        last_heartbeat: new Date().toISOString(),
+      },
+    ];
+    if (branchId && branchId !== "all") {
+      return NextResponse.json(devicesList.filter((d) => d.branch_id === branchId));
+    }
+    return NextResponse.json(devicesList);
+  }
+
+  // 11. Attendance Summaries
+  if (path === "attendance/summaries") {
+    const summariesList = [
+      {
+        id: "sum1",
+        staff_name: "Aliya Rizvi",
+        employee_code: "EMP-001",
+        branch_name: "Clifton Flagship",
+        branch_id: "b1",
+        shift_date: new Date().toISOString().split("T")[0],
+        check_in_time: "08:55 AM",
+        check_out_time: null,
+        total_hours: 5.2,
+        overtime_hours: 0,
+        status: "PRESENT",
+        punctuality: "ON_TIME",
+      },
+      {
+        id: "sum2",
+        staff_name: "Tariq Mehmood",
+        employee_code: "EMP-002",
+        branch_name: "Clifton Flagship",
+        branch_id: "b1",
+        shift_date: new Date().toISOString().split("T")[0],
+        check_in_time: "09:02 AM",
+        check_out_time: null,
+        total_hours: 5.0,
+        overtime_hours: 0,
+        status: "PRESENT",
+        punctuality: "ON_TIME",
+      },
+      {
+        id: "sum3",
+        staff_name: "Dr. Sana Hashmi",
+        employee_code: "EMP-003",
+        branch_name: "DHA Bukhari",
+        branch_id: "b2",
+        shift_date: new Date().toISOString().split("T")[0],
+        check_in_time: "09:30 AM",
+        check_out_time: null,
+        total_hours: 4.5,
+        overtime_hours: 0,
+        status: "PRESENT",
+        punctuality: "ON_TIME",
+      },
+      {
+        id: "sum4",
+        staff_name: "Bilal Qureshi",
+        employee_code: "EMP-004",
+        branch_name: "Clifton Flagship",
+        branch_id: "b1",
+        shift_date: new Date().toISOString().split("T")[0],
+        check_in_time: "09:10 AM",
+        check_out_time: null,
+        total_hours: 4.8,
+        overtime_hours: 0,
+        status: "PRESENT",
+        punctuality: "ON_TIME",
+      },
+      {
+        id: "sum5",
+        staff_name: "Mehak Fatima",
+        employee_code: "EMP-005",
+        branch_name: "DHA Bukhari",
+        branch_id: "b2",
+        shift_date: new Date().toISOString().split("T")[0],
+        check_in_time: "09:45 AM",
+        check_out_time: null,
+        total_hours: 4.2,
+        overtime_hours: 0,
+        status: "PRESENT",
+        punctuality: "ON_TIME",
+      },
+    ];
+    if (branchId && branchId !== "all") {
+      return NextResponse.json(summariesList.filter((s) => s.branch_id === branchId));
+    }
+    return NextResponse.json(summariesList);
+  }
+
+  // 12. Payroll Runs
+  if (path === "payroll/runs") {
+    const payrollRunsList = [
+      {
+        id: "pay-1",
+        run_code: "PAY-2026-OCT-W2",
+        period_start: "2026-10-01",
+        period_end: "2026-10-15",
+        status: "DRAFT",
+        total_gross_pay: 285000,
+        total_commissions: 42750,
+        total_net_disbursed: 327750,
+        staff_count: 8,
+        branch_name: "Consolidated Karachi Network",
+      },
+      {
+        id: "pay-2",
+        run_code: "PAY-2026-SEP-FINAL",
+        period_start: "2026-09-16",
+        period_end: "2026-09-30",
+        status: "DISBURSED",
+        total_gross_pay: 570000,
+        total_commissions: 85500,
+        total_net_disbursed: 655500,
+        staff_count: 8,
+        branch_name: "Consolidated Karachi Network",
+      },
+    ];
+    return NextResponse.json(payrollRunsList);
+  }
+
   return NextResponse.json({ message: "SHAY Cloud API Active", path });
 }
 
@@ -789,6 +930,103 @@ export async function POST(request: NextRequest, { params }: { params: { slug: s
   // 5. Record Stock Movement
   if (path === "inventory/movements") {
     return NextResponse.json({ status: "recorded" }, { status: 201 });
+  }
+
+  // 6. Appointment Status Update (Check in, In progress, Complete, Cancel)
+  if (path.includes("appointments") && path.includes("status")) {
+    const segments = path.split("/");
+    const apptId = segments[1];
+    const newStatus = body.status || "CONFIRMED";
+    const appt = appointments.find((a) => a.id === apptId);
+    if (appt) {
+      appt.status = newStatus;
+    }
+    return NextResponse.json({ status: "success", appointment: appt });
+  }
+
+  // 7. Generate Invoice from Appointment (Checkout flow)
+  if (path === "billing/invoices/from-appointment") {
+    const appt = appointments.find((a) => a.id === body.appointment_id) || appointments[0];
+    const inv = {
+      id: `inv-${Date.now()}`,
+      invoice_number: `SHAY-INV-2026-${Math.floor(1000 + Math.random() * 9000)}`,
+      customer_name: appt.customer_name,
+      customer_phone: appt.customer_phone,
+      branch_name: appt.branch_name,
+      status: "ISSUED",
+      subtotal_amount: appt.total_amount || 4500,
+      tax_amount: (appt.total_amount || 4500) * 0.13,
+      total_amount: (appt.total_amount || 4500) * 1.13,
+      amount_paid: 0,
+      balance_due: (appt.total_amount || 4500) * 1.13,
+      issued_at: new Date().toISOString(),
+      items: [
+        { name: appt.service_names?.[0] || "Custom Salon Service", quantity: 1, unit_price: appt.total_amount, total_price: appt.total_amount },
+      ],
+      payments: [],
+    };
+    invoices.unshift(inv);
+    return NextResponse.json(inv, { status: 201 });
+  }
+
+  // 8. Attendance Punch Simulator
+  if (path.includes("attendance/punches") || path.includes("attendance/simulator") || path === "attendance/clock") {
+    return NextResponse.json({
+      status: "SUCCESS",
+      punch_time: new Date().toISOString(),
+      message: `Biometric Punch Recorded: ${body.punch_type || "CHECK_IN"} verified successfully.`,
+    });
+  }
+
+  // 9. Payroll Run Generation & Disbursement
+  if (path.includes("payroll/runs/generate")) {
+    return NextResponse.json({
+      status: "success",
+      run_code: `PAY-2026-OCT-W${Math.floor(Math.random() * 4) + 1}`,
+      message: "Biometric attendance draft payroll run generated.",
+    });
+  }
+
+  if (path.includes("payroll/runs") && path.includes("disburse")) {
+    return NextResponse.json({
+      status: "success",
+      message: "Payroll disbursed successfully via 1Link direct deposit.",
+    });
+  }
+
+  // 10. WhatsApp Concierge Simulator Webhook
+  if (path === "webhooks/whatsapp/simulate") {
+    const rawMsg = (body.message || "").toLowerCase().trim();
+    let reply = "";
+    let nextState = "MENU";
+
+    if (rawMsg.includes("hi") || rawMsg.includes("hello") || rawMsg.includes("menu")) {
+      reply = "👋 Welcome to SHAY Salon & Spa (Karachi) WhatsApp Concierge!\n\n✨ Current Featured Specials:\n1️⃣ Executive Grooming Suite (Rs. 4,500)\n2️⃣ Hydra-Refresh & Hair Spa Ritual (Rs. 9,800)\n3️⃣ Royal Wedding Groom Package (Rs. 19,500)\n\nReply with Deal Number (e.g. 1) to book, or 'branch' for locations!";
+      nextState = "AWAITING_SERVICE";
+    } else if (rawMsg === "1" || rawMsg.includes("groom")) {
+      reply = "✂️ Selected: SHAY Deal 01: Executive Grooming Suite (Precision Haircut + Organic Charcoal Beard + Scalp Cleanse).\n\nWhich branch would you like to visit?\n🅰️ Clifton Block 4 Flagship\n🅱️ DHA Phase 6 Bukhari Studio";
+      nextState = "AWAITING_BRANCH";
+    } else if (rawMsg === "2" || rawMsg.includes("hydra")) {
+      reply = "💆‍♀️ Selected: SHAY Deal 02: Hydra-Refresh & Hair Spa Ritual (Deep Pore Hydra-Glow Facial + Moroccan Argan Gloss).\n\nWhich branch?\n🅰️ Clifton Block 4 Flagship\n🅱️ DHA Phase 6 Bukhari Studio";
+      nextState = "AWAITING_BRANCH";
+    } else if (rawMsg === "a" || rawMsg.includes("clifton")) {
+      reply = "📍 Reserved at Clifton Flagship Branch (Block 4, Near Bilawal House).\n\nAvailable today at 02:00 PM with Senior Stylist Aliya Rizvi. Reply 'yes' to confirm your seat!";
+      nextState = "AWAITING_CONFIRM";
+    } else if (rawMsg === "b" || rawMsg.includes("dha")) {
+      reply = "📍 Reserved at DHA Bukhari Studio (Bukhari Commercial Lane 3, Phase 6).\n\nAvailable today at 01:30 PM with Dr. Sana Hashmi. Reply 'yes' to confirm your seat!";
+      nextState = "AWAITING_CONFIRM";
+    } else if (rawMsg === "yes" || rawMsg.includes("confirm")) {
+      reply = "🎉 Your booking is confirmed! Reference: SHAY-WA-9041.\n\nOur concierge will welcome you with complimentary refreshments. For directions, call +92 21 35870000.";
+      nextState = "CONFIRMED";
+    } else {
+      reply = "Thank you for contacting SHAY Luxury Salon & Spa Karachi. How may our concierge team assist your appointment today? Type 'menu' to view packages.";
+      nextState = "GREETING";
+    }
+
+    return NextResponse.json({
+      session_state: nextState,
+      bot_reply: reply,
+    });
   }
 
   return NextResponse.json({ status: "ok" });
