@@ -37,11 +37,10 @@ function LoginForm() {
 
       // Save token, user details, and cookies for Next.js route protection
       setSession(data.access, data.refresh, data.user);
-      setSuccessMsg(`Welcome, ${data.user.full_name || data.user.email}! Redirecting to dashboard...`);
+      setSuccessMsg(`Welcome, ${data.user.full_name || data.user.email}! Redirecting...`);
 
-      setTimeout(() => {
-        router.push(redirectUrl);
-      }, 400);
+      // Immediate hard navigation ensures cookies and auth session are synchronously applied
+      window.location.href = redirectUrl;
     } catch (err: any) {
       setError(
         err.message || "Authentication failed. Please verify your credentials or network connection."
